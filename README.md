@@ -1,7 +1,7 @@
 # SummonersWar-Rune-delete-picker
 Summonerswar - rune delete picker
 
-This app require JSON file gathered with proxy, and will create a .xlsx containing parsed rune data, including estimated efficiendy, and will highlight rune that's bottom 20%  (which should be considered to be sold)
+This app require JSON file gathered with proxy, and will create a .xlsx containing parsed rune data, including estimated efficiency, and will highlight rune that's bottom 20%  (which should be considered to be sold)
 
 # How to use
 * Run rune_delete_picker.py 

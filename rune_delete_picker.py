@@ -4,23 +4,32 @@ from parser_mons import *
 import pandas as pd
 import json
 import os
+import sys
 
+
+# insert your wizard code as string here ex : "123452"
+default_wizard_id = None
 
 
 def parse_file(wizard_id):
-    with open("{}.json".format(wizard_id), encoding="utf-8") as f:
-        json_data = json.load(f)
-    # json_data = json.load(open("{}.json".format(wizard_id)))
+
+    try:
+        with open("{}.json".format(wizard_id), encoding="utf-8") as f:
+            json_data = json.load(f)
+    except:
+        raise
 
     # storage runes
     try:
         rune_list = json_data["runes"]
+
     except:
         rune_list = []
 
     # equipped runes
     try:
         monsters = json_data["unit_list"]
+
     except:
         monsters = json_data["friend"]["unit_list"]
 
@@ -30,7 +39,7 @@ def parse_file(wizard_id):
             for rune in monster_runes:
 
                 # there are 2 different format (?)
-                if len(rune) < 2:
+                if len(rune) <= 2:
                     rune = monster_runes[rune]
                     rune_list.append(rune)
                 else:
@@ -43,19 +52,33 @@ def parse_file(wizard_id):
 
 if __name__ == '__main__':
 
-    # prompt user id
-    wizard_id = input("input your id (example 101222) : ")
+    # prompt user id if not given default one
+    if default_wizard_id is None:
+        wizard_id = input("input your id (example 101222 or visit-110200) : ")
+    else:
+        wizard_id = default_wizard_id
 
     # Default value
     try:
         int(wizard_id)
-    except:
-        if "visit" in wizard_id:
+
+    except Exception as e:
+        if "visit-" in wizard_id:
             pass
         else:
-            wizard_id = "1018652"
+            print("wrong input:", e)
+            os.system("pause")
+            sys.exit(0)
 
-    rune_list, monster_list = parse_file(wizard_id)
+    try:
+        rune_list, monster_list = parse_file(wizard_id)
+
+    except Exception as e:
+        print("cannot open file:", e)
+        print("aborting.....")
+        os.system("pause")
+        sys.exit(0)
+
     whole_rune = []
     monster_eff = {}
     monster_exp_eff = {}
@@ -63,7 +86,7 @@ if __name__ == '__main__':
     for rune in rune_list:
 
         """ ===================================================
-                              RUNE SECTION
+                            RUNE SECTION
         ===================================================="""
 
         # Getting rune main information
@@ -89,11 +112,12 @@ if __name__ == '__main__':
         rune_exp_eff = rune_expected_efficiency(rune)
 
         # Reshape and append
-        rune_data = (rune_type, rune_slot, rune_grade, rune_base_grade, rune_stars, rune_level, rune_main, rune_inate, rune_subs_list, rune_eff, rune_exp_eff, rune_loc)
+        rune_data = (rune_type, rune_slot, rune_grade, rune_base_grade, rune_stars, rune_level,
+                     rune_main, rune_inate, rune_subs_list, rune_eff, rune_exp_eff, rune_loc)
         whole_rune.append(rune_data)
 
         """ ===================================================
-                       MONSTER EFF SECTION
+                    MONSTER EFF SECTION
         ===================================================="""
         store_monster_eff(monster_eff, rune_loc, rune_eff)
         store_monster_eff(monster_exp_eff, rune_loc, rune_exp_eff)
@@ -110,7 +134,7 @@ if __name__ == '__main__':
         avg_exp_eff = monster_exp_eff[monster] / 6
         monster_eff_avg.append((monster, avg_real_eff, avg_exp_eff))
 
-    # Convert eff data to pandas dataframe
+    # Convert eff data to pandas data frame
     monster_eff_index = ('monster', 'avg real eff', 'avg exp eff')
     monster_eff_pd = pd.DataFrame(monster_eff_avg, columns=monster_eff_index)
     monster_eff_sorted = monster_eff_pd.sort_values(by=['avg real eff'], ascending=False)
@@ -119,28 +143,26 @@ if __name__ == '__main__':
     import pandas.io.formats.excel
     pd.io.formats.excel.header_style = None
 
-    # Send to excel
-    filename = '{} rune_eff.xlsx'.format(wizard_id)
-    writer = pd.ExcelWriter(filename, engine='xlsxwriter')
-    workbook = writer.book
+    success = False
+    while not success:
+        try:
+            # Send to excel
+            filename = '{} rune_eff.xlsx'.format(wizard_id)
+            writer = pd.ExcelWriter(filename, engine='xlsxwriter')
+            workbook = writer.book
 
+            whole_rune_pd_sorted.to_excel(writer, sheet_name="Rune")
+            worksheet = writer.sheets['Rune']
+            excel_formatting(workbook, worksheet)
 
-    try:
-        whole_rune_pd_sorted.to_excel(writer, sheet_name="Rune")
-        worksheet = writer.sheets['Rune']
-        excel_formatting(workbook, worksheet)
+            monster_eff_sorted.to_excel(writer, sheet_name="Mons eff")
+            worksheet = writer.sheets['Mons eff']
+            excel_formatting(workbook, worksheet, cond="mons")
 
-        monster_eff_sorted.to_excel(writer, sheet_name="Mons eff")
-        worksheet = writer.sheets['Mons eff']
-        excel_formatting(workbook, worksheet, cond="mons")
+            writer.save()
+            os.startfile(filename)
+            success = True
 
-        writer.save()
-        os.startfile(filename)
-
-    except:
-        print("File is open, close it first")
-
-
-
-
-
+        except Exception as e:
+            print("File is open, close it first:", e)
+            os.system("pause")

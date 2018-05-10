@@ -8,8 +8,9 @@ import os
 
 
 def parse_file(wizard_id):
-
-    json_data = json.load(open("{}.json".format(wizard_id)))
+    with open("{}.json".format(wizard_id), encoding="utf-8") as f:
+        json_data = json.load(f)
+    # json_data = json.load(open("{}.json".format(wizard_id)))
 
     # storage runes
     try:

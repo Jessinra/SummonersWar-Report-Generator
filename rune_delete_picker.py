@@ -49,120 +49,137 @@ def parse_file(wizard_id):
 
     return rune_list, monster_list
 
+try:
+    if __name__ == '__main__':
 
-if __name__ == '__main__':
+        # prompt user id if not given default one
+        if default_wizard_id is None:
 
-    # prompt user id if not given default one
-    if default_wizard_id is None:
-        wizard_id = input("input your id (example 101222 or visit-110200) : ")
-    else:
-        wizard_id = default_wizard_id
+            try:
+                with open("default_id.txt", encoding="utf-8") as f:
+                    
+                    for line in f:
+                        wizard_id = line.strip()
+                        break
+                        
+            except Exception as e:
+                print(e)
+                os.system("pause")
+                wizard_id = input("input your id (example 101222 or visit-110200) : ")
+                
 
-    # Default value
-    try:
-        int(wizard_id)
-
-    except Exception as e:
-        if "visit-" in wizard_id:
-            pass
         else:
-            print("wrong input:", e)
+            wizard_id = default_wizard_id
+
+        # Default value
+        try:
+            int(wizard_id)
+
+        except Exception as e:
+            if "visit-" in wizard_id:
+                pass
+            else:
+                print("wrong input:", e)
+                os.system("pause")
+                sys.exit(0)
+
+        try:
+            rune_list, monster_list = parse_file(wizard_id)
+
+        except Exception as e:
+            print("cannot open file:", e)
+            print("aborting.....")
             os.system("pause")
             sys.exit(0)
 
-    try:
-        rune_list, monster_list = parse_file(wizard_id)
+        whole_rune = []
+        monster_eff = {}
+        monster_exp_eff = {}
 
-    except Exception as e:
-        print("cannot open file:", e)
-        print("aborting.....")
-        os.system("pause")
-        sys.exit(0)
+        for rune in rune_list:
 
-    whole_rune = []
-    monster_eff = {}
-    monster_exp_eff = {}
+            """ ===================================================
+                                RUNE SECTION
+            ===================================================="""
 
-    for rune in rune_list:
+            # Getting rune main information
+            rune_slot = rune['slot_no']
+            rune_stars = rune['class']
+            rune_grade = get_rune_grade(rune['rank'])
+            rune_base_grade = get_rune_grade(rune['extra'])
+            rune_type = get_rune_type(rune['set_id'])
+            rune_level = rune['upgrade_curr']
+            rune_main = get_attribute(rune['pri_eff'])
+            rune_inate = get_attribute(rune['prefix_eff'])
+            rune_loc = get_rune_user(monster_list, rune["occupied_id"])
 
-        """ ===================================================
-                            RUNE SECTION
-        ===================================================="""
+            # Getting sub stats
+            rune_subs_list_raw = rune['sec_eff']
+            rune_subs_list = []
+            for substats in rune_subs_list_raw:
+                rune_substats = get_attribute(substats)
+                rune_subs_list.append(rune_substats)
 
-        # Getting rune main information
-        rune_slot = rune['slot_no']
-        rune_stars = rune['class']
-        rune_grade = get_rune_grade(rune['rank'])
-        rune_base_grade = get_rune_grade(rune['extra'])
-        rune_type = get_rune_type(rune['set_id'])
-        rune_level = rune['upgrade_curr']
-        rune_main = get_attribute(rune['pri_eff'])
-        rune_inate = get_attribute(rune['prefix_eff'])
-        rune_loc = get_rune_user(monster_list, rune["occupied_id"])
+            # Calculate eff
+            rune_eff = rune_efficiency(rune)
+            rune_exp_eff = rune_expected_efficiency(rune)
 
-        # Getting sub stats
-        rune_subs_list_raw = rune['sec_eff']
-        rune_subs_list = []
-        for substats in rune_subs_list_raw:
-            rune_substats = get_attribute(substats)
-            rune_subs_list.append(rune_substats)
+            # Reshape and append
+            rune_data = (rune_type, rune_slot, rune_grade, rune_base_grade, rune_stars, rune_level,
+                        rune_main, rune_inate, rune_subs_list, rune_eff, rune_exp_eff, rune_loc)
+            whole_rune.append(rune_data)
 
-        # Calculate eff
-        rune_eff = rune_efficiency(rune)
-        rune_exp_eff = rune_expected_efficiency(rune)
+            """ ===================================================
+                        MONSTER EFF SECTION
+            ===================================================="""
+            store_monster_eff(monster_eff, rune_loc, rune_eff)
+            store_monster_eff(monster_exp_eff, rune_loc, rune_exp_eff)
 
-        # Reshape and append
-        rune_data = (rune_type, rune_slot, rune_grade, rune_base_grade, rune_stars, rune_level,
-                     rune_main, rune_inate, rune_subs_list, rune_eff, rune_exp_eff, rune_loc)
-        whole_rune.append(rune_data)
+        # Convert rune data to pandas dataframe
+        whole_rune_index = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate', 'Subs', 'Eff', 'Exp eff', "Loc")
+        whole_rune_pd = pd.DataFrame(whole_rune, columns=whole_rune_index)
+        whole_rune_pd_sorted = whole_rune_pd.sort_values(by=['Exp eff'])
 
-        """ ===================================================
-                    MONSTER EFF SECTION
-        ===================================================="""
-        store_monster_eff(monster_eff, rune_loc, rune_eff)
-        store_monster_eff(monster_exp_eff, rune_loc, rune_exp_eff)
+        # Calculate monster efficiency
+        monster_eff_avg = []
+        for monster in monster_eff:
+            avg_real_eff = monster_eff[monster] / 6
+            avg_exp_eff = monster_exp_eff[monster] / 6
+            monster_eff_avg.append((monster, avg_real_eff, avg_exp_eff))
 
-    # Convert rune data to pandas dataframe
-    whole_rune_index = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate', 'Subs', 'Eff', 'Exp eff', "Loc")
-    whole_rune_pd = pd.DataFrame(whole_rune, columns=whole_rune_index)
-    whole_rune_pd_sorted = whole_rune_pd.sort_values(by=['Exp eff'])
+        # Convert eff data to pandas data frame
+        monster_eff_index = ('monster', 'avg real eff', 'avg exp eff')
+        monster_eff_pd = pd.DataFrame(monster_eff_avg, columns=monster_eff_index)
+        monster_eff_sorted = monster_eff_pd.sort_values(by=['avg real eff'], ascending=False)
 
-    # Calculate monster efficiency
-    monster_eff_avg = []
-    for monster in monster_eff:
-        avg_real_eff = monster_eff[monster] / 6
-        avg_exp_eff = monster_exp_eff[monster] / 6
-        monster_eff_avg.append((monster, avg_real_eff, avg_exp_eff))
+        # enable header formatting
+        import pandas.io.formats.excel
+        pd.io.formats.excel.header_style = None
 
-    # Convert eff data to pandas data frame
-    monster_eff_index = ('monster', 'avg real eff', 'avg exp eff')
-    monster_eff_pd = pd.DataFrame(monster_eff_avg, columns=monster_eff_index)
-    monster_eff_sorted = monster_eff_pd.sort_values(by=['avg real eff'], ascending=False)
+        success = False
+        while not success:
+            try:
+                # Send to excel
+                filename = '{} rune_eff.xlsx'.format(wizard_id)
+                writer = pd.ExcelWriter(filename, engine='xlsxwriter')
+                workbook = writer.book
 
-    # enable header formatting
-    import pandas.io.formats.excel
-    pd.io.formats.excel.header_style = None
+                whole_rune_pd_sorted.to_excel(writer, sheet_name="Rune")
+                worksheet = writer.sheets['Rune']
+                excel_formatting(workbook, worksheet)
 
-    success = False
-    while not success:
-        try:
-            # Send to excel
-            filename = '{} rune_eff.xlsx'.format(wizard_id)
-            writer = pd.ExcelWriter(filename, engine='xlsxwriter')
-            workbook = writer.book
+                monster_eff_sorted.to_excel(writer, sheet_name="Mons eff")
+                worksheet = writer.sheets['Mons eff']
+                excel_formatting(workbook, worksheet, cond="mons")
 
-            whole_rune_pd_sorted.to_excel(writer, sheet_name="Rune")
-            worksheet = writer.sheets['Rune']
-            excel_formatting(workbook, worksheet)
+                writer.save()
+                os.startfile(filename)
+                success = True
 
-            monster_eff_sorted.to_excel(writer, sheet_name="Mons eff")
-            worksheet = writer.sheets['Mons eff']
-            excel_formatting(workbook, worksheet, cond="mons")
+            except Exception as e:
+                print("File is open, close it first:", e)
+                os.system("pause")
 
-            writer.save()
-            os.startfile(filename)
-            success = True
-
-        except Exception as e:
-            print("File is open, close it first:", e)
-            os.system("pause")
+except Exception as e:
+    print(e)
+    os.system("pause")

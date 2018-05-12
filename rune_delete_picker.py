@@ -11,6 +11,50 @@ import sys
 default_wizard_id = None
 
 
+def get_wizard_id():
+    """
+    Handle input and validating user input if necessary, returning wizard id 
+    """
+
+    # prompt user id if not given default one
+    if default_wizard_id is None:
+        try:
+            with open("default_id.txt", encoding="utf-8") as f:
+                
+                for line in f:
+                    wizard_id = line.strip()
+                    break
+
+            create_file = False
+                    
+        except Exception as e:
+            wizard_id = input("<this will be stored into default_id.txt>\nInput your id (example 101222 or visit-110200) : ")
+            create_file = True
+
+    else:
+        wizard_id = default_wizard_id
+        create_file = False
+
+    # validating default id
+    try:
+        int(wizard_id)
+
+    except Exception as e:
+        if "visit-" in wizard_id:
+            pass
+        else:
+            print("wrong input:", e)
+            os.system("pause")
+            sys.exit(0)
+
+    # Store default id for later use
+    if create_file:
+        f = open("default_id.txt", "w")
+        f.write(wizard_id)
+
+    return wizard_id
+
+
 def parse_file(wizard_id):
 
     try:
@@ -49,39 +93,11 @@ def parse_file(wizard_id):
 
     return rune_list, monster_list
 
+
 try:
     if __name__ == '__main__':
 
-        # prompt user id if not given default one
-        if default_wizard_id is None:
-
-            try:
-                with open("default_id.txt", encoding="utf-8") as f:
-                    
-                    for line in f:
-                        wizard_id = line.strip()
-                        break
-                        
-            except Exception as e:
-                print(e)
-                os.system("pause")
-                wizard_id = input("input your id (example 101222 or visit-110200) : ")
-                
-
-        else:
-            wizard_id = default_wizard_id
-
-        # Default value
-        try:
-            int(wizard_id)
-
-        except Exception as e:
-            if "visit-" in wizard_id:
-                pass
-            else:
-                print("wrong input:", e)
-                os.system("pause")
-                sys.exit(0)
+        wizard_id = get_wizard_id()
 
         try:
             rune_list, monster_list = parse_file(wizard_id)

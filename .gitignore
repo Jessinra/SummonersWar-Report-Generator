@@ -3,3 +3,6 @@
 *.json
 *.txt
 *.xlsx
+*.spec
+/build
+/dist

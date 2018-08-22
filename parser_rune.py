@@ -4,27 +4,27 @@
 ==================================================================== """
 
 
-def rune_is_equiped(id):
+def rune_is_equiped(rune_id):
 
-    if id == "1":
+    if rune_id == "1":
         return True
     else:
         return False
 
 
-def get_rune_user(unit_list, id):
+def get_rune_user(unit_list, rune_id):
 
-    if id == 0:
+    if rune_id == 0:
         return ""
     else:
-        return unit_list[id]
+        return unit_list[rune_id]
 
 """ ====================================================================
                                 Sub function
 ==================================================================== """
 
 
-def get_rune_type(id):
+def get_rune_type(rune_id):
     """
     convert rune type to string
     """
@@ -55,10 +55,10 @@ def get_rune_type(id):
         99: "Immemorial"
     }
 
-    return name_map[id]
+    return name_map[rune_id]
 
 
-def get_sub_type(id):
+def get_sub_type(rune_id):
     """
     convert rune sub type to string
     """
@@ -78,10 +78,10 @@ def get_sub_type(id):
         12: "ACC",
     }
 
-    return sub_type_map[id]
+    return sub_type_map[rune_id]
 
 
-def get_rune_grade(id):
+def get_rune_grade(rune_id):
     """
     return rune grade (Currently)
     """
@@ -95,7 +95,7 @@ def get_rune_grade(id):
         5: 'L',  # legend
     }
 
-    return rune_class_map[id]
+    return rune_class_map[rune_id]
 
 
 def get_rune_stat(stats, include_grind=True):
@@ -206,10 +206,6 @@ def rune_efficiency(rune):
 
     # Rune secondary stats (sub stats)
     rune_subs_list_raw = rune['sec_eff']
-    
-    
-    
-    # rune_subs_list = []
 
     substats_roll_score = 0
     substats_roll_without_grind_score = 0
@@ -277,11 +273,11 @@ def rune_expected_efficiency(rune):
                 fgood -= 1  # atk% or def%
                 fbad -= 1   # atk+ or def+
 
-            # Special assumtion that slot 2 4 6 has 'good' primary stat (percents), and 1 3 5 has 'bad' primary stat (flats)
+            # Special assumption that slot 2 4 6 has 'good' primary stat (percents), and 1 3 5 has 'bad' primary stat (flats)
             if rune_slot % 2 == 0:
-                fgood -= 1 # definitely single type of good stat is used already for primary
+                fgood -= 1  # definitely single type of good stat is used already for primary
             else:
-                fbad -= 1 # definitely single type of bad stat is used already for primary
+                fbad -= 1  # definitely single type of bad stat is used already for primary
 
             # Statistic
             expected_roll_into_good = expectation(fgood, fbad, roll_count)
@@ -327,7 +323,7 @@ def rune_expected_efficiency(rune):
     # Get rune inate stat, do current eff count
     rune_static_stat = get_rune_stat(rune['prefix_eff'], include_grind=True)
     substats_roll_score += rune_static_stat[1] / max_roll_substats(rune_static_stat[0])
-    substats_roll_without_grind_score += rune_static_stat[1] / max_roll_substats(rune_static_stat[0])   # Inate stat can't be grinded ATM
+    substats_roll_without_grind_score += rune_static_stat[1] / max_roll_substats(rune_static_stat[0])  # Inate stat can't be grinded ATM
 
     # ============================================= #
     #                   forecast part               #
@@ -339,7 +335,6 @@ def rune_expected_efficiency(rune):
 
     # count how many times NEW sub available
     rune_new_stat_upgrade_count = 4 - min(len(rune_subs_list_type), 4)
-    rune_upgrade_new_point = 0
 
     # calculate point earned by rolling into NEW stats
     rune_subs_list_type.append(rune_static_stat)

@@ -10,11 +10,11 @@ def generate_monsters(list_of_unit):
     :rtype: list
     """
 
-    def get_monster_name(id):
+    def get_monster_name(monster_id):
         """
         Return monster name from monster id
-        :param id: monsters id
-        :type id: int
+        :param monster_id: monsters id
+        :type monster_id: int
         :return: monster name
         :rtype: string
         """
@@ -27,15 +27,16 @@ def generate_monsters(list_of_unit):
             '5': "Dark"
         }
 
-        try:
-            if str(id) in monsters_name_map:
-                name = monsters_name_map[str(id)]
-            else:
-                name = str(monsters_name_map[str(id)[0:3]] + " " + monster_attribute[str(id)[4]])
+        # Specific name
+        if str(monster_id) in monsters_name_map:
+            return monsters_name_map[str(monster_id)]
 
-            return name
-        except:
-            return "unknown "+str(id)
+        # Unawakened name
+        elif str(monster_id)[0:3] in monsters_name_map:
+            return str(monsters_name_map[str(monster_id)[0:3]] + " " + monster_attribute[str(monster_id)[4]])
+
+        else:
+            return "unknown "+str(monster_id)
 
     monster_list = {}
     count_duplicate = {}

@@ -27,7 +27,7 @@ def get_wizard_id():
 
             create_file = False
                     
-        except Exception as e:
+        except:
             wizard_id = input("<this will be stored into default_id.txt>\nInput your id (example 101222 or visit-110200) : ")
             create_file = True
 
@@ -162,10 +162,9 @@ try:
             store_monster_eff(monster_eff, rune_loc, rune_eff)
             store_monster_eff(monster_exp_eff, rune_loc, rune_exp_eff)
 
-
         # Setup dataframe index
         whole_rune_index = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate', '')
-        whole_rune_index += ( 'Spd', 'Atk%', 'Hp%', 'Def%', 'Crate', 'Cdmg', 'Res', 'Acc', 'Atk+', 'Hp+', 'Def+')
+        whole_rune_index += ('Spd', 'Atk%', 'Hp%', 'Def%', 'Crate', 'Cdmg', 'Res', 'Acc', 'Atk+', 'Hp+', 'Def+')
         whole_rune_index += ('', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc")
         
         # Convert rune data to pandas dataframe
@@ -212,9 +211,7 @@ try:
             except Exception as e:
                 print("File is open, close it first:", e)
                 os.system("pause")
-                raise e
 
 except Exception as e:
     print(e)
     os.system("pause")
-    raise e

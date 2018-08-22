@@ -5,6 +5,8 @@ def excel_formatting(workbook, worksheet, cond="rune"):
     :type workbook:
     :param worksheet:
     :type worksheet:
+    :param cond: type of format needed (for what purpose)
+    :type cond: string
     :return:
     :rtype:
     """
@@ -13,7 +15,8 @@ def excel_formatting(workbook, worksheet, cond="rune"):
         format_legend = workbook.add_format({'bg_color': '#f9e7a9', 'font_color': '#2B2925'})
         format_hero = workbook.add_format({'bg_color': '#f4d9f9', 'font_color': '#2B2925'})
         format_rare = workbook.add_format({'bg_color': '#d5f0f2', 'font_color': '#2B2925'})
-        format_flat = workbook.add_format({'bg_color': '#dfdee2', 'font_color': '#0d0133'})
+        # format_flat = workbook.add_format({'bg_color': '#dfdee2', 'font_color': '#0d0133'})
+
         format_del_candidate = workbook.add_format({'bg_color': '#6d5f5c', 'font_color': '#ffd2c9'})
         format_header = workbook.add_format({'bg_color': '#30305e', 'font_color': '#FFFFFF', 'rotation': '45',
                                              'valign': 'vcenter', 'align': 'center', 'bold': True})

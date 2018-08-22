@@ -626,7 +626,7 @@ monsters_name_map = {
     "19311": "Sera",
     "19312": "Anne",
     "19313": "Hannah",
-    "19314": "",
+    "19314": "Loren",
     "19315": "Cassie",
 
     "194": "Pirate Captain",
@@ -682,7 +682,7 @@ monsters_name_map = {
     "20111": "Emma",
     "20112": "Lisa",
     "20113": "Olivia",
-    "20114": "Illianna",
+    "20114": "Illiana",
     "20115": "Sylvia",
 
     "202": "Martial Artist",
@@ -776,21 +776,31 @@ monsters_name_map = {
     "21414": "Celia",
     "21415": "Vivachel",
 
-    "15105": "Devilmon",
-    "14314": "Rainbowmon",
+    "215": "Unicorn",
+    "21511": "Amelia",
+    "21512": "Helena",
+    "21513": "Diana",
+    "21514": "Eleanor",
+    "21515": "Alexandra",
+    "21611": "Amelia",
+    "21612": "Helena",
+    "21613": "Diana",
+    "21614": "Eleanor",
+    "21615": "Alexandra",
 
-    "1000111": "Homun (Water)",
-    "1000112": "Homun (Fire)",
-    "1000113": "Homun (Wind)",
-    "21814": "Homun (light)",
-    "21815": "Homun (dark)",
+    "218": "Paladin",
+    "21811": "Josephine",
+    "21812": "Ophilia",
+    "21813": "Louise",
+    "21814": "Jeanne",
+    "21815": "Leona",
 
-    "10002": "Paladin",
-    "1000211": "Josephine",
-    "1000212": "Ophilia",
-    "1000213": "Louise",
-    "1000214": "Jeanne",
-    "1000215": "Leona",
+    "219": "Chakram Dancer",
+    "21911": "Talia",
+    "21912": "Shaina",
+    "21913": "Melissa",
+    "21914": "Deva",
+    "21915": "Belita",
 
     "220": "Boomerang Warrior",
     "22011": "Sabrina",
@@ -798,4 +808,14 @@ monsters_name_map = {
     "22013": "Zenobia",
     "22014": "Bailey",
     "22015": "Martina",
+
+    "15105": "Devilmon",
+    "14314": "Rainbowmon",
+
+    "1000111": "Homunculus - Attack (Water)",
+    "1000112": "Homunculus - Attack (Fire)",
+    "1000113": "Homunculus - Attack (Wind)",
+
+    "1000214": "Homunculus - Support (Light)",
+    "1000215": "Homunculus - Support (Dark)"
 }

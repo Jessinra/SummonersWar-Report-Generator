@@ -125,24 +125,25 @@ try:
             rune_base_grade = get_rune_grade(rune['extra'])
             rune_type = get_rune_type(rune['set_id'])
             rune_level = rune['upgrade_curr']
-            rune_main = get_attribute(rune['pri_eff'])
-            rune_inate = get_attribute(rune['prefix_eff'])
+            rune_main = get_rune_stat(rune['pri_eff'])
+            rune_inate = get_rune_stat(rune['prefix_eff'])
+
             rune_loc = get_rune_user(monster_list, rune["occupied_id"])
 
             # Getting sub stats
             rune_subs_list_raw = rune['sec_eff']
             rune_subs_list = []
             for substats in rune_subs_list_raw:
-                rune_substats = get_attribute(substats)
+                rune_substats = get_rune_stat(substats)
                 rune_subs_list.append(rune_substats)
 
             # Calculate eff
-            rune_eff = rune_efficiency(rune)
-            rune_exp_eff = rune_expected_efficiency(rune)
+            rune_eff, rune_eff_without_grind = rune_efficiency(rune)
+            rune_exp_eff, rune_exp_eff_without_grind = rune_expected_efficiency(rune)
 
             # Reshape and append
-            rune_data = (rune_type, rune_slot, rune_grade, rune_base_grade, rune_stars, rune_level,
-                        rune_main, rune_inate, rune_subs_list, rune_eff, rune_exp_eff, rune_loc)
+            rune_data = (rune_type, rune_slot, rune_grade, rune_base_grade, rune_stars, rune_level, rune_main, rune_inate,
+                        rune_subs_list, rune_eff, rune_exp_eff, rune_eff_without_grind, rune_exp_eff_without_grind, rune_loc)
             whole_rune.append(rune_data)
 
             """ ===================================================
@@ -152,7 +153,7 @@ try:
             store_monster_eff(monster_exp_eff, rune_loc, rune_exp_eff)
 
         # Convert rune data to pandas dataframe
-        whole_rune_index = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate', 'Subs', 'Eff', 'Exp eff', "Loc")
+        whole_rune_index = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate', 'Subs', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc")
         whole_rune_pd = pd.DataFrame(whole_rune, columns=whole_rune_index)
         whole_rune_pd_sorted = whole_rune_pd.sort_values(by=['Exp eff'])
 

@@ -18,24 +18,20 @@ def generate_monsters(list_of_unit):
         :return: monster name
         :rtype: string
         """
-        def element(id):
-
-            if id == "1":
-                return "water"
-            elif id == "2":
-                return "fire"
-            elif id == "3":
-                return "wind"
-            elif id == "4":
-                return "light"
-            elif id == "5":
-                return "dark"
+        
+        monster_attribute = {
+            '1': "Water",
+            '2': "Fire",
+            '3': "Wind",
+            '4': "Light",
+            '5': "Dark"
+        }
 
         try:
             if str(id) in monsters_name_map:
                 name = monsters_name_map[str(id)]
             else:
-                name = str(monsters_name_map[str(id)[0:3]] + " " + element(str(id)[4]))
+                name = str(monsters_name_map[str(id)[0:3]] + " " + monster_attribute[str(id)[4]])
 
             return name
         except:
@@ -60,7 +56,8 @@ def generate_monsters(list_of_unit):
 def store_monster_eff(monsters_eff, monster_id, rune_eff):
 
     if len(monster_id) > 2:
-        try:
+
+        if monster_id in monsters_eff:
             monsters_eff[monster_id] += rune_eff
-        except:
+        else:
             monsters_eff[monster_id] = rune_eff

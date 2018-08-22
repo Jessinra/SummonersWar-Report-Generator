@@ -34,6 +34,10 @@ def excel_formatting(workbook, worksheet, cond="rune"):
                                                   'criteria': '%',
                                                   'value': '20',
                                                   'format': format_del_candidate})
+        worksheet.conditional_format('N1:N1600', {'type': 'bottom',
+                                                  'criteria': '%',
+                                                  'value': '20',
+                                                  'format': format_del_candidate})
         worksheet.conditional_format('J1:J1600', {'type': 'text',
                                                   'criteria': 'containing',
                                                   'value': 'flat',
@@ -50,13 +54,15 @@ def excel_formatting(workbook, worksheet, cond="rune"):
         worksheet.set_column('F:F', 3.33)
         worksheet.set_column('G:G', 3.33)
         worksheet.set_column('H:H', 14.6)
-        worksheet.set_column('I:I', 14.6)
+        worksheet.set_column('I:I', 12)
         worksheet.set_column('J:J', 45)
-        worksheet.set_column('K:K', 8.2)
-        worksheet.set_column('L:L', 8.2)
-        worksheet.set_column('M:M', 9)
+        worksheet.set_column('K:K', 6.2)
+        worksheet.set_column('L:L', 6.2)
+        worksheet.set_column('M:M', 6.2)
+        worksheet.set_column('N:N', 6.2)
+        worksheet.set_column('O:O', 9)
 
-        worksheet.autofilter('A1:M1600')
+        worksheet.autofilter('A1:O1600')
         worksheet.set_row(0, None, format_header)
         worksheet.freeze_panes(1, 0)
 

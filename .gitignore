@@ -6,3 +6,5 @@
 *.spec
 /build
 /dist
+/.vscode
+*.ipynb

@@ -141,13 +141,19 @@ try:
                 rune_substats = get_rune_stat(substats)
                 rune_subs_list.append(rune_substats)
 
+            # Densify the matrix of substats
+            dense_substats = substats_to_dense(rune_subs_list)
+
             # Calculate eff
             rune_eff, rune_eff_without_grind = rune_efficiency(rune)
             rune_exp_eff, rune_exp_eff_without_grind = rune_expected_efficiency(rune)
 
-            # Reshape and append
-            rune_data = (rune_type, rune_slot, rune_grade, rune_base_grade, rune_stars, rune_level, rune_main, rune_inate,
-                        rune_subs_list, rune_eff, rune_exp_eff, rune_eff_without_grind, rune_exp_eff_without_grind, rune_loc)
+            # Reshape
+            _separator_ = None  # separator
+            rune_data = (rune_type, rune_slot, rune_grade, rune_base_grade, rune_stars, rune_level, rune_main, rune_inate, _separator_)
+            rune_data += dense_substats
+            rune_data += (_separator_, rune_eff, rune_exp_eff, rune_eff_without_grind, rune_exp_eff_without_grind, rune_loc)
+            
             whole_rune.append(rune_data)
 
             """ ===================================================
@@ -156,8 +162,13 @@ try:
             store_monster_eff(monster_eff, rune_loc, rune_eff)
             store_monster_eff(monster_exp_eff, rune_loc, rune_exp_eff)
 
+
+        # Setup dataframe index
+        whole_rune_index = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate', '')
+        whole_rune_index += ( 'Spd', 'Atk%', 'Hp%', 'Def%', 'Crate', 'Cdmg', 'Res', 'Acc', 'Atk+', 'Hp+', 'Def+')
+        whole_rune_index += ('', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc")
+        
         # Convert rune data to pandas dataframe
-        whole_rune_index = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate', 'Subs', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc")
         whole_rune_pd = pd.DataFrame(whole_rune, columns=whole_rune_index)
         whole_rune_pd_sorted = whole_rune_pd.sort_values(by=['Exp eff'])
 
@@ -179,6 +190,7 @@ try:
 
         success = False
         while not success:
+            
             try:
                 # Send to excel
                 filename = '{} rune_eff.xlsx'.format(wizard_id)
@@ -200,6 +212,7 @@ try:
             except Exception as e:
                 print("File is open, close it first:", e)
                 os.system("pause")
+                raise e
 
 except Exception as e:
     print(e)

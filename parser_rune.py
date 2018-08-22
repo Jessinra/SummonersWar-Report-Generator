@@ -166,6 +166,31 @@ def max_roll_substats(rune_type):
     else:
         return 99999999999
 
+
+def substats_to_dense(substat_list):
+
+    template = {
+        "SPD": None,
+        "ATK%": None,
+        "HP%": None,
+        "DEF%": None,
+        "CRate": None,
+        "CDmg": None,
+        "RES": None,
+        "ACC": None,
+        "ATK flat": None,
+        "HP flat": None,
+        "DEF flat": None,
+    }
+
+    # update the value
+    for substat in substat_list:
+        template[substat[0]] = substat[1]
+
+    # densify
+    return tuple([x for x in template.values()])
+
+
 """ ====================================================================
                                 Main function
 ==================================================================== """

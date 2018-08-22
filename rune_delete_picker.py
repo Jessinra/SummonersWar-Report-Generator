@@ -128,6 +128,10 @@ try:
             rune_main = get_rune_stat(rune['pri_eff'])
             rune_inate = get_rune_stat(rune['prefix_eff'])
 
+            # remove inate if it doesn't have it
+            if rune_inate[0] is None:
+                rune_inate = None
+
             rune_loc = get_rune_user(monster_list, rune["occupied_id"])
 
             # Getting sub stats
@@ -200,3 +204,4 @@ try:
 except Exception as e:
     print(e)
     os.system("pause")
+    raise e

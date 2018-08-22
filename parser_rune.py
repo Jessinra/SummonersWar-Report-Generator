@@ -109,9 +109,6 @@ def get_rune_stat(stats, include_grind=True):
     """
 
     sub_type = get_sub_type(stats[0])
-    if sub_type is None:
-        return None
-    
     value = stats[1]
 
     if len(stats) > 2 and include_grind:

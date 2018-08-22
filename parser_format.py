@@ -55,7 +55,7 @@ def excel_formatting(workbook, worksheet, cond="rune"):
         worksheet.set_column('G:G', 3.33)
         worksheet.set_column('H:H', 14.6)
         worksheet.set_column('I:I', 12)
-        worksheet.set_column('J:J', 45)
+        worksheet.set_column('J:J', 42)
         worksheet.set_column('K:K', 6.2)
         worksheet.set_column('L:L', 6.2)
         worksheet.set_column('M:M', 6.2)

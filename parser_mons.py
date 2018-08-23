@@ -55,6 +55,15 @@ def generate_monsters(list_of_unit):
 
 
 def store_monster_eff(monsters_eff, monster_id, rune_eff):
+    """
+    Update monster efficiency dictionary
+    :param monsters_eff: dictionary to keep monsters efficiencies
+    :type monsters_eff: dict
+    :param monster_id: id representing monster
+    :type monster_id: string
+    :param rune_eff: rune's efficiency
+    :type rune_eff: float
+    """
 
     if len(monster_id) > 2:
 

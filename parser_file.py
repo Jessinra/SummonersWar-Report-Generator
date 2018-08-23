@@ -3,27 +3,29 @@ import os
 import sys
 from parser_mons import generate_monsters
 
-# insert your wizard code as string here ex : "123452"
-default_wizard_id = None
 
-def get_wizard_id():
+def get_wizard_id(default_wizard_id=None):
     """
     Handle input and validating user input if necessary, returning wizard id 
     """
 
+    wizard_id = None
+
     # prompt user id if not given default one
     if default_wizard_id is None:
+
+        # Try to open existing file
         try:
             with open("default_id.txt", encoding="utf-8") as f:
-                
                 for line in f:
                     wizard_id = line.strip()
                     break
 
             create_file = False
-                    
+
+        # If file doesn't exist yet, prompt user for input and cache input
         except:
-            wizard_id = input("<this will be stored into default_id.txt>\nInput your id (example 101222 or visit-110200) : ")
+            wizard_id = input("<This will be stored into default_id.txt>\nInput your id (example 101222 or visit-110200) : ")
             create_file = True
 
     else:
@@ -51,7 +53,11 @@ def get_wizard_id():
 
 
 def parse_file(wizard_id):
-
+    """
+    Parse Json file into three separate json (rune, monster, enhancement)
+    :return: list of runes, list of monster, list of enhancement
+    :rtype: list, list, list
+    """
     try:
         with open("{}.json".format(wizard_id), encoding="utf-8") as f:
             json_data = json.load(f)
@@ -64,12 +70,6 @@ def parse_file(wizard_id):
 
     except:
         rune_list = []
-
-    try:
-        grind_enchant_list = json_data["rune_craft_item_list"]
-    
-    except:
-        grind_enchant_list = []
 
     # equipped runes
     try:
@@ -92,5 +92,10 @@ def parse_file(wizard_id):
 
     monster_list = generate_monsters(monsters)
 
-    return rune_list, monster_list, grind_enchant_list
+    try:
+        grind_enchant_list = json_data["rune_craft_item_list"]
 
+    except:
+        grind_enchant_list = []
+
+    return rune_list, monster_list, grind_enchant_list

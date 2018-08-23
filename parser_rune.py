@@ -1,18 +1,30 @@
-
 """ ====================================================================
                                     UNUSED
 ==================================================================== """
 
 
-def rune_is_equiped(rune_id):
+def rune_is_equipped(rune_id):
+    """
+    Check if a rune is equipped
+    :param rune_id: part of rune id which determine if it's equipped
+    :type rune_id: string
+    :return: is rune equipped or not
+    :rtype: bool
+    """
 
-    if rune_id == "1":
-        return True
-    else:
-        return False
+    return rune_id == "1"
 
 
 def get_rune_user(unit_list, rune_id):
+    """
+    Get name of the monster equipped with this rune
+    :param unit_list: list of monster own by player
+    :type unit_list: list
+    :param rune_id: partial id of the rune, which indicate user
+    :type rune_id: int
+    :return: name of the monster
+    :rtype: string
+    """
 
     if rune_id == 0:
         return ""
@@ -20,12 +32,10 @@ def get_rune_user(unit_list, rune_id):
         return unit_list[rune_id]
 
 
+class Rune:
 
-class Rune():
-
-    
     def __init__(self, rune):
-        
+
         # Default initialization
         self.slot = rune['slot_no']
         self.stars = rune['class']
@@ -36,16 +46,16 @@ class Rune():
         self.main = Rune.get_rune_stat(rune['pri_eff'])
 
         self.loc = None
-        self.inate = None
+        self.innate = None
         self.substats = None
         self.dense_substats = None
-        self.grind_values  = None
+        self.grind_values = None
         self.efficiency = 0
         self.exp_efficiency = 0
         self.efficiency_without_grind = 0
         self.exp_efficiency_without_grind = 0
 
-        self.set_inate(rune['prefix_eff'])
+        self.set_innate(rune['prefix_eff'])
         self.set_substats(rune['sec_eff'])
         self.set_dense_substats()
         self.set_grind_values(rune['sec_eff'])
@@ -53,19 +63,25 @@ class Rune():
         self.set_rune_efficiency(rune)
         self.set_rune_expected_efficiency(rune)
 
-    
     def set_loc(self, rune_user):
+        """
+        Set location of a rune
+        """
 
         self.loc = rune_user
 
-    def set_inate(self, inate):
-        
-        inate = Rune.get_rune_stat(inate)
+    def set_innate(self, innate):
+        """
+        Set innate sub stat of a rune
+        """
 
-        if inate[0] is None:
-            self.inate = None
+        innate = Rune.get_rune_stat(innate)
+
+        # Remove if it doesn't have innate stat
+        if innate[0] is None:
+            self.innate = None
         else:
-            self.inate = inate
+            self.innate = innate
 
     def set_substats(self, rune_substat_raw):
         """
@@ -77,8 +93,6 @@ class Rune():
             rune_substats = Rune.get_rune_stat(substats)
             self.substats.append(rune_substats)
 
-
-
     def set_dense_substats(self):
         """
         Densify the matrix of substats
@@ -86,18 +100,23 @@ class Rune():
 
         self.dense_substats = Rune.substats_to_dense(self.substats)
 
-
     def set_grind_values(self, substats):
+        """
+        Set a map containing value of grinds used
+        :param substats: list of substat that rune has
+        :type substats: list
+        """
 
         self.grind_values = {
+
             "SPD": None,
             "ATK%": None,
             "HP%": None,
             "DEF%": None,
-            #"CRate": None,
-            #"CDmg": None,
-            #"RES": None,
-            #"ACC": None,
+            # "CRate": None,
+            # "CDmg": None,
+            # "RES": None,
+            # "ACC": None,
             "ATK flat": None,
             "HP flat": None,
             "DEF flat": None,
@@ -116,12 +135,21 @@ class Rune():
             else:
                 self.grind_values[sub_type] = 0
 
-
     def set_rune_efficiency(self, rune):
+        """
+        Set rune's efficiency with/without grind
+        :param rune: raw rune data
+        :type rune: list
+        """
 
         self.efficiency, self.efficiency_without_grind = Rune.rune_efficiency(rune)
 
     def set_rune_expected_efficiency(self, rune):
+        """
+        Set rune's expected efficiency with/without grind
+        :param rune: raw rune data
+        :type rune: list
+        """
 
         self.exp_efficiency, self.exp_efficiency_without_grind = Rune.rune_expected_efficiency(rune)
 
@@ -191,7 +219,7 @@ class Rune():
         """
         return rune grade (Currently)
         """
-        
+
         if shorten:
             rune_class_map = {
                 0: 'U',  # unknown
@@ -204,11 +232,11 @@ class Rune():
 
         else:
             rune_class_map = {
-                0: 'Unknown',  
-                1: 'Common',  
-                2: 'Magic',  
-                3: 'Rare', 
-                4: 'Hero', 
+                0: 'Unknown',
+                1: 'Common',
+                2: 'Magic',
+                3: 'Rare',
+                4: 'Hero',
                 5: 'Legend',
             }
 
@@ -233,10 +261,7 @@ class Rune():
         else:
             grind = 0
 
-        return sub_type, (value+grind)
-
-
-
+        return sub_type, (value + grind)
 
     @staticmethod
     def max_roll(rune_type):
@@ -269,15 +294,15 @@ class Rune():
 
         sub_type_max = {
 
-                "HP%": 40,
-                "ATK%": 40,
-                "DEF%": 40,
-                "SPD": 30,
-                "CRate": 30,
-                "CDmg": 35,
-                "RES": 40,
-                "ACC": 40,
-            }
+            "HP%": 40,
+            "ATK%": 40,
+            "DEF%": 40,
+            "SPD": 30,
+            "CRate": 30,
+            "CDmg": 35,
+            "RES": 40,
+            "ACC": 40,
+        }
 
         if rune_type in sub_type_max:
             return sub_type_max[rune_type]
@@ -286,11 +311,18 @@ class Rune():
         else:
             return 99999999999
 
-
     @staticmethod
     def substats_to_dense(substat_list):
+        """
+        Convert list of substats to dense form
+        :param substat_list:
+        :type substat_list:
+        :return:
+        :rtype:
+        """
 
         template = {
+
             "SPD": None,
             "ATK%": None,
             "HP%": None,
@@ -304,11 +336,11 @@ class Rune():
             "DEF flat": None,
         }
 
-        # update the value
+        # Update the value
         for substat in substat_list:
             template[substat[0]] = substat[1]
 
-        # densify
+        # Densify
         return tuple([x for x in template.values()])
 
     @staticmethod
@@ -327,17 +359,16 @@ class Rune():
         substats_roll_without_grind_score = 0
 
         for substat in rune_subs_list_raw:
-
             rune_substats = Rune.get_rune_stat(substat, include_grind=True)
             rune_substats_without_grind = Rune.get_rune_stat(substat, include_grind=False)
 
             substats_roll_score += rune_substats[1] / Rune.max_roll_substats(rune_substats[0])
             substats_roll_without_grind_score += rune_substats_without_grind[1] / Rune.max_roll_substats(rune_substats_without_grind[0])
 
-        # Rune inate stat
+        # Rune innate stat
         rune_static_stat = Rune.get_rune_stat(rune['prefix_eff'], include_grind=True)
         substats_roll_score += rune_static_stat[1] / Rune.max_roll_substats(rune_static_stat[0])
-        substats_roll_without_grind_score += rune_static_stat[1] / Rune.max_roll_substats(rune_static_stat[0])   # Inate stat can't be grinded ATM
+        substats_roll_without_grind_score += rune_static_stat[1] / Rune.max_roll_substats(rune_static_stat[0])  # Inate stat can't be grinded ATM
 
         # Sum all score
         primary_score = rune_primary_stat[1] / Rune.max_roll(rune_primary_stat[0])
@@ -384,7 +415,7 @@ class Rune():
                 # Special condition of slot 1 (no def% and def+) and 3 (no atk% and atk+)
                 if rune_slot == 1 or rune_slot == 3:
                     fgood -= 1  # atk% or def%
-                    fbad -= 1   # atk+ or def+
+                    fbad -= 1  # atk+ or def+
 
                 # Special assumption that slot 2 4 6 has 'good' primary stat (percents), and 1 3 5 has 'bad' primary stat (flats)
                 if rune_slot % 2 == 0:
@@ -412,7 +443,7 @@ class Rune():
             cgood = len([x for x in avail_sub if x in good])
             cbad = len([x for x in avail_sub if x in bad])
 
-            prob_getting_good = cgood / (cgood+cbad)
+            prob_getting_good = cgood / (cgood + cbad)
 
             return prob_getting_good
 
@@ -424,7 +455,6 @@ class Rune():
         substats_roll_without_grind_score = 0
 
         for substat in rune_subs_list_raw:
-
             rune_substats = Rune.get_rune_stat(substat, include_grind=True)
             rune_substats_without_grind = Rune.get_rune_stat(substat, include_grind=False)
 
@@ -432,8 +462,8 @@ class Rune():
 
             substats_roll_score += rune_substats[1] / Rune.max_roll_substats(rune_substats[0])
             substats_roll_without_grind_score += rune_substats_without_grind[1] / Rune.max_roll_substats(rune_substats_without_grind[0])
-        
-        # Get rune inate stat, do current eff count
+
+        # Get rune innate stat, do current eff count
         rune_static_stat = Rune.get_rune_stat(rune['prefix_eff'], include_grind=True)
         substats_roll_score += rune_static_stat[1] / Rune.max_roll_substats(rune_static_stat[0])
         substats_roll_without_grind_score += rune_static_stat[1] / Rune.max_roll_substats(rune_static_stat[0])  # Inate stat can't be grinded ATM
@@ -442,7 +472,7 @@ class Rune():
         #                   forecast part               #
         # ============================================= #
 
-        rune_subs_upgrade_avg_eff = 47 / 59     # 6 star sub upgrade min 35 max 59, avg 47...
+        rune_subs_upgrade_avg_eff = 47 / 59  # 6 star sub upgrade min 35 max 59, avg 47...
         rune_level = rune['upgrade_curr']
         rune_slot = rune['slot_no']
 

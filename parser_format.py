@@ -109,12 +109,8 @@ def excel_formatting(workbook, worksheet, cond="rune"):
         format_flat = workbook.add_format({'bg_color': '#dfdee2', 'font_color': '#0d0133'})
         format_border = workbook.add_format({'bg_color': '#030930', 'font_color': '#030930'})
 
-        format_header_rune = workbook.add_format({'bg_color': '#30305e', 'font_color': '#FFFFFF', 'rotation': '45',
-                                                  'valign': 'vcenter', 'align': 'center', 'bold': True})
-
         format_header_grind = workbook.add_format({'bg_color': '#3e135b', 'font_color': '#FFFFFF', 'rotation': '45',
                                                    'valign': 'vcenter', 'align': 'center', 'bold': True})
-
 
         format_center = workbook.add_format({'valign': 'vcenter', 'align': 'center'})
 

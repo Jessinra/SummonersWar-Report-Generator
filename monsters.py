@@ -1,4 +1,5 @@
 monsters_name_map = {
+
     "101": "Fairy",
     "10111": "Elucia",
     "10112": "Iselia",

@@ -6,7 +6,35 @@ import pandas as pd
 import os
 import sys
 
+
+def format_rune_parser(current_rune):
+    """
+    Reshape for printout
+    """
+
+    _separator_ = None  # separator
+
+    rune_data = (current_rune.type,
+                 current_rune.slot,
+                 current_rune.grade,
+                 current_rune.base_grade,
+                 current_rune.stars,
+                 current_rune.level,
+                 current_rune.main,
+                 current_rune.innate,
+                 _separator_)
+    rune_data += current_rune.dense_substats
+    rune_data += (_separator_,
+                  current_rune.efficiency,
+                  current_rune.exp_efficiency,
+                  current_rune.efficiency_without_grind,
+                  current_rune.exp_efficiency_without_grind,
+                  current_rune.loc)
+
+    return rune_data
+
 try:
+
     if __name__ == '__main__':
 
         wizard_id = get_wizard_id()
@@ -15,7 +43,6 @@ try:
             rune_list, monster_list, grind_enchant_list = parse_file(wizard_id)
 
         except Exception as e:
-            print("cannot open file:", e)
             print("aborting.....")
             os.system("pause")
             sys.exit(0)
@@ -33,26 +60,8 @@ try:
             current_rune = Rune(rune)
             current_rune.set_loc(get_rune_user(monster_list, rune["occupied_id"]))
 
-            # Reshape for printout
-            _separator_ = None  # separator
-            rune_data = (current_rune.type,
-                        current_rune.slot,
-                        current_rune.grade,
-                        current_rune.base_grade,
-                        current_rune.stars,
-                        current_rune.level,
-                        current_rune.main,
-                        current_rune.inate,
-                        _separator_)
-            rune_data += current_rune.dense_substats
-            rune_data += (_separator_,
-                        current_rune.efficiency,
-                        current_rune.exp_efficiency,
-                        current_rune.efficiency_without_grind,
-                        current_rune.exp_efficiency_without_grind,
-                        current_rune.loc)
-            
-            whole_rune.append(rune_data)
+            formatted_result = format_rune_parser(current_rune)
+            whole_rune.append(formatted_result)
 
             """ ===================================================
                         MONSTER EFF SECTION

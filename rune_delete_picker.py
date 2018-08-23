@@ -1,5 +1,5 @@
 from parser_rune import Rune, get_rune_user
-from parser_format import *
+from parser_format import excel_formatting
 from parser_file import *
 from parser_mons import store_monster_eff
 import pandas as pd

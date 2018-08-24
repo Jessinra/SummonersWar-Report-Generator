@@ -387,16 +387,22 @@ class Rune:
             """
             Calculate probability of rolling into a new good stat
             :param avail_sub: subs owned by rune
+            :type avail_sub: list
             :param roll_count: how many roll still available
+            :type roll_count: int
             :param rune_slot: rune's slot (slot 1 and 3 has special condition)
+            :type rune_slot: int
             """
 
             def expectation(fgood, fbad, rc_l):
                 """
                 Calculate of how many roll into 'good' stat  (hyper geometry dist mean (n * k/N)
                 :param fgood: available good stat un rolled
+                :type fgood: int
                 :param fbad: available good stat un rolled
+                :type fbad: int
                 :param rc_l: how many roll available
+                :type rc_l: int
                 """
 
                 return rc_l * (fgood / (fgood + fbad))
@@ -433,6 +439,7 @@ class Rune:
             """
             Calculate probability to roll into good stat for available stats
             :param avail_sub: available stats of runes
+            :type avail_sub: list
             """
 
             # List of good and bad stats

@@ -11,7 +11,7 @@ def excel_formatting(workbook, worksheet, cond="rune"):
     :rtype:
     """
     
-    if cond == "rune":
+    if cond == "Rune":
         format_legend = workbook.add_format({'bg_color': '#f9e7a9', 'font_color': '#2B2925'})
         format_hero = workbook.add_format({'bg_color': '#f4d9f9', 'font_color': '#2B2925'})
         format_rare = workbook.add_format({'bg_color': '#d5f0f2', 'font_color': '#2B2925'})
@@ -88,7 +88,7 @@ def excel_formatting(workbook, worksheet, cond="rune"):
         worksheet.set_row(0, 58, format_header)
         worksheet.freeze_panes(1, 0)
 
-    elif cond == "mons":
+    elif cond == "Monster eff":
 
         format_center = workbook.add_format({'valign': 'vcenter', 'align': 'center'})
         format_header = workbook.add_format({'bg_color': '#30305e', 'font_color': '#FFFFFF', 'valign': 'vcenter', 'align': 'center', 'bold': True})
@@ -102,7 +102,7 @@ def excel_formatting(workbook, worksheet, cond="rune"):
         worksheet.set_row(0, None, format_header)
         worksheet.freeze_panes(1, 0)
 
-    elif cond == "grinds":
+    elif cond == "Grinds":
 
         format_legend = workbook.add_format({'bg_color': '#f9e7a9', 'font_color': '#2B2925'})
         format_hero = workbook.add_format({'bg_color': '#f4d9f9', 'font_color': '#2B2925'})
@@ -179,7 +179,7 @@ def excel_formatting(workbook, worksheet, cond="rune"):
         worksheet.set_row(0, 58, format_header_grind)
         worksheet.freeze_panes(1, 0)
 
-    elif cond == "enchant":
+    elif cond == "Enchant":
 
         format_legend = workbook.add_format({'bg_color': '#f9e7a9', 'font_color': '#2B2925'})
         format_hero = workbook.add_format({'bg_color': '#f4d9f9', 'font_color': '#2B2925'})

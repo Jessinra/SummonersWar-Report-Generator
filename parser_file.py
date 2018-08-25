@@ -2,6 +2,11 @@ import json
 import os
 import sys
 from parser_mons import generate_monsters
+from parser_format import excel_formatting
+
+ # enable header formatting
+import pandas.io.formats.excel
+pandas.io.formats.excel.header_style = None
 
 
 def get_wizard_id(default_wizard_id=None):
@@ -99,3 +104,33 @@ def parse_file(wizard_id):
         grind_enchant_list = []
 
     return rune_list, monster_list, grind_enchant_list
+
+
+def write_to_excel(filename, dataframes, sheets_name):
+
+   
+    success = False
+    while not success:
+
+        try:
+
+            writer = pandas.ExcelWriter(filename, engine='xlsxwriter')
+            workbook = writer.book
+
+            for i in range(0, len(dataframes)):
+                datafame_to_sheet(dataframe=dataframes[i], sheet_name=sheets_name[i], writer=writer, workbook=workbook)
+
+            writer.save()
+            os.startfile(filename)
+            success = True
+
+        except:
+            print("File is open, close it first")
+            os.system("pause")
+
+
+def datafame_to_sheet(dataframe, writer, workbook, sheet_name):
+
+    dataframe.to_excel(writer, sheet_name=sheet_name)
+    worksheet = writer.sheets[sheet_name]
+    excel_formatting(workbook, worksheet, cond=sheet_name)

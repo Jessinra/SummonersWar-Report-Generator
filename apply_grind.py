@@ -1,4 +1,4 @@
-from parser_file import get_wizard_id, parse_file
+from parser_file import get_wizard_id, parse_file, write_to_excel, datafame_to_sheet
 from parser_enhancement import Enhancement
 from parser_rune import Rune, get_rune_user
 from parser_format import excel_formatting
@@ -6,6 +6,25 @@ import os
 import operator
 import pandas as pd
 
+
+def parse_enhancement(enhancement_list):
+
+    # Parse the grindstones and enchantstones
+    inventory = {
+        "Grind": {},
+        "Enchant": {}
+    }
+
+    for enhancement in enhancement_list:
+        current_enhancement = Enhancement(enhancement)
+
+        # Group each enhancement according to it's set
+        if current_enhancement.set in inventory[current_enhancement.type]:
+            inventory[current_enhancement.type][current_enhancement.set].append(current_enhancement)
+        else:
+            inventory[current_enhancement.type][current_enhancement.set] = [current_enhancement]
+
+    return inventory
 
 def apply_grindstones(grindstones, runes):
     """
@@ -280,128 +299,103 @@ def apply_enchantstones(enchantstones, runes):
     return applied
 
 
-if __name__ == '__main__':
+def get_pd_column_name(data_name):
 
-    wizard_id = get_wizard_id()
+    columns_name = None
 
-    try:
-
-        """ ========================================================
-                                Parsing Sections
-        ======================================================== """
-
-        rune_list, monster_list, enhancement_list = parse_file(wizard_id)
-
-        # Parse the grindstones and enchantstones
-        inventory = {
-            "Grind": {},
-            "Enchant": {}
-        }
-
-        for enhancement in enhancement_list:
-
-            current_enhancement = Enhancement(enhancement)
-
-            # Group each enhancement according to it's set
-            if current_enhancement.set in inventory[current_enhancement.type]:
-                inventory[current_enhancement.type][current_enhancement.set].append(current_enhancement)
-            else:
-                inventory[current_enhancement.type][current_enhancement.set] = [current_enhancement]
-
-        # Parse the runes
-        rune_inventory = {}
-        for rune in rune_list:
-
-            current_rune = Rune(rune)
-            current_rune.set_loc(get_rune_user(monster_list, rune["occupied_id"]))
-
-            # Group each RUNE according to it's set
-            if current_rune.type in rune_inventory:
-                rune_inventory[current_rune.type].append(current_rune)
-            else: 
-                rune_inventory[current_rune.type] = [current_rune]
-
-        """ ========================================================
-                     Implementation of applying grinds
-        ======================================================== """
-
-        # Try to use grindstone on runes
-        grind_result = []
-        grindstone_inventory = inventory["Grind"]
-        for rune_set in grindstone_inventory:
-
-            # Only check if there's grind and rune that match
-            if rune_set in rune_inventory:
-                grind_result += apply_grindstones(grindstones=grindstone_inventory[rune_set], runes=rune_inventory[rune_set])
-
-
-        """ ========================================================
-                     Implementation of applying enchants
-        ======================================================== """
-
-        # Try to use enchantstone on runes
-        enchant_result = []
-        enchant_inventory = inventory["Enchant"]
-        for rune_set in enchant_inventory:
-
-            # Only check if there's enchant and rune that match
-            if rune_set in rune_inventory:
-                enchant_result += apply_enchantstones(enchantstones=enchant_inventory[rune_set], runes=rune_inventory[rune_set])
-
-
-        """ ========================================================
-                     Convert to dataframe for presentation
-        ======================================================== """
-
-        # Setup dataframe index
+    if data_name == "Grind":
+        
         columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate',
                         'Substats', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc", "",
                         'GType', 'Grade', 'Stat')
 
-        # Convert grind result data to pandas dataframe
-        grind_result_pd = pd.DataFrame(grind_result, columns=columns_name)
-        grind_result_pd_sorted = grind_result_pd.sort_values(by=['Type', 'Exp eff'], ascending=[True, False])
+    elif data_name == "Enchant":
 
-        # Setup dataframe index
         columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate',
                         'Substats', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc", "",
                         'Type', 'Enchant Grade', 'Stat', 'Id')
 
-        # Convert enchant result data to pandas dataframe
-        enchant_result_pd = pd.DataFrame(enchant_result, columns=columns_name)
-        enchant_result_pd_sorted = enchant_result_pd.sort_values(by=['Id', 'Exp eff'], ascending=[True, False])
+    return columns_name
 
-        # enable header formatting
-        import pandas.io.formats.excel
-        pd.io.formats.excel.header_style = None
+def parse_rune(rune_list, monster_list):
 
-        success = False
-        while not success:
+    # Parse the runes
+    rune_inventory = {}
+    for rune in rune_list:
 
-            try:
-                # Send to excel
-                filename = '{} applying_grinds.xlsx'.format(wizard_id)
-                writer = pd.ExcelWriter(filename, engine='xlsxwriter')
-                workbook = writer.book
+        current_rune = Rune(rune)
+        current_rune.set_loc(get_rune_user(monster_list, rune["occupied_id"]))
 
-                grind_result_pd_sorted.to_excel(writer, sheet_name="Grinds")
-                worksheet = writer.sheets['Grinds']
-                excel_formatting(workbook, worksheet, cond="grinds")
+        # Group each RUNE according to it's set
+        if current_rune.type in rune_inventory:
+            rune_inventory[current_rune.type].append(current_rune)
+        else: 
+            rune_inventory[current_rune.type] = [current_rune]
 
-                enchant_result_pd_sorted.to_excel(writer, sheet_name="Enchant")
-                worksheet = writer.sheets['Enchant']
-                excel_formatting(workbook, worksheet, cond="enchant")
+    return rune_inventory
 
-                writer.save()
-                os.startfile(filename)
-                success = True
 
-            except Exception as e:
-                print("File is open, close it first:", e)
-                os.system("pause")
-                raise e
+def apply_enhancements(enhancement_inventory, rune_inventory):
 
-    except Exception as e:
-        print(e)
-        print("aborting.....")
-        raise e
+    grindstone_inventory = enhancement_inventory["Grind"]
+    enchant_inventory = enhancement_inventory["Enchant"]
+
+    grind_result = []
+    enchant_result = []
+
+    for rune_set in rune_inventory:
+
+        # Only check if there's grind and rune that match
+        if rune_set in grindstone_inventory:
+            grind_result += apply_grindstones(grindstones=grindstone_inventory[rune_set], runes=rune_inventory[rune_set])
+
+        if rune_set in enchant_inventory:
+            enchant_result += apply_enchantstones(enchantstones=enchant_inventory[rune_set], runes=rune_inventory[rune_set])
+
+    return grind_result, enchant_result
+
+
+
+def format_grind_result(grind_result):
+
+    # Convert grind result data to pandas dataframe
+    columns_name = get_pd_column_name("Grind")
+    grind_result_pd = pd.DataFrame(grind_result, columns=columns_name)
+    grind_result_pd_sorted = grind_result_pd.sort_values(by=['Type', 'Exp eff'], ascending=[True, False])
+    
+    return grind_result_pd_sorted
+
+
+def format_enchant_result(enchant_result):
+
+    # Convert enchant result data to pandas dataframe
+    columns_name = get_pd_column_name("Enchant")
+    enchant_result_pd = pd.DataFrame(enchant_result, columns=columns_name)
+    enchant_result_pd_sorted = enchant_result_pd.sort_values(by=['Id', 'Exp eff'], ascending=[True, False])
+
+    return enchant_result_pd_sorted
+
+try:
+
+    if __name__ == '__main__':
+
+        wizard_id = get_wizard_id()
+        rune_list, monster_list, enhancement_list = parse_file(wizard_id)
+
+        enhancement_inventory = parse_enhancement(enhancement_list)
+        rune_inventory = parse_rune(rune_list, monster_list)
+
+        grind_result, enchant_result = apply_enhancements(enhancement_inventory, rune_inventory)
+
+        formated_grind_result = format_grind_result(grind_result)
+        formated_enchant_result = format_enchant_result(enchant_result)
+
+        filename = '{} applying_grinds.xlsx'.format(wizard_id)
+        dataframes = [formated_grind_result, formated_enchant_result]
+        sheets_name = ['Grinds', 'Enchant']
+        write_to_excel(filename, dataframes, sheets_name)
+
+except Exception as e:
+    print(e)
+    os.system("pause")
+    raise e

@@ -64,9 +64,8 @@ def store_monster_eff(monsters_eff, monster_id, rune_eff):
     :param rune_eff: rune's efficiency
     :type rune_eff: float
     """
-
+    
     if len(monster_id) > 2:
-
         if monster_id in monsters_eff:
             monsters_eff[monster_id] += rune_eff
         else:

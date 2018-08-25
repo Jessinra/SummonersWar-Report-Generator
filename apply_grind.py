@@ -40,14 +40,26 @@ def apply_grindstones(grindstones, runes):
         # Do several condition checking for decision making
         if substat_to_be_grinded is None:
             return False
+            
         elif substat_to_be_grinded == "Applied":
             return False
+
         elif grindstone.stat == "SPD":
-            return substat_to_be_grinded < grindstone.max_value
+
+            if grindstone.grade == "Hero" or grindstone.grade == "Legend":
+                return substat_to_be_grinded < grindstone.max_value - 1
+            else:
+                return substat_to_be_grinded < grindstone.max_value
+
         elif "flat" in grindstone.stat:
             return substat_to_be_grinded < grindstone.max_value * 0.85
+
         else:
-            return substat_to_be_grinded < grindstone.max_value - 1
+
+            if grindstone.grade == "Hero" or grindstone.grade == "Legend":
+                return substat_to_be_grinded < grindstone.max_value - 2
+            else:
+                return substat_to_be_grinded < grindstone.max_value - 1
 
     def virtually_apply_grind(grindstone, rune):
         """
@@ -147,6 +159,127 @@ def apply_grindstones(grindstones, runes):
     return applied
 
 
+def apply_enchantstones(enchantstones, runes):
+
+    def enchant_applicable(enchantstone, rune):
+        
+        # If runes is enchanted already (assumtion that enchant into good stat)
+        if rune.enchant_type is not None:
+            return False
+
+        owned_stats = rune._get_owned_all_stats_type()
+        
+        # If the stone stat already exist
+        if enchantstone.stat in owned_stats:
+            return False
+
+        max_roll_flat_atk = 20
+        max_roll_flat_def = 20
+        max_roll_flat_hp = 375
+
+        # If there exist a flat stat without any roll into it
+        if rune.grade == 'L':
+            for substat in rune.substats:
+
+                if substat[0] == "ATK flat" and substat[1] <= max_roll_flat_atk:
+                    return True
+                elif substat[0] == "DEF flat" and substat[1] <= max_roll_flat_def:
+                    return True
+                elif substat[0] == "HP flat" and substat[1] <= max_roll_flat_hp:
+                    return True
+        
+        # Since it's not legend, it's not going to be reap
+        else:
+            for substat in rune.substats:
+
+                if substat[0] == "ATK flat" and substat[1] <= max_roll_flat_atk*2:
+                    return True
+                elif substat[0] == "DEF flat" and substat[1] <= max_roll_flat_def*2:
+                    return True
+                elif substat[0] == "HP flat" and substat[1] <= max_roll_flat_hp*2:
+                    return True
+
+    def format_applying_enchant(enchantstone, rune):
+        """
+        Reshape for printout
+        :param enchantstone: enchantstone to be used
+        :type enchantstone: Enhancement
+        :param rune: which rune to be checked
+        :type rune: Rune
+        :return: tuples of rune and enchant data, for usable enchantstone
+        :rtype: tuples
+        """
+        _separator = None
+
+        rune_data = (rune.type,
+                     rune.slot,
+                     rune.grade,
+                     rune.base_grade,
+                     rune.stars,
+                     rune.level,
+                     rune.main,
+                     rune.innate,
+                     rune.substats,
+                     rune.efficiency,
+                     rune.exp_efficiency,
+                     rune.efficiency_without_grind,
+                     rune.exp_efficiency_without_grind,
+                     rune.loc,
+                     _separator)
+
+        enchant_data = (enchantstone.set,
+                        enchantstone.grade,
+                        enchantstone.stat,
+                        enchantstone.id)
+
+        return rune_data + enchant_data
+
+    # Sort the enchantstone by grade and stat (grade is most sorted), and sort the runes by efficiency
+    enchantstones.sort(key=operator.attrgetter('stat'))
+    enchantstones.sort(key=operator.attrgetter('grade_int'), reverse=True)
+   
+    applied = []
+    checked_and_failed = {
+
+        "SPD": False,
+        "ATK%": False,
+        "HP%": False,
+        "DEF%": False,
+        "CRate": False,
+        "CDmg": False,
+        "RES": False,
+        "ACC": False,
+        "ATK flat": False,
+        "HP flat": False,
+        "DEF flat": False,
+    }
+
+    for enchantstone in enchantstones:
+
+        # Flag to mark if certain enchantstone is successfully used or not
+        applicable = False
+
+        # By pass if the subs checked and failed
+        if checked_and_failed[enchantstone.stat]:
+            continue
+
+        for rune in runes:
+
+            if enchant_applicable(enchantstone, rune):
+
+                # If it's applicable, format and append the result
+                formatted_result = format_applying_enchant(enchantstone, rune)
+                applied.append(formatted_result)
+
+                applicable = True
+
+        # If this kind of rune is unusable, skip those which has same stats, and is same or even lower grade
+        if not applicable:
+            checked_and_failed[enchantstone.stat] = True
+
+    return applied
+
+
 if __name__ == '__main__':
 
     wizard_id = get_wizard_id()
@@ -159,21 +292,21 @@ if __name__ == '__main__':
 
         rune_list, monster_list, enhancement_list = parse_file(wizard_id)
 
-        # Parse the grindstones
-        grindstone_inventory = {}
+        # Parse the grindstones and enchantstones
+        inventory = {
+            "Grind": {},
+            "Enchant": {}
+        }
+
         for enhancement in enhancement_list:
 
             current_enhancement = Enhancement(enhancement)
 
-            # Skip enchantment gem
-            if current_enhancement.type == "Enchant":
-                continue
-
             # Group each enhancement according to it's set
-            if current_enhancement.set in grindstone_inventory:
-                grindstone_inventory[current_enhancement.set].append(current_enhancement)
+            if current_enhancement.set in inventory[current_enhancement.type]:
+                inventory[current_enhancement.type][current_enhancement.set].append(current_enhancement)
             else:
-                grindstone_inventory[current_enhancement.set] = [current_enhancement]
+                inventory[current_enhancement.type][current_enhancement.set] = [current_enhancement]
 
         # Parse the runes
         rune_inventory = {}
@@ -185,7 +318,7 @@ if __name__ == '__main__':
             # Group each RUNE according to it's set
             if current_rune.type in rune_inventory:
                 rune_inventory[current_rune.type].append(current_rune)
-            else:
+            else: 
                 rune_inventory[current_rune.type] = [current_rune]
 
         """ ========================================================
@@ -194,11 +327,27 @@ if __name__ == '__main__':
 
         # Try to use grindstone on runes
         grind_result = []
+        grindstone_inventory = inventory["Grind"]
         for rune_set in grindstone_inventory:
 
             # Only check if there's grind and rune that match
             if rune_set in rune_inventory:
                 grind_result += apply_grindstones(grindstones=grindstone_inventory[rune_set], runes=rune_inventory[rune_set])
+
+
+        """ ========================================================
+                     Implementation of applying enchants
+        ======================================================== """
+
+        # Try to use enchantstone on runes
+        enchant_result = []
+        enchant_inventory = inventory["Enchant"]
+        for rune_set in enchant_inventory:
+
+            # Only check if there's enchant and rune that match
+            if rune_set in rune_inventory:
+                enchant_result += apply_enchantstones(enchantstones=enchant_inventory[rune_set], runes=rune_inventory[rune_set])
+
 
         """ ========================================================
                      Convert to dataframe for presentation
@@ -207,11 +356,20 @@ if __name__ == '__main__':
         # Setup dataframe index
         columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate',
                         'Substats', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc", "",
-                        'Type', 'Grade', 'Stat')
+                        'GType', 'Grade', 'Stat')
 
         # Convert grind result data to pandas dataframe
         grind_result_pd = pd.DataFrame(grind_result, columns=columns_name)
-        grind_result_pd_sorted = grind_result_pd.sort_values(by=['Exp eff'], ascending=False)
+        grind_result_pd_sorted = grind_result_pd.sort_values(by=['Type', 'Exp eff'], ascending=[True, False])
+
+        # Setup dataframe index
+        columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate',
+                        'Substats', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc", "",
+                        'Type', 'Enchant Grade', 'Stat', 'Id')
+
+        # Convert enchant result data to pandas dataframe
+        enchant_result_pd = pd.DataFrame(enchant_result, columns=columns_name)
+        enchant_result_pd_sorted = enchant_result_pd.sort_values(by=['Id', 'Exp eff'], ascending=[True, False])
 
         # enable header formatting
         import pandas.io.formats.excel
@@ -226,9 +384,13 @@ if __name__ == '__main__':
                 writer = pd.ExcelWriter(filename, engine='xlsxwriter')
                 workbook = writer.book
 
-                grind_result_pd_sorted.to_excel(writer, sheet_name="Applying grinds")
-                worksheet = writer.sheets['Applying grinds']
+                grind_result_pd_sorted.to_excel(writer, sheet_name="Grinds")
+                worksheet = writer.sheets['Grinds']
                 excel_formatting(workbook, worksheet, cond="grinds")
+
+                enchant_result_pd_sorted.to_excel(writer, sheet_name="Enchant")
+                worksheet = writer.sheets['Enchant']
+                excel_formatting(workbook, worksheet, cond="enchant")
 
                 writer.save()
                 os.startfile(filename)

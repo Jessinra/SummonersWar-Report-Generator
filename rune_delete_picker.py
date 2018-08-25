@@ -122,3 +122,4 @@ try:
 except Exception as e:
     print(e)
     os.system("pause")
+    raise e

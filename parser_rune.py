@@ -30,6 +30,8 @@ def get_rune_user(unit_list, rune_id):
 
 class Rune:
 
+    RUNE_SUBS_UPGRADE_AVG_EFF = 47 / 59  # 6 star sub upgrade min 35 max 59, avg 47...
+
     def __init__(self, rune):
 
         # Default initialization
@@ -142,6 +144,11 @@ class Rune:
                 self.grind_values[sub_type] = 0
 
     def set_enchant_type(self, substats):
+        """
+        Set rune enchantment type if the rune is enchanted
+        :param substats: owned substats
+        :type substats: list of str
+        """
 
         for stat in substats:
             if Rune.is_stat_enchanted(stat):
@@ -164,25 +171,7 @@ class Rune:
         self.exp_efficiency = Rune.rune_expected_efficiency(self, include_grind=True)
         self.exp_efficiency_without_grind = Rune.rune_expected_efficiency(self, include_grind=False)
 
-
-    def _get_owned_stat_roll_chance(self):
-        """
-        Count how many times OWNED sub upgrade available
-        """
-        available_upgrade_chance = 4 - min(self.level // 3, 4)
-        return available_upgrade_chance - self._get_new_stat_roll_chance()
-
-    def _get_new_stat_roll_chance(self):
-        """
-        Count how many times NEW sub available 
-        """
-        return 4 - min(len(self.substats), 4)
-
-    def _get_owned_substats_type(self):
-
-        return [stat[0] for stat in self.substats]
-
-    def _get_owned_all_stats_type(self):
+    def get_owned_all_stats_type(self):
         """
         Return all stats own by a rune (main, innate, substats)
         """
@@ -191,24 +180,60 @@ class Rune:
 
         if self.innate is not None:
             owned_stats.append(self.innate[0])
-        
+
         owned_stats += self._get_owned_substats_type()
 
         return owned_stats
-    
+
+    def _get_owned_stat_roll_chance(self):
+        """
+        Count how many times OWNED sub upgrade available
+        """
+
+        available_upgrade_chance = 4 - min(self.level // 3, 4)
+        return available_upgrade_chance - self._get_new_stat_roll_chance()
+
+    def _get_new_stat_roll_chance(self):
+        """
+        Count how many times NEW sub available 
+        """
+
+        return 4 - min(len(self.substats), 4)
+
+    def _get_owned_substats_type(self):
+        """
+        :return: owned substats (only the stat type)
+        :rtype: list of str
+        """
+
+        return [stat[0] for stat in self.substats]
+
     def _compute_primary_score(self):
-            
+        """
+        Get partial efficiency score based on primary stat
+        """
+
         return self.main[1] / Rune.max_roll(self.main[0])
 
     def _forecast_primary_score(self):
+        """
+        Predict partial efficiency score based on primary stat,
+        assumption: normally rune upgraded to +12 at least
+        """
 
-        # Primary point for primary stat
         if self.level > 12:
             return 1
         else:
             return 0.75  # around +12
 
     def _compute_roll_score(self, include_grind):
+        """
+        Calculate partial rune efficiency based on roll (substat upgrade) results
+        :param include_grind: if set True, applied grind will be counted in efficiency
+        :type include_grind: bool
+        :return: partial rune efficiency
+        :rtype: float
+        """
 
         if include_grind:
             substats = self.substats
@@ -222,6 +247,9 @@ class Rune:
         return substats_roll_score
 
     def _compute_innate_score(self):
+        """
+        Get partial efficiency score based on innate stat
+        """
 
         if self.innate is not None:
             return self.innate[1] / Rune.max_roll_substats(self.innate[0])
@@ -229,8 +257,11 @@ class Rune:
             return 0
 
     def _forecast_owned_stat_upgrade_score(self):
-        
+
         def count_owned_good_bad_substats(available_sub):
+            """
+            Count how many good substats and bad substats that already owned by a rune
+            """
 
             # List of good and bad stats
             good_substat = ["HP%", "ATK%", "DEF%", "SPD", "CRate", "CDmg", "RES", "ACC"]
@@ -249,15 +280,14 @@ class Rune:
             :type available_sub: list
             """
 
-            cgood, cbad = count_owned_good_bad_substats(available_sub)
-            return cgood / (cgood + cbad)
+            count_good, count_bad = count_owned_good_bad_substats(available_sub)
+            return count_good / (count_good + count_bad)
 
-        RUNE_SUBS_UPGRADE_AVG_EFF = 47 / 59  # 6 star sub upgrade min 35 max 59, avg 47...
         roll_chance = self._get_owned_stat_roll_chance()
         owned_substats = self._get_owned_substats_type()
-        
+
         roll_to_good_probability = probability_owned_stat(owned_substats)
-        return roll_chance * roll_to_good_probability * RUNE_SUBS_UPGRADE_AVG_EFF * 0.2
+        return roll_chance * roll_to_good_probability * Rune.RUNE_SUBS_UPGRADE_AVG_EFF * 0.2
 
     def _forecast_new_stat_upgrade_score(self):
 
@@ -286,14 +316,14 @@ class Rune:
                 available_bad -= 1  # definitely single type of bad stat is used already for primary
 
             return available_good, available_bad
-        
+
         def probability_new_roll(available_sub, available_rolls, rune_slot):
             """
             Calculate probability of rolling into a new good stat
             :param available_sub: subs owned by rune
             :type available_sub: list
-            :param roll_count: how many roll still available
-            :type roll_count: int
+            :param available_rolls: how many roll still available
+            :type available_rolls: int
             :param rune_slot: rune's slot (slot 1 and 3 has special condition)
             :type rune_slot: int
             """
@@ -305,9 +335,10 @@ class Rune:
 
                 return avail_rolls * (available_good_substat / (available_good_substat + available_bad_substat))
 
+            # If rune is already at +12, no possible new roll, therefor zero probability
             if available_rolls <= 0:
                 return 0
- 
+
             # Count number of good and bad stats
             available_good_substat, available_bad_substat = count_available_good_bad_substats(available_sub, rune_slot)
 
@@ -317,17 +348,15 @@ class Rune:
 
             return prob_getting_good
 
-        RUNE_SUBS_UPGRADE_AVG_EFF = 47 / 59  # 6 star sub upgrade min 35 max 59, avg 47...
         roll_chance = self._get_new_stat_roll_chance()
         owned_substats = self._get_owned_substats_type()
-        
+
         # Take innate stat into consideration when predicting NEW stats
         if self.innate is not None:
             owned_substats += [self.innate]
 
         roll_to_good_probability = probability_new_roll(owned_substats, roll_chance, rune_slot=self.slot)
-        return roll_chance * roll_to_good_probability * RUNE_SUBS_UPGRADE_AVG_EFF * 0.2
-    
+        return roll_chance * roll_to_good_probability * Rune.RUNE_SUBS_UPGRADE_AVG_EFF * 0.2
 
     """ ====================================================================
                                 Static Methods
@@ -431,7 +460,7 @@ class Rune:
         """
         :param stats: raw data of sub stats
         :type stats: list
-        :param include_grind: options to include grind upgrade or not
+        :param include_grind: if set True, applied grind will be counted in efficiency
         :type include_grind: bool
         :return: tuple of sub type and value
         :rtype: tuple
@@ -531,24 +560,34 @@ class Rune:
     @staticmethod
     def rune_efficiency(rune, include_grind):
         """
-        Finding rune current efficiency
+        Finding rune's current efficiency
+        :param rune: instance of Rune which's efficiency gonna be calculated
         :type rune: Rune
+        :param include_grind: if set True, applied grind will be counted in efficiency
+        :type include_grind: bool
+        :return: rune's efficiency
+        :rtype: float
         """
 
         primary_score = rune._compute_primary_score()
         innate_score = rune._compute_innate_score()
         substats_roll_score = rune._compute_roll_score(include_grind)
-            
+
         # Sum all score
         return Rune._compute_final_score(primary_score, innate_score, substats_roll_score)
 
     @staticmethod
     def rune_expected_efficiency(rune, include_grind):
         """
-        Return rune expected efficiency at +12
+        Finding rune's expected efficiency at +12 (4 times roll)
+        :param rune: instance of Rune which's efficiency gonna be calculated
         :type rune: Rune
+        :param include_grind: if set True, applied grind will be counted in efficiency
+        :type include_grind: bool
+        :return: rune's expected efficiency
+        :rtype: float
         """
-        
+
         primary_score = rune._forecast_primary_score()
         innate_score = rune._compute_innate_score()
         substats_roll_score = rune._compute_roll_score(include_grind)
@@ -559,11 +598,16 @@ class Rune:
 
     @staticmethod
     def _compute_final_score(*args):
-        
-        sum = 0
-        for x in args:
-            sum += x
+        """
+        Compute rune efficiency score (2.8 is from  1 main stat + (9 times roll x 0.2 max efficiency))
+        :param args: list of score
+        :type args: float
+        :return: final efficiency score
+        :rtype: float
+        """
 
-        return sum / 2.8  # 1 + 9 x 0.2 max roll
-        
-    
+        score = 0
+        for x in args:
+            score += x
+
+        return score / 2.8

@@ -1,11 +1,10 @@
+from parser_mons import generate_monsters
+from parser_format import excel_formatting
 import json
 import os
 import sys
-from parser_mons import generate_monsters
-from parser_format import excel_formatting
-
- # enable header formatting
 import pandas.io.formats.excel
+
 pandas.io.formats.excel.header_style = None
 
 
@@ -63,6 +62,7 @@ def parse_file(wizard_id):
     :return: list of runes, list of monster, list of enhancement
     :rtype: list, list, list
     """
+
     try:
         with open("{}.json".format(wizard_id), encoding="utf-8") as f:
             json_data = json.load(f)
@@ -106,9 +106,33 @@ def parse_file(wizard_id):
     return rune_list, monster_list, grind_enchant_list
 
 
-def write_to_excel(filename, dataframes, sheets_name):
+def dataframe_to_sheet(dataframe, writer, workbook, sheet_name):
+    """
+    Add pandas dataframe to excel sheet
+    :param dataframe: table contain data to be written
+    :type dataframe: pandas.DataFrame
+    :param writer: writer object
+    :param workbook: workbook object
+    :param sheet_name: excel sheet's name
+    :type sheet_name: string
+    """
 
-   
+    dataframe.to_excel(writer, sheet_name=sheet_name)
+    worksheet = writer.sheets[sheet_name]
+    excel_formatting(workbook, worksheet, cond=sheet_name)
+
+
+def write_to_excel(filename, dataframes, sheets_name):
+    """
+    Write dataframes into excel
+    :param filename: excel filename
+    :type filename: str
+    :param dataframes: dataframes / tables to be written
+    :type dataframes: list of pandas.DataFrame
+    :param sheets_name: sheet name corresponding to each dataframe
+    :type sheets_name: list of str
+    """
+
     success = False
     while not success:
 
@@ -118,7 +142,7 @@ def write_to_excel(filename, dataframes, sheets_name):
             workbook = writer.book
 
             for i in range(0, len(dataframes)):
-                datafame_to_sheet(dataframe=dataframes[i], sheet_name=sheets_name[i], writer=writer, workbook=workbook)
+                dataframe_to_sheet(dataframe=dataframes[i], sheet_name=sheets_name[i], writer=writer, workbook=workbook)
 
             writer.save()
             os.startfile(filename)
@@ -127,10 +151,3 @@ def write_to_excel(filename, dataframes, sheets_name):
         except:
             print("File is open, close it first")
             os.system("pause")
-
-
-def datafame_to_sheet(dataframe, writer, workbook, sheet_name):
-
-    dataframe.to_excel(writer, sheet_name=sheet_name)
-    worksheet = writer.sheets[sheet_name]
-    excel_formatting(workbook, worksheet, cond=sheet_name)

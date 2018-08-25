@@ -1,9 +1,8 @@
 from parser_rune import Rune, get_rune_user
-from parser_file import get_wizard_id, parse_file, write_to_excel, datafame_to_sheet
+from parser_file import get_wizard_id, parse_file, write_to_excel
 from parser_mons import store_monster_eff
 import pandas as pd
 import os
-import sys
 
 
 def format_rune(current_rune):
@@ -11,7 +10,7 @@ def format_rune(current_rune):
     Reshape for printout
     """
 
-    _separator_ = None  # separator
+    _separator_ = None
 
     rune_data = (current_rune.type,
                  current_rune.slot,
@@ -34,14 +33,20 @@ def format_rune(current_rune):
 
 
 def get_pd_column_name(data_name):
-    
+    """
+    :param data_name: type of data contained in the table
+    :type data_name: str
+    :return: table columns header / columns name
+    :rtype: tuple of str
+    """
+
     columns_name = None
 
     if data_name == "Rune":
         columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate', '')
         columns_name += ('Spd', 'Atk%', 'Hp%', 'Def%', 'Crate', 'Cdmg', 'Res', 'Acc', 'Atk+', 'Hp+', 'Def+')
         columns_name += ('', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc")
-    
+
     elif data_name == "Monster eff":
         columns_name = ('monster', 'avg real eff', 'avg exp eff')
 
@@ -49,13 +54,19 @@ def get_pd_column_name(data_name):
 
 
 def parse_runes_and_monster_eff(rune_list):
+    """
+    Parse runes and calculate monster efficiency
+    :param rune_list: list of raw rune data
+    :type rune_list: list
+    :return: parsed runes, monster efficiency
+    :rtype: (list, list)
+    """
 
     parsed_runes = []
     monster_eff = {}
     monster_exp_eff = {}
 
     for rune in rune_list:
-
         current_rune = Rune(rune)
         current_rune.set_loc(get_rune_user(monster_list, rune["occupied_id"]))
 
@@ -78,15 +89,24 @@ def parse_runes_and_monster_eff(rune_list):
 
 
 def format_parsed_runes(parsed_runes):
+    """
+    :return: formatted parsed runes
+    :rtype: pandas.DataFrame
+    """
 
-    # Convert rune data to pandas dataframe
+    # Convert rune data to pandas data frame
     columns_name = get_pd_column_name("Rune")
     parsed_runes_pd = pd.DataFrame(parsed_runes, columns=columns_name)
     parsed_runes_pd_sorted = parsed_runes_pd.sort_values(by=['Exp eff'])
 
     return parsed_runes_pd_sorted
 
+
 def format_monster_eff(monster_eff_avg):
+    """
+    :return: formatted monsters efficiency
+    :rtype: pandas.DataFrame
+    """
 
     # Convert monster eff data to pandas data frame
     columns_name = get_pd_column_name("Monster eff")
@@ -95,10 +115,10 @@ def format_monster_eff(monster_eff_avg):
 
     return monster_eff_sorted
 
+
 try:
 
     if __name__ == '__main__':
-
         wizard_id = get_wizard_id()
         rune_list, monster_list, grind_enchant_list = parse_file(wizard_id)
 

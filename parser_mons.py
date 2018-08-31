@@ -1,33 +1,4 @@
-from monsters import monsters_name_map
-
-
-def get_monster_name(monster_id):
-    """
-    Return monster name from monster id
-    :param monster_id: monsters id
-    :type monster_id: int
-    :return: monster name
-    :rtype: string
-    """
-
-    monster_attribute = {
-        '1': "Water",
-        '2': "Fire",
-        '3': "Wind",
-        '4': "Light",
-        '5': "Dark"
-    }
-
-    # Specific name
-    if str(monster_id) in monsters_name_map:
-        return monsters_name_map[str(monster_id)]
-
-    # Unawakened name
-    elif str(monster_id)[0:3] in monsters_name_map:
-        return str(monsters_name_map[str(monster_id)[0:3]] + " " + monster_attribute[str(monster_id)[4]])
-
-    else:
-        return "unknown " + str(monster_id)
+from data_mapping import DataMappingCollection
 
 
 def generate_monsters(list_of_unit):
@@ -54,6 +25,8 @@ def generate_monsters(list_of_unit):
 
     return monster_list
 
+def get_monster_name(monster_id):
+    return DataMappingCollection.get_monster_name(monster_id)
 
 def store_monster_eff(monsters_eff, monster_id, rune_eff):
     """

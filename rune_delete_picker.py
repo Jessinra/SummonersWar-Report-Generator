@@ -119,6 +119,7 @@ def format_monster_eff(monster_eff_avg):
 try:
 
     if __name__ == '__main__':
+        
         wizard_id = get_wizard_id()
         rune_list, monster_list, grind_enchant_list = parse_file(wizard_id)
 

@@ -15,7 +15,7 @@ def parse_enhancement(enhancement_list):
     :rtype: dict
     """
 
-    # Parse the grindstones and enchantstones
+    # Parse the grindstones and enchantgems
     inventory = {
         "Grind": {},
         "Enchant": {}
@@ -183,24 +183,24 @@ def apply_grindstones(grindstones, runes):
     return applied
 
 
-def apply_enchantstones(enchantstones, runes):
+def apply_enchantgems(enchantgems, runes):
     """
-    :param enchantstones: usable enchantstones
-    :type enchantstones: list
+    :param enchantgems: usable enchantgems
+    :type enchantgems: list
     :param runes: usable runes
     :type runes: list
-    :return: list of runes and corresponding enchantstones
+    :return: list of runes and corresponding enchantgems
     :rtype: list
     """
 
-    def enchant_applicable(enchantstone, rune):
+    def enchant_applicable(enchantgem, rune):
         """
-        Check whether a enchantstone can be used
-        :param enchantstone: which enchantstone to be used
-        :type enchantstone: Enhancement
+        Check whether a enchantgem can be used
+        :param enchantgem: which enchantgem to be used
+        :type enchantgem: Enhancement
         :param rune: which rune to be checked
         :type rune: Rune
-        :return: is enchantstone usable
+        :return: is enchantgem usable
         :rtype: bool
         """
 
@@ -211,7 +211,7 @@ def apply_enchantstones(enchantstones, runes):
         owned_stats = rune.get_owned_all_stats_type()
 
         # If the stone stat already exist
-        if enchantstone.stat in owned_stats:
+        if enchantgem.stat in owned_stats:
             return False
 
         max_roll_flat_atk = 20
@@ -240,14 +240,14 @@ def apply_enchantstones(enchantstones, runes):
                 elif substat[0] == "HP flat" and substat[1] <= max_roll_flat_hp * 2:
                     return True
 
-    def format_applying_enchant(enchantstone, rune):
+    def format_applying_enchant(enchantgem, rune):
         """
         Reshape for printout
-        :param enchantstone: enchantstone to be used
-        :type enchantstone: Enhancement
+        :param enchantgem: enchantgem to be used
+        :type enchantgem: Enhancement
         :param rune: which rune to be checked
         :type rune: Rune
-        :return: tuples of rune and enchant data, for usable enchantstone
+        :return: tuples of rune and enchant data, for usable enchantgem
         :rtype: tuples
         """
         _separator = None
@@ -268,16 +268,16 @@ def apply_enchantstones(enchantstones, runes):
                      rune.loc,
                      _separator)
 
-        enchant_data = (enchantstone.set,
-                        enchantstone.grade,
-                        enchantstone.stat,
-                        enchantstone.id)
+        enchant_data = (enchantgem.set,
+                        enchantgem.grade,
+                        enchantgem.stat,
+                        enchantgem.id)
 
         return rune_data + enchant_data
 
-    # Sort the enchantstone by grade and stat (grade is most sorted), and sort the runes by efficiency
-    enchantstones.sort(key=operator.attrgetter('stat'))
-    enchantstones.sort(key=operator.attrgetter('grade_int'), reverse=True)
+    # Sort the enchantgem by grade and stat (grade is most sorted), and sort the runes by efficiency
+    enchantgems.sort(key=operator.attrgetter('stat'))
+    enchantgems.sort(key=operator.attrgetter('grade_int'), reverse=True)
 
     applied = []
     checked_and_failed = {
@@ -295,27 +295,27 @@ def apply_enchantstones(enchantstones, runes):
         "DEF flat": False,
     }
 
-    for enchantstone in enchantstones:
+    for enchantgem in enchantgems:
 
-        # Flag to mark if certain enchantstone is successfully used or not
+        # Flag to mark if certain enchantgem is successfully used or not
         applicable = False
 
         # By pass if the subs checked and failed
-        if checked_and_failed[enchantstone.stat]:
+        if checked_and_failed[enchantgem.stat]:
             continue
 
         for rune in runes:
 
-            if enchant_applicable(enchantstone, rune):
+            if enchant_applicable(enchantgem, rune):
                 # If it's applicable, format and append the result
-                formatted_result = format_applying_enchant(enchantstone, rune)
+                formatted_result = format_applying_enchant(enchantgem, rune)
                 applied.append(formatted_result)
 
                 applicable = True
 
         # If this kind of rune is unusable, skip those which has same stats, and is same or even lower grade
         if not applicable:
-            checked_and_failed[enchantstone.stat] = True
+            checked_and_failed[enchantgem.stat] = True
 
     return applied
 
@@ -375,7 +375,7 @@ def parse_rune(rune_list, monster_list):
 def apply_enhancements(enhancement_inventory, rune_inventory):
     """
     Try to apply all grind and enchant stone for all rune
-    :param enhancement_inventory: all grindstones and enchantstones sorted by rune set
+    :param enhancement_inventory: all grindstones and enchantgems sorted by rune set
     :type enhancement_inventory: dict
     :param rune_inventory: runes sorted by rune set
     :type rune_inventory: dict
@@ -396,7 +396,7 @@ def apply_enhancements(enhancement_inventory, rune_inventory):
             grind_result += apply_grindstones(grindstones=grindstone_inventory[rune_set], runes=rune_inventory[rune_set])
 
         if rune_set in enchant_inventory:
-            enchant_result += apply_enchantstones(enchantstones=enchant_inventory[rune_set], runes=rune_inventory[rune_set])
+            enchant_result += apply_enchantgems(enchantgems=enchant_inventory[rune_set], runes=rune_inventory[rune_set])
 
     return grind_result, enchant_result
 

@@ -1,3 +1,4 @@
+from data_mapping import DataMappingCollection
 
 def rune_is_equipped(rune_id):
     """
@@ -39,7 +40,7 @@ class Rune:
         self.stars = rune['class']
         self.grade = Rune.get_rune_grade(rune['rank'])
         self.base_grade = Rune.get_rune_grade(rune['extra'])
-        self.type = Rune.get_rune_type(rune['set_id'])
+        self.type = Rune.get_rune_set(rune['set_id'])
         self.level = rune['upgrade_curr']
         self.main = Rune.get_rune_stat(rune['pri_eff'])
 
@@ -364,96 +365,27 @@ class Rune:
 
     @staticmethod
     def is_stat_enchanted(substat):
-        """
-        Check if a substat is enchanted or not
-        """
 
         return substat[2] == 1
 
     @staticmethod
-    def get_rune_type(rune_id):
-        """
-        convert rune type to string
-        """
+    def get_rune_set(set_id):
 
-        name_map = {
-
-            1: "Energy",
-            2: "Guard",
-            3: "Swift",
-            4: "Blade",
-            5: "Rage",
-            6: "Focus",
-            7: "Endure",
-            8: "Fatal",
-            10: "Despair",
-            11: "Vampire",
-            13: "Violent",
-            14: "Nemesis",
-            15: "Will",
-            16: "Shield",
-            17: "Revenge",
-            18: "Destroy",
-            19: "Fight",
-            20: "Determination",
-            21: "Enhance",
-            22: "Accuracy",
-            23: "Tolerance",
-            99: "Immemorial"
-        }
-
-        return name_map[rune_id]
+        return DataMappingCollection.get_rune_set(set_id)
 
     @staticmethod
-    def get_sub_type(rune_id):
-        """
-        convert rune sub type to string
-        """
+    def get_sub_type(type_id):
 
-        sub_type_map = {
-            0: None,
-            1: "HP flat",
-            2: "HP%",
-            3: "ATK flat",
-            4: "ATK%",
-            5: "DEF flat",
-            6: "DEF%",
-            8: "SPD",
-            9: "CRate",
-            10: "CDmg",
-            11: "RES",
-            12: "ACC",
-        }
-
-        return sub_type_map[rune_id]
+        return DataMappingCollection.get_rune_type(type_id)
 
     @staticmethod
-    def get_rune_grade(rune_id, shorten=True):
-        """
-        return rune grade (Currently)
-        """
-
+    def get_rune_grade(class_id, shorten=True):
+        
         if shorten:
-            rune_class_map = {
-                0: 'U',  # unknown
-                1: 'C',  # common
-                2: 'M',  # magic
-                3: 'R',  # rare
-                4: 'H',  # hero
-                5: 'L',  # legend
-            }
-
+            return DataMappingCollection.get_rune_class_shorten(class_id)
         else:
-            rune_class_map = {
-                0: 'Unknown',
-                1: 'Common',
-                2: 'Magic',
-                3: 'Rare',
-                4: 'Hero',
-                5: 'Legend',
-            }
+            return DataMappingCollection.get_rune_class(class_id)
 
-        return rune_class_map[rune_id]
 
     @staticmethod
     def get_rune_stat(stats, include_grind=True):
@@ -478,52 +410,12 @@ class Rune:
         return sub_type, (value + grind)
 
     @staticmethod
-    def max_roll(rune_type):
-        """
-        return max stat of primary stat
-        """
-
-        sub_type_max = {
-
-            "HP flat": 2448,
-            "HP%": 63,
-            "ATK flat": 160,
-            "ATK%": 63,
-            "DEF flat": 160,
-            "DEF%": 63,
-            "SPD": 42,
-            "CRate": 58,
-            "CDmg": 80,
-            "RES": 65,
-            "ACC": 65,
-        }
-
-        return sub_type_max[rune_type]
+    def max_roll(primary_stat):
+        return DataMappingCollection.get_rune_primary_stat_max_value(primary_stat)
 
     @staticmethod
-    def max_roll_substats(rune_type):
-        """
-        return max roll of sub stat
-        """
-
-        sub_type_max = {
-
-            "HP%": 40,
-            "ATK%": 40,
-            "DEF%": 40,
-            "SPD": 30,
-            "CRate": 30,
-            "CDmg": 35,
-            "RES": 40,
-            "ACC": 40,
-        }
-
-        if rune_type in sub_type_max:
-            return sub_type_max[rune_type]
-
-        # undesired atk flat, hp flat, and def flat
-        else:
-            return 99999999999
+    def max_roll_substats(sub_stat):
+        return DataMappingCollection.get_rune_sub_stat_max_value(sub_stat)
 
     @staticmethod
     def substats_to_dense(substat_list):

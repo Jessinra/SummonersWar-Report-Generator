@@ -1,3 +1,4 @@
+
 def excel_formatting(workbook, worksheet, cond="rune"):
     """
     Get excel formatting for displaying output
@@ -12,6 +13,7 @@ def excel_formatting(workbook, worksheet, cond="rune"):
     """
     
     if cond == "Rune":
+
         format_legend = workbook.add_format({'bg_color': '#f9e7a9', 'font_color': '#2B2925'})
         format_hero = workbook.add_format({'bg_color': '#f4d9f9', 'font_color': '#2B2925'})
         format_rare = workbook.add_format({'bg_color': '#d5f0f2', 'font_color': '#2B2925'})

@@ -1,6 +1,7 @@
 from parser_file import WizardIdGetter, FileParser, ExcelFile
 from parser_enhancement import Enhancement
-from parser_rune import Rune, get_rune_user
+from parser_rune import RuneParser
+from rune import Rune
 import os
 import operator
 import pandas as pd
@@ -361,7 +362,7 @@ def parse_rune(rune_list, monster_list):
     for rune in rune_list:
 
         current_rune = Rune(rune)
-        current_rune.set_loc(get_rune_user(monster_list, rune["occupied_id"]))
+        current_rune.set_loc(RuneParser.get_rune_user(monster_list, rune["occupied_id"]))
 
         # Group each RUNE according to it's set
         if current_rune.type in rune_inventory:
@@ -438,7 +439,7 @@ try:
         
         file_parser = FileParser(wizard_id)
         rune_list = file_parser.get_rune_list()
-        monster_list = file_parser.get_monster_list()
+        monster_list = file_parser.get_unit_list()
         grind_enchant_list = file_parser.get_grind_enchant_list()
 
         enhancement_inventory = parse_enhancement(grind_enchant_list)

@@ -1066,6 +1066,25 @@ class DataMappingCollection:
         "ACC": 40,
     }
 
+    _rune_sub_stat_grindable = {
+        
+        "HP flat": True, 
+        "HP%": True,
+        "ATK flat": True,
+        "ATK%": True,
+        "DEF flat": True,
+        "DEF%": True,
+        "SPD": True,
+        "CRate": False,
+        "CDmg": False,
+        "RES": False,
+        "ACC": False,
+    }
+
+    _good_substat = ["HP%", "ATK%", "DEF%", "SPD", "CRate", "CDmg", "RES", "ACC"]
+    
+    _bad_substat = ["HP flat", "ATK flat", "DEF flat"]
+
     @staticmethod
     def get_monster_name(monster_id):
         
@@ -1158,3 +1177,14 @@ class DataMappingCollection:
     def get_rune_sub_stat_max_value(stat):
         return DataMappingCollection._rune_sub_stat_max_value[stat]
         
+    @staticmethod
+    def is_substat_grindable(stat):
+        return DataMappingCollection._rune_sub_stat_grindable[stat]
+
+    @staticmethod
+    def get_good_substats():
+        return DataMappingCollection._good_substat
+
+    @staticmethod
+    def get_bad_substats():
+        return DataMappingCollection._bad_substat

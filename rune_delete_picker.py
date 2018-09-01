@@ -1,5 +1,6 @@
-from parser_rune import Rune, get_rune_user
+from parser_rune import RuneParser
 from parser_file import WizardIdGetter, FileParser, ExcelFile
+from rune import Rune
 import pandas as pd
 import os
 
@@ -67,18 +68,17 @@ def parse_runes_and_monster_eff(rune_list):
 
     for rune in rune_list:
         current_rune = Rune(rune)
-        current_rune.set_loc(get_rune_user(monster_list, rune["occupied_id"]))
+        current_rune.set_loc(RuneParser.get_rune_user(monster_list, rune["occupied_id"]))
 
         formatted_result = format_rune(current_rune)
         parsed_runes.append(formatted_result)
 
         if current_rune.loc == "":
             continue
-            
+
         monster_eff = increment_dict_value(monster_eff, current_rune.loc, current_rune.efficiency)
         monster_exp_eff = increment_dict_value(monster_exp_eff, current_rune.loc, current_rune.exp_efficiency)
 
-        
 
     # Average it
     monster_eff_avg = []

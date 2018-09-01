@@ -997,7 +997,7 @@ class DataMappingCollection:
         99: "Immemorial"
     }
 
-    _rune_type = {
+    _rune_stat_type = {
 
         0: None,
         1: "HP flat",
@@ -1139,8 +1139,8 @@ class DataMappingCollection:
         return DataMappingCollection._rune_set[id]
 
     @staticmethod
-    def get_rune_type(id):
-        return DataMappingCollection._rune_type[id]
+    def get_rune_stat_type(id):
+        return DataMappingCollection._rune_stat_type[id]
 
     @staticmethod
     def get_rune_class(id):

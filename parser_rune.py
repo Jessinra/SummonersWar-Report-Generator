@@ -132,7 +132,7 @@ class Rune:
 
         for stat in substats:
 
-            sub_type = Rune.get_sub_type(stat[0])
+            sub_type = Rune.get_rune_stat_type(stat[0])
 
             # Skip crate, cdmg, res, acc since they can't be grinded
             if sub_type not in self.grind_values:
@@ -153,7 +153,7 @@ class Rune:
 
         for stat in substats:
             if Rune.is_stat_enchanted(stat):
-                self.enchant_type = Rune.get_sub_type(stat[0])
+                self.enchant_type = Rune.get_rune_stat_type(stat[0])
                 break
 
     def set_rune_efficiencies(self):
@@ -374,9 +374,9 @@ class Rune:
         return DataMappingCollection.get_rune_set(set_id)
 
     @staticmethod
-    def get_sub_type(type_id):
+    def get_rune_stat_type(type_id):
 
-        return DataMappingCollection.get_rune_type(type_id)
+        return DataMappingCollection.get_rune_stat_type(type_id)
 
     @staticmethod
     def get_rune_grade(class_id, shorten=True):
@@ -398,7 +398,7 @@ class Rune:
         :rtype: tuple
         """
 
-        sub_type = Rune.get_sub_type(stats[0])
+        sub_type = Rune.get_rune_stat_type(stats[0])
         value = stats[1]
         grindable = len(stats) > 2
 

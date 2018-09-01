@@ -1,5 +1,5 @@
 from parser_rune import Rune, get_rune_user
-from parser_file import get_wizard_id, parse_file, write_to_excel
+from parser_file import WizardIdGetter, parse_file, ExcelFile
 from parser_mons import store_monster_eff
 import pandas as pd
 import os
@@ -120,7 +120,9 @@ try:
 
     if __name__ == '__main__':
         
-        wizard_id = get_wizard_id()
+        wizard_id_getter = WizardIdGetter()
+        wizard_id = wizard_id_getter.get_wizard_id()
+        
         rune_list, monster_list, grind_enchant_list = parse_file(wizard_id)
 
         parsed_runes, monster_eff_avg = parse_runes_and_monster_eff(rune_list)
@@ -128,10 +130,12 @@ try:
         formatted_parsed_runes = format_parsed_runes(parsed_runes)
         formatted_monster_eff = format_monster_eff(monster_eff_avg)
 
-        filename = '{} rune_eff.xlsx'.format(wizard_id)
-        dataframes = [formatted_parsed_runes, formatted_monster_eff]
-        sheets_name = ['Rune', 'Monster eff']
-        write_to_excel(filename, dataframes, sheets_name)
+        excel = ExcelFile(filename='{} rune_eff.xlsx'.format(wizard_id), 
+                          dataframes=[formatted_parsed_runes, formatted_monster_eff], 
+                          sheets_name=['Rune', 'Monster eff'])
+        excel.open_file()
+
+
 
 except Exception as e:
     print(e)

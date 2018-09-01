@@ -1,4 +1,4 @@
-from parser_file import get_wizard_id, parse_file, write_to_excel
+from parser_file import WizardIdGetter, parse_file, ExcelFile
 from parser_enhancement import Enhancement
 from parser_rune import Rune, get_rune_user
 import os
@@ -432,7 +432,10 @@ def format_enchant_result(enchant_result):
 try:
 
     if __name__ == '__main__':
-        wizard_id = get_wizard_id()
+
+        wizard_id_getter = WizardIdGetter()
+        wizard_id = wizard_id_getter.get_wizard_id()
+        
         rune_list, monster_list, enhancement_list = parse_file(wizard_id)
 
         enhancement_inventory = parse_enhancement(enhancement_list)
@@ -443,10 +446,10 @@ try:
         formated_grind_result = format_grind_result(grind_result)
         formated_enchant_result = format_enchant_result(enchant_result)
 
-        filename = '{} applying_grinds.xlsx'.format(wizard_id)
-        dataframes = [formated_grind_result, formated_enchant_result]
-        sheets_name = ['Grinds', 'Enchant']
-        write_to_excel(filename, dataframes, sheets_name)
+        excel = ExcelFile(filename='{} applying_grinds.xlsx'.format(wizard_id), 
+                          dataframes=[formated_grind_result, formated_enchant_result], 
+                          sheets_name=['Grinds', 'Enchant'])
+        excel.open_file()
 
 except Exception as e:
     print(e)

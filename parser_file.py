@@ -7,54 +7,61 @@ import pandas.io.formats.excel
 
 pandas.io.formats.excel.header_style = None
 
+class WizardIdGetter:
 
-def get_wizard_id(default_wizard_id=None):
-    """
-    Handle input and validating user input if necessary, returning wizard id 
-    """
+    default_filename = "default_id.txt"
 
-    wizard_id = None
+    def __init__(self):
 
-    # prompt user id if not given default one
-    if default_wizard_id is None:
+        self.wizard_id = None
 
-        # Try to open existing file
+        while not self._is_wizard_id_valid():
+            self._display_wizard_id_invalid()
+            self._set_wizard_id()
+        
+        self._store_new_wizard_id()
+
+    def _display_wizard_id_invalid(self):
+
+        error_message = "Your current wizard id is invalid, please input a valid one\n"
+        print(error_message)
+
+    def _set_wizard_id(self):
+
         try:
-            with open("default_id.txt", encoding="utf-8") as f:
-                for line in f:
-                    wizard_id = line.strip()
-                    break
-
-            create_file = False
-
-        # If file doesn't exist yet, prompt user for input and cache input
+            self.wizard_id = self._read_cached_wizard_id()
         except:
-            wizard_id = input("<This will be stored into default_id.txt>\nInput your id (example 101222 or visit-110200) : ")
-            create_file = True
+            self.wizard_id = self._ask_user_wizard_id()
 
-    else:
-        wizard_id = default_wizard_id
-        create_file = False
+    def _read_cached_wizard_id(self):
 
-    # validating default id
-    try:
-        int(wizard_id)
+        filename = WizardIdGetter.default_filename
+        first_line = open(filename, encoding="utf-8").readline()
+        return first_line.strip()
 
-    except Exception as e:
-        if "visit-" in wizard_id:
-            pass
+    def _ask_user_wizard_id(self, ):
+
+        display_text = "<Your wizard id will be stored in this folder>\n\nPlease input your id (example 101222 or visit-110200) : "
+
+        wizard_id = input(display_text)
+        return wizard_id
+
+    def _store_new_wizard_id(self):
+
+        filename = WizardIdGetter.default_filename
+        with open(filename, "w") as f:
+            f.write(self.wizard_id)
+
+    def _is_wizard_id_valid(self):
+
+        if self.wizard_id is None:
+            return False    # Not initialized
         else:
-            print("wrong input:", e)
-            os.system("pause")
-            sys.exit(0)
+            return self.wizard_id.isdigit() or "visit-" in self.wizard_id
 
-    # Store default id for later use
-    if create_file:
-        f = open("default_id.txt", "w")
-        f.write(wizard_id)
-
-    return wizard_id
-
+    def get_wizard_id(self):   
+        return self.wizard_id
+            
 
 def parse_file(wizard_id):
     """
@@ -63,91 +70,157 @@ def parse_file(wizard_id):
     :rtype: list, list, list
     """
 
-    try:
-        with open("{}.json".format(wizard_id), encoding="utf-8") as f:
-            json_data = json.load(f)
-    except:
-        raise
+    filename = "{}.json".format(wizard_id)
+    json_data = read_json(filename)
 
-    # storage runes
-    try:
-        rune_list = json_data["runes"]
-
-    except:
-        rune_list = []
-
-    # equipped runes
-    try:
-        monsters = json_data["unit_list"]
-
-    except:
-        monsters = json_data["friend"]["unit_list"]
-
-    for mons in monsters:
-        monster_runes = mons["runes"]
-        if len(monster_runes) > 0:
-            for rune in monster_runes:
-
-                # there are 2 different format (?)
-                if len(rune) <= 2:
-                    rune = monster_runes[rune]
-                    rune_list.append(rune)
-                else:
-                    rune_list.append(rune)
-
+    monsters = parse_monster_section(json_data)
     monster_list = generate_monsters(monsters)
+    
+    storage_runes = parse_runes_in_storage(json_data)
+    equiped_runes = parse_runes_equiped(monsters)
+    rune_list = storage_runes + equiped_runes
 
-    try:
-        grind_enchant_list = json_data["rune_craft_item_list"]
-
-    except:
-        grind_enchant_list = []
+    grind_enchant_list = parse_enhancement_section(json_data)
 
     return rune_list, monster_list, grind_enchant_list
 
+def read_json(filename):
+    
+    try:
+        return json.load(open(filename, encoding="utf-8"))
+    except:
+        raise
 
-def dataframe_to_sheet(dataframe, writer, workbook, sheet_name):
+def parse_monster_section(json_data):
+
+    try:
+        return json_data["unit_list"]
+    except:
+        return json_data["friend"]["unit_list"]
+
+def parse_runes_in_storage(json_data):
+
+    try:
+        return json_data["runes"]
+    except:
+        return []
+
+def parse_runes_equiped(monsters):
+
+    rune_list = []
+
+    for monster in monsters:
+        if is_monster_has_rune(monster):
+            rune_list += get_runes_from_monster(monster)
+
+    return rune_list
+
+def is_monster_has_rune(monster):
+    return len(monster["runes"]) > 0
+
+def get_runes_from_monster(monster):
+
+    monster_runes = monster["runes"]
+
+    # Format : [{rune data}, {rune data}, {rune data}]
+    if isinstance(monster_runes, list):
+        return get_runes_from_list(monster_runes)
+
+    # Format : {"XX": {rune data}, "XX": {rune data}, "XX": {rune data}}
+    elif isinstance(monster_runes, dict):
+        return get_runes_from_dict(monster_runes)
+
+    else:
+        return []
+
+def get_runes_from_list(monster_runes):
+
+    rune_list = []
+    for rune in monster_runes:
+        rune_list.append(rune)
+    return rune_list
+
+def get_runes_from_dict(monster_runes):
+
+    rune_list = []
+    for key in monster_runes:
+        rune_list.append(monster_runes[key])
+    return rune_list
+
+def parse_enhancement_section(json_data):
+
+    try:
+        return json_data["rune_craft_item_list"]
+    except:
+        return []
+
+
+
+
+class ExcelFile:
+
+    def __init__(self, filename, dataframes, sheets_name):
+
+        self.filename = filename
+        self.dataframes = dataframes
+        self.sheet_names = sheets_name
+        self.writer = None
+        self.workbook = None
+
+        self.write_to_excel()
+
+    def write_to_excel(self):
+
+        success = False
+        while not success:
+            success = self.try_to_construct_excel()
+
+    def try_to_construct_excel(self):
+
+        try:
+            self.set_writer()
+            self.set_workbook()
+            self.dataframes_to_sheet()
+            self.save()
+
+            successfully_constructed = True
+
+        except Exception as e:
+            self.handle_exception(e)
+
+            successfully_constructed = False
+
+        finally:
+            return successfully_constructed
+
+    def set_writer(self):
+        self.writer = pandas.ExcelWriter(self.filename, engine='xlsxwriter')
+
+    def set_workbook(self):
+        self.workbook = self.writer.book
+
+    def dataframes_to_sheet(self):
+        for i in range(0, len(self.dataframes)):
+            dataframe_to_sheet(dataframe=self.dataframes[i],
+                               sheet_name=self.sheet_names[i], 
+                               writer=self.writer, 
+                               workbook=self.workbook)
+
+    def save(self):
+        self.writer.save()
+
+    def handle_exception(self, exception):
+        print(exception)
+        os.system("pause")
+
+    def open_file(self):
+        os.startfile(self.filename)
+    
+def dataframe_to_sheet(dataframe, sheet_name, writer, workbook):
     """
-    Add pandas dataframe to excel sheet
-    :param dataframe: table contain data to be written
-    :type dataframe: pandas.DataFrame
-    :param writer: writer object
-    :param workbook: workbook object
-    :param sheet_name: excel sheet's name
-    :type sheet_name: string
+    Convert dataframe to excel sheet
     """
 
     dataframe.to_excel(writer, sheet_name=sheet_name)
     worksheet = writer.sheets[sheet_name]
     excel_formatting(workbook, worksheet, cond=sheet_name)
-
-
-def write_to_excel(filename, dataframes, sheets_name):
-    """
-    Write dataframes into excel
-    :param filename: excel filename
-    :type filename: str
-    :param dataframes: dataframes / tables to be written
-    :type dataframes: list of pandas.DataFrame
-    :param sheets_name: sheet name corresponding to each dataframe
-    :type sheets_name: list of str
-    """
-
-    success = False
-    while not success:
-
-        try:
-
-            writer = pandas.ExcelWriter(filename, engine='xlsxwriter')
-            workbook = writer.book
-
-            for i in range(0, len(dataframes)):
-                dataframe_to_sheet(dataframe=dataframes[i], sheet_name=sheets_name[i], writer=writer, workbook=workbook)
-
-            writer.save()
-            os.startfile(filename)
-            success = True
-
-        except:
-            print("File is open, close it first")
-            os.system("pause")

@@ -6,45 +6,186 @@ import os
 import operator
 import pandas as pd
 
+class ApplyGrind:
 
-def parse_enhancement(enhancement_list):
-    """
-    Parse grind and enchant and sort by rune set
-    :param enhancement_list: list of raw enhancement data
-    :type enhancement_list: list
-    :return: sorted grind and enchant by rune set
-    :rtype: dict
-    """
+    def start(self):
 
-    # Parse the grindstones and enchantgems
-    inventory = {
-        "Grind": {},
-        "Enchant": {}
-    }
+        try:
+            self.run_main_function()
 
-    for enhancement in enhancement_list:
-        current_enhancement = Enhancement(enhancement)
+        except Exception as e:
+            self.handle_error(e)
 
-        # Group each enhancement according to it's set
-        if current_enhancement.set in inventory[current_enhancement.type]:
-            inventory[current_enhancement.type][current_enhancement.set].append(current_enhancement)
-        else:
-            inventory[current_enhancement.type][current_enhancement.set] = [current_enhancement]
+    def handle_error(self, error):
+        print(error)
+        os.system("pause")
 
-    return inventory
+    def run_main_function(self):
+
+        wizard_id_getter = WizardIdGetter()
+        wizard_id = wizard_id_getter.get_wizard_id()
+
+        file_parser = FileParser(wizard_id)
+        rune_list = file_parser.get_rune_list()
+        monster_list = file_parser.get_unit_list()
+        grind_enchant_list = file_parser.get_grind_enchant_list()
+
+        enhancement_inventory = self.parse_enhancement(grind_enchant_list)
+        rune_inventory = self.parse_rune(rune_list, monster_list)
+
+        grind_result, enchant_result = self.apply_enhancements(enhancement_inventory, rune_inventory)
+
+        formated_grind_result = self.format_grind_result(grind_result)
+        formated_enchant_result = self.format_enchant_result(enchant_result)
+
+        excel = ExcelFile(filename='{} applying_grinds.xlsx'.format(wizard_id), 
+                        dataframes=[formated_grind_result, formated_enchant_result], 
+                        sheets_name=['Grinds', 'Enchant'])
+        excel.open_file()
+
+    def parse_enhancement(self, enhancement_list):
+        """
+        Parse grind and enchant and sort by rune set
+        :param enhancement_list: list of raw enhancement data
+        :type enhancement_list: list
+        :return: sorted grind and enchant by rune set
+        :rtype: dict
+        """
+
+        # Parse the grindstones and enchantgems
+        inventory = {
+            "Grind": {},
+            "Enchant": {}
+        }
+
+        for enhancement in enhancement_list:
+            current_enhancement = Enhancement(enhancement)
+
+            # Group each enhancement according to it's set
+            if current_enhancement.set in inventory[current_enhancement.type]:
+                inventory[current_enhancement.type][current_enhancement.set].append(current_enhancement)
+            else:
+                inventory[current_enhancement.type][current_enhancement.set] = [current_enhancement]
+
+        return inventory
 
 
-def apply_grindstones(grindstones, runes):
-    """
-    :param grindstones: usable grindstones
-    :type grindstones: list
-    :param runes: usable runes
-    :type runes: list
-    :return: list of runes and corresponding grindstones
-    :rtype: list
-    """
+    def parse_rune(self, rune_list, monster_list):
+        """
+        Parse runes and sort by rune set
+        :param rune_list: raw data of runes
+        :type rune_list: list
+        :param monster_list: raw data of monster
+        :type monster_list: list
+        :return: sorted runes by rune set
+        :rtype: dict
+        """
 
-    def grind_applicable(grindstone, rune, eff_threshold=0.75):
+        # Parse the runes
+        rune_inventory = {}
+        for rune in rune_list:
+
+            current_rune = Rune(rune)
+            current_rune.set_loc(RuneParser.get_rune_user(monster_list, rune["occupied_id"]))
+
+            # Group each RUNE according to it's set
+            if current_rune.type in rune_inventory:
+                rune_inventory[current_rune.type].append(current_rune)
+            else:
+                rune_inventory[current_rune.type] = [current_rune]
+
+        return rune_inventory
+
+    def apply_enhancements(self, enhancement_inventory, rune_inventory):
+        """
+        Try to apply all grind and enchant stone for all rune
+        :param enhancement_inventory: all grindstones and enchantgems sorted by rune set
+        :type enhancement_inventory: dict
+        :param rune_inventory: runes sorted by rune set
+        :type rune_inventory: dict
+        :return: grind result, enchant result
+        :rtype: (list, list)
+        """
+
+        grindstone_inventory = enhancement_inventory["Grind"]
+        enchant_inventory = enhancement_inventory["Enchant"]
+
+        grind_result = []
+        enchant_result = []
+
+        for rune_set in rune_inventory:
+
+            # Only check if there's grind and rune that match
+            if rune_set in grindstone_inventory:
+                grind_result += self.apply_grindstones(grindstones=grindstone_inventory[rune_set], runes=rune_inventory[rune_set])
+
+            if rune_set in enchant_inventory:
+                enchant_result += self.apply_enchantgems(enchantgems=enchant_inventory[rune_set], runes=rune_inventory[rune_set])
+
+        return grind_result, enchant_result
+
+    def apply_grindstones(self, grindstones, runes):
+        """
+        :param grindstones: usable grindstones
+        :type grindstones: list
+        :param runes: usable runes
+        :type runes: list
+        :return: list of runes and corresponding grindstones
+        :rtype: list
+        """
+
+
+        # Sort the grindstones by grade and stat (grade is most sorted), and sort the runes by efficiency
+        grindstones.sort(key=operator.attrgetter('stat'))
+        grindstones.sort(key=operator.attrgetter('grade_int'), reverse=True)
+        runes.sort(key=operator.attrgetter('efficiency_without_grind'), reverse=True)
+
+        applied = []
+        checked_and_failed = {
+
+            "SPD": False,
+            "ATK%": False,
+            "HP%": False,
+            "DEF%": False,
+            # "CRate": False,
+            # "CDmg": False,
+            # "RES": False,
+            # "ACC": False,
+            "ATK flat": False,
+            "HP flat": False,
+            "DEF flat": False,
+        }
+
+        for grindstone in grindstones:
+
+            # Flag to mark if certain grind is successfully used or not
+            applicable = False
+
+            # By pass if the subs checked and failed
+            if checked_and_failed[grindstone.stat]:
+                continue
+
+            for rune in runes:
+
+                if self.grind_applicable(grindstone, rune):
+                    # If it's applicable, format and append the result
+                    formatted_result = self.format_applying_grind(grindstone, rune)
+                    applied.append(formatted_result)
+
+                    # Make sure same substat from a rune won't get grind using two different grind
+                    self.virtually_apply_grind(grindstone, rune)
+                    applicable = True
+
+                    # Continue to next grindstone
+                    break
+
+            # If this kind of rune is unusable, skip those which has same stats, and is same or even lower grade
+            if not applicable:
+                checked_and_failed[grindstone.stat] = True
+
+        return applied
+
+    def grind_applicable(self, grindstone, rune, eff_threshold=0.75):
         """
         Check whether a grind can be used and passed certain constraints
         :param grindstone: which grindstone to be used
@@ -88,18 +229,7 @@ def apply_grindstones(grindstones, runes):
             else:
                 return substat_to_be_grinded < grindstone.max_value - 1
 
-    def virtually_apply_grind(grindstone, rune):
-        """
-        Remove that substat virtually so it won't get upgraded again
-        :param grindstone: which grindstone to be used
-        :type grindstone: Enhancement
-        :param rune: which rune to be checked
-        :type rune: Rune
-        """
-
-        rune.grind_values[grindstone.stat] = "Applied"
-
-    def format_applying_grind(grindstone, rune):
+    def format_applying_grind(self, grindstone, rune):
         """
         Reshape for printout
         :param grindstone: grind to be used
@@ -112,89 +242,94 @@ def apply_grindstones(grindstones, runes):
         _separator = None
 
         rune_data = (rune.type,
-                     rune.slot,
-                     rune.grade,
-                     rune.base_grade,
-                     rune.stars,
-                     rune.level,
-                     rune.main,
-                     rune.innate,
-                     rune.substats,
-                     rune.efficiency,
-                     rune.exp_efficiency,
-                     rune.efficiency_without_grind,
-                     rune.exp_efficiency_without_grind,
-                     rune.loc,
-                     _separator)
+                        rune.slot,
+                        rune.grade,
+                        rune.base_grade,
+                        rune.stars,
+                        rune.level,
+                        rune.main,
+                        rune.innate,
+                        rune.substats,
+                        rune.efficiency,
+                        rune.exp_efficiency,
+                        rune.efficiency_without_grind,
+                        rune.exp_efficiency_without_grind,
+                        rune.loc,
+                        _separator)
 
         grind_data = (grindstone.set,
-                      grindstone.grade,
-                      grindstone.stat)
+                        grindstone.grade,
+                        grindstone.stat)
 
         return rune_data + grind_data
 
-    # Sort the grindstones by grade and stat (grade is most sorted), and sort the runes by efficiency
-    grindstones.sort(key=operator.attrgetter('stat'))
-    grindstones.sort(key=operator.attrgetter('grade_int'), reverse=True)
-    runes.sort(key=operator.attrgetter('efficiency_without_grind'), reverse=True)
+    def virtually_apply_grind(self, grindstone, rune):
+        """
+        Remove that substat virtually so it won't get upgraded again
+        :param grindstone: which grindstone to be used
+        :type grindstone: Enhancement
+        :param rune: which rune to be checked
+        :type rune: Rune
+        """
 
-    applied = []
-    checked_and_failed = {
-
-        "SPD": False,
-        "ATK%": False,
-        "HP%": False,
-        "DEF%": False,
-        # "CRate": False,
-        # "CDmg": False,
-        # "RES": False,
-        # "ACC": False,
-        "ATK flat": False,
-        "HP flat": False,
-        "DEF flat": False,
-    }
-
-    for grindstone in grindstones:
-
-        # Flag to mark if certain grind is successfully used or not
-        applicable = False
-
-        # By pass if the subs checked and failed
-        if checked_and_failed[grindstone.stat]:
-            continue
-
-        for rune in runes:
-
-            if grind_applicable(grindstone, rune):
-                # If it's applicable, format and append the result
-                formatted_result = format_applying_grind(grindstone, rune)
-                applied.append(formatted_result)
-
-                # Make sure same substat from a rune won't get grind using two different grind
-                virtually_apply_grind(grindstone, rune)
-                applicable = True
-
-                # Continue to next grindstone
-                break
-
-        # If this kind of rune is unusable, skip those which has same stats, and is same or even lower grade
-        if not applicable:
-            checked_and_failed[grindstone.stat] = True
-
-    return applied
+        rune.grind_values[grindstone.stat] = "Applied"
 
 
-def apply_enchantgems(enchantgems, runes):
-    """
-    :param enchantgems: usable enchantgems
-    :type enchantgems: list
-    :param runes: usable runes
-    :type runes: list
-    :return: list of runes and corresponding enchantgems
-    :rtype: list
-    """
+    def apply_enchantgems(self, enchantgems, runes):
+        """
+        :param enchantgems: usable enchantgems
+        :type enchantgems: list
+        :param runes: usable runes
+        :type runes: list
+        :return: list of runes and corresponding enchantgems
+        :rtype: list
+        """
 
-    def enchant_applicable(enchantgem, rune):
+        # Sort the enchantgem by grade and stat (grade is most sorted), and sort the runes by efficiency
+        enchantgems.sort(key=operator.attrgetter('stat'))
+        enchantgems.sort(key=operator.attrgetter('grade_int'), reverse=True)
+
+        applied = []
+        checked_and_failed = {
+
+            "SPD": False,
+            "ATK%": False,
+            "HP%": False,
+            "DEF%": False,
+            "CRate": False,
+            "CDmg": False,
+            "RES": False,
+            "ACC": False,
+            "ATK flat": False,
+            "HP flat": False,
+            "DEF flat": False,
+        }
+
+        for enchantgem in enchantgems:
+
+            # Flag to mark if certain enchantgem is successfully used or not
+            applicable = False
+
+            # By pass if the subs checked and failed
+            if checked_and_failed[enchantgem.stat]:
+                continue
+
+            for rune in runes:
+
+                if self.enchant_applicable(enchantgem, rune):
+                    # If it's applicable, format and append the result
+                    formatted_result = self.format_applying_enchant(enchantgem, rune)
+                    applied.append(formatted_result)
+
+                    applicable = True
+
+            # If this kind of rune is unusable, skip those which has same stats, and is same or even lower grade
+            if not applicable:
+                checked_and_failed[enchantgem.stat] = True
+
+        return applied
+
+    def enchant_applicable(self, enchantgem, rune):
         """
         Check whether a enchantgem can be used
         :param enchantgem: which enchantgem to be used
@@ -241,7 +376,7 @@ def apply_enchantgems(enchantgems, runes):
                 elif substat[0] == "HP flat" and substat[1] <= max_roll_flat_hp * 2:
                     return True
 
-    def format_applying_enchant(enchantgem, rune):
+    def format_applying_enchant(self, enchantgem, rune):
         """
         Reshape for printout
         :param enchantgem: enchantgem to be used
@@ -254,20 +389,20 @@ def apply_enchantgems(enchantgems, runes):
         _separator = None
 
         rune_data = (rune.type,
-                     rune.slot,
-                     rune.grade,
-                     rune.base_grade,
-                     rune.stars,
-                     rune.level,
-                     rune.main,
-                     rune.innate,
-                     rune.substats,
-                     rune.efficiency,
-                     rune.exp_efficiency,
-                     rune.efficiency_without_grind,
-                     rune.exp_efficiency_without_grind,
-                     rune.loc,
-                     _separator)
+                        rune.slot,
+                        rune.grade,
+                        rune.base_grade,
+                        rune.stars,
+                        rune.level,
+                        rune.main,
+                        rune.innate,
+                        rune.substats,
+                        rune.efficiency,
+                        rune.exp_efficiency,
+                        rune.efficiency_without_grind,
+                        rune.exp_efficiency_without_grind,
+                        rune.loc,
+                        _separator)
 
         enchant_data = (enchantgem.set,
                         enchantgem.grade,
@@ -276,186 +411,60 @@ def apply_enchantgems(enchantgems, runes):
 
         return rune_data + enchant_data
 
-    # Sort the enchantgem by grade and stat (grade is most sorted), and sort the runes by efficiency
-    enchantgems.sort(key=operator.attrgetter('stat'))
-    enchantgems.sort(key=operator.attrgetter('grade_int'), reverse=True)
 
-    applied = []
-    checked_and_failed = {
+    def format_grind_result(self, grind_result):
+        """
+        :return: formatted grind result
+        :rtype: pandas.DataFrame
+        """
 
-        "SPD": False,
-        "ATK%": False,
-        "HP%": False,
-        "DEF%": False,
-        "CRate": False,
-        "CDmg": False,
-        "RES": False,
-        "ACC": False,
-        "ATK flat": False,
-        "HP flat": False,
-        "DEF flat": False,
-    }
+        # Convert grind result data to pandas dataframe
+        columns_name = self.get_pd_column_name("Grind")
+        grind_result_pd = pd.DataFrame(grind_result, columns=columns_name)
+        grind_result_pd_sorted = grind_result_pd.sort_values(by=['Type', 'Exp eff'], ascending=[True, False])
 
-    for enchantgem in enchantgems:
-
-        # Flag to mark if certain enchantgem is successfully used or not
-        applicable = False
-
-        # By pass if the subs checked and failed
-        if checked_and_failed[enchantgem.stat]:
-            continue
-
-        for rune in runes:
-
-            if enchant_applicable(enchantgem, rune):
-                # If it's applicable, format and append the result
-                formatted_result = format_applying_enchant(enchantgem, rune)
-                applied.append(formatted_result)
-
-                applicable = True
-
-        # If this kind of rune is unusable, skip those which has same stats, and is same or even lower grade
-        if not applicable:
-            checked_and_failed[enchantgem.stat] = True
-
-    return applied
+        return grind_result_pd_sorted
 
 
-def get_pd_column_name(data_name):
-    """
-    :param data_name: type of data contained in the table
-    :type data_name: str
-    :return: table columns header / columns name
-    :rtype: tuple of str
-    """
+    def format_enchant_result(self, enchant_result):
+        """
+        :return: formatted enchant result
+        :rtype: pandas.DataFrame
+        """
 
-    columns_name = None
+        # Convert enchant result data to pandas dataframe
+        columns_name = self.get_pd_column_name("Enchant")
+        enchant_result_pd = pd.DataFrame(enchant_result, columns=columns_name)
+        enchant_result_pd_sorted = enchant_result_pd.sort_values(by=['Id', 'Exp eff'], ascending=[True, False])
 
-    if data_name == "Grind":
+        return enchant_result_pd_sorted
+   
+    def get_pd_column_name(self, data_name):
+        """
+        :param data_name: type of data contained in the table
+        :type data_name: str
+        :return: table columns header / columns name
+        :rtype: tuple of str
+        """
 
-        columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate',
-                        'Substats', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc", "",
-                        'GType', 'Grade', 'Stat')
+        columns_name = None
 
-    elif data_name == "Enchant":
+        if data_name == "Grind":
 
-        columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate',
-                        'Substats', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc", "",
-                        'Type', 'Enchant Grade', 'Stat', 'Id')
+            columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate',
+                            'Substats', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc", "",
+                            'GType', 'Grade', 'Stat')
 
-    return columns_name
+        elif data_name == "Enchant":
 
+            columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate',
+                            'Substats', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc", "",
+                            'Type', 'Enchant Grade', 'Stat', 'Id')
 
-def parse_rune(rune_list, monster_list):
-    """
-    Parse runes and sort by rune set
-    :param rune_list: raw data of runes
-    :type rune_list: list
-    :param monster_list: raw data of monster
-    :type monster_list: list
-    :return: sorted runes by rune set
-    :rtype: dict
-    """
-
-    # Parse the runes
-    rune_inventory = {}
-    for rune in rune_list:
-
-        current_rune = Rune(rune)
-        current_rune.set_loc(RuneParser.get_rune_user(monster_list, rune["occupied_id"]))
-
-        # Group each RUNE according to it's set
-        if current_rune.type in rune_inventory:
-            rune_inventory[current_rune.type].append(current_rune)
-        else:
-            rune_inventory[current_rune.type] = [current_rune]
-
-    return rune_inventory
+        return columns_name
 
 
-def apply_enhancements(enhancement_inventory, rune_inventory):
-    """
-    Try to apply all grind and enchant stone for all rune
-    :param enhancement_inventory: all grindstones and enchantgems sorted by rune set
-    :type enhancement_inventory: dict
-    :param rune_inventory: runes sorted by rune set
-    :type rune_inventory: dict
-    :return: grind result, enchant result
-    :rtype: (list, list)
-    """
+if __name__ == '__main__':
 
-    grindstone_inventory = enhancement_inventory["Grind"]
-    enchant_inventory = enhancement_inventory["Enchant"]
-
-    grind_result = []
-    enchant_result = []
-
-    for rune_set in rune_inventory:
-
-        # Only check if there's grind and rune that match
-        if rune_set in grindstone_inventory:
-            grind_result += apply_grindstones(grindstones=grindstone_inventory[rune_set], runes=rune_inventory[rune_set])
-
-        if rune_set in enchant_inventory:
-            enchant_result += apply_enchantgems(enchantgems=enchant_inventory[rune_set], runes=rune_inventory[rune_set])
-
-    return grind_result, enchant_result
-
-
-def format_grind_result(grind_result):
-    """
-    :return: formatted grind result
-    :rtype: pandas.DataFrame
-    """
-
-    # Convert grind result data to pandas dataframe
-    columns_name = get_pd_column_name("Grind")
-    grind_result_pd = pd.DataFrame(grind_result, columns=columns_name)
-    grind_result_pd_sorted = grind_result_pd.sort_values(by=['Type', 'Exp eff'], ascending=[True, False])
-
-    return grind_result_pd_sorted
-
-
-def format_enchant_result(enchant_result):
-    """
-    :return: formatted enchant result
-    :rtype: pandas.DataFrame
-    """
-
-    # Convert enchant result data to pandas dataframe
-    columns_name = get_pd_column_name("Enchant")
-    enchant_result_pd = pd.DataFrame(enchant_result, columns=columns_name)
-    enchant_result_pd_sorted = enchant_result_pd.sort_values(by=['Id', 'Exp eff'], ascending=[True, False])
-
-    return enchant_result_pd_sorted
-
-
-try:
-
-    if __name__ == '__main__':
-
-        wizard_id_getter = WizardIdGetter()
-        wizard_id = wizard_id_getter.get_wizard_id()
-        
-        file_parser = FileParser(wizard_id)
-        rune_list = file_parser.get_rune_list()
-        monster_list = file_parser.get_unit_list()
-        grind_enchant_list = file_parser.get_grind_enchant_list()
-
-        enhancement_inventory = parse_enhancement(grind_enchant_list)
-        rune_inventory = parse_rune(rune_list, monster_list)
-
-        grind_result, enchant_result = apply_enhancements(enhancement_inventory, rune_inventory)
-
-        formated_grind_result = format_grind_result(grind_result)
-        formated_enchant_result = format_enchant_result(enchant_result)
-
-        excel = ExcelFile(filename='{} applying_grinds.xlsx'.format(wizard_id), 
-                          dataframes=[formated_grind_result, formated_enchant_result], 
-                          sheets_name=['Grinds', 'Enchant'])
-        excel.open_file()
-
-except Exception as e:
-    print(e)
-    os.system("pause")
-    raise e
+    app = ApplyGrind()
+    app.start()

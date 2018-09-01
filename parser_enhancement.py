@@ -1,6 +1,4 @@
 from data_mapping import DataMappingCollection
-from parser_rune import RuneParser
-
 
 class Enhancement:
 
@@ -34,17 +32,17 @@ class Enhancement:
     def set_enhancement_sets(self):
 
         set_id = int(self.type_id[0:-4])
-        self.set = RuneParser.get_rune_set(set_id)
+        self.set = DataMappingCollection.get_rune_set(set_id)
 
     def set_enhancement_stat(self):
 
         type_id = int(self.type_id[-4:-2])
-        self.stat = RuneParser.get_rune_stat_type(type_id)
+        self.stat = DataMappingCollection.get_rune_stat_type(type_id)
 
     def set_enhancement_grade(self):
 
         self.grade_int = int(self.type_id[-1])
-        self.grade = RuneParser.get_rune_grade(self.grade_int, shorten=False)
+        self.grade = DataMappingCollection.get_rune_class(self.grade_int)
 
     def set_enhance_values(self):
 

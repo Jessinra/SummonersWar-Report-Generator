@@ -20,10 +20,6 @@ class RuneParser:
         return DataMappingCollection.get_rune_set(set_id)
 
     @staticmethod
-    def get_rune_stat_type(type_id):
-        return DataMappingCollection.get_rune_stat_type(type_id)
-
-    @staticmethod
     def get_rune_grade(class_id, shorten=True):
         
         if shorten:
@@ -33,10 +29,6 @@ class RuneParser:
 
     @staticmethod
     def get_rune_stat(stats):
-        """
-        :return: tuple of sub type and value
-        :rtype: tuple
-        """
 
         rune_stat_type, value = RuneParser.get_rune_stat_without_grind(stats)
         grind = RuneParser.get_rune_grind_value(stats)
@@ -45,20 +37,23 @@ class RuneParser:
     
     @staticmethod
     def get_rune_stat_without_grind(stats):
-        """
-        :return: tuple of sub type and value
-        :rtype: tuple
-        """
-        rune_stat_type = RuneParser.get_rune_stat_type(stats[0])
+
+        rune_stat_type = RuneParser.get_rune_stat_type(stats)
         value = stats[1]
 
         return rune_stat_type, value
 
     @staticmethod
-    def get_rune_grind_value(stats):
+    def get_rune_stat_type(stat):
 
-        if RuneParser.is_grindable(stats):
-            return stats[3]
+        type_id = stat[0]
+        return DataMappingCollection.get_rune_stat_type(type_id)
+
+    @staticmethod
+    def get_rune_grind_value(stat):
+
+        if RuneParser.is_grindable(stat):
+            return stat[3]
         else:
             return 0
 
@@ -78,9 +73,8 @@ class RuneParser:
     def substats_to_dense_form(substat_list):
 
         substats_map = RuneParser.create_empty_substats_map()
-        substats_map = RuneParser.update_substats_map(substat_list, substats_map)
+        substats_map = RuneParser.update_substats_map(substats_map, substat_list)
         dense_tuples = RuneParser.dict_to_dense(substats_map)
-
         return dense_tuples
 
     @staticmethod
@@ -104,21 +98,16 @@ class RuneParser:
         return substats_map
 
     @staticmethod
-    def dict_to_dense(dictionary):
-        return tuple([x for x in dictionary.values()])
-
-
-
-    @staticmethod
-    def update_substats_map(substat_list, substats_map):
+    def update_substats_map(substats_map, substat_list):
 
         for substat in substat_list:
             substats_map[substat[0]] = substat[1]   # Asign value to corresponding stat in substats map
 
         return substats_map
     
-
-
+    @staticmethod
+    def dict_to_dense(dictionary):
+        return tuple([x for x in dictionary.values()])
 
 
 

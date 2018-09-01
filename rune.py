@@ -70,7 +70,7 @@ class Rune:
 
     def _set_grind_values(self, substats):
 
-        self.grind_values = RuneParser.create_empty_substats_map()
+        self.grind_values = RuneParser.create_substats_map()
         for stat in substats:
             self._set_grind_value(stat)
 
@@ -381,6 +381,6 @@ class Rune:
 
         owned_stats = [self.main[0]]
         owned_stats += self._get_owned_substats_include_innate()
-        
+
         return owned_stats
 

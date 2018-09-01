@@ -72,27 +72,27 @@ class RuneParser:
     @staticmethod
     def substats_to_dense_form(substat_list):
 
-        substats_map = RuneParser.create_empty_substats_map()
+        substats_map = RuneParser.create_substats_map()
         substats_map = RuneParser.update_substats_map(substats_map, substat_list)
         dense_tuples = RuneParser.dict_to_dense(substats_map)
         return dense_tuples
 
     @staticmethod
-    def create_empty_substats_map():
+    def create_substats_map(default=None):
         
         substats_map = {
 
-            "SPD": None,
-            "ATK%": None,
-            "HP%": None,
-            "DEF%": None,
-            "CRate": None,
-            "CDmg": None,
-            "RES": None,
-            "ACC": None,
-            "ATK flat": None,
-            "HP flat": None,
-            "DEF flat": None,
+            "SPD": default,
+            "ATK%": default,
+            "HP%": default,
+            "DEF%": default,
+            "CRate": default,
+            "CDmg": default,
+            "RES": default,
+            "ACC": default,
+            "ATK flat": default,
+            "HP flat": default,
+            "DEF flat": default,
         }
 
         return substats_map

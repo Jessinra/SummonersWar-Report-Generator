@@ -1066,6 +1066,21 @@ class DataMappingCollection:
         "ACC": 40,
     }
 
+    _rune_sub_stat_max_roll = {
+
+        "HP flat": 375, 
+        "HP%": 8,
+        "ATK flat": 20,
+        "ATK%": 8,
+        "DEF flat": 20,
+        "DEF%": 8,
+        "SPD": 6,
+        "CRate": 6,
+        "CDmg": 7,
+        "RES": 8,
+        "ACC": 8,
+    }
+
     _rune_sub_stat_grindable = {
         
         "HP flat": True, 
@@ -1176,6 +1191,10 @@ class DataMappingCollection:
     @staticmethod
     def get_rune_sub_stat_max_value(stat):
         return DataMappingCollection._rune_sub_stat_max_value[stat]
+
+    @staticmethod
+    def get_rune_sub_stat_max_roll(stat):
+        return DataMappingCollection._rune_sub_stat_max_roll[stat]
         
     @staticmethod
     def is_substat_grindable(stat):

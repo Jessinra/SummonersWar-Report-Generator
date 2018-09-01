@@ -2,7 +2,6 @@ from data_mapping import DataMappingCollection
 
 
 class RuneParser:
-
     @staticmethod
     def get_rune_user(unit_list, rune_id):
 
@@ -21,7 +20,7 @@ class RuneParser:
 
     @staticmethod
     def get_rune_grade(class_id, shorten=True):
-        
+
         if shorten:
             return DataMappingCollection.get_rune_class_shorten(class_id)
         else:
@@ -34,7 +33,7 @@ class RuneParser:
         grind = RuneParser.get_rune_grind_value(stats)
 
         return rune_stat_type, (value + grind)
-    
+
     @staticmethod
     def get_rune_stat_without_grind(stats):
 
@@ -79,7 +78,7 @@ class RuneParser:
 
     @staticmethod
     def create_substats_map(default=None):
-        
+
         substats_map = {
 
             "SPD": default,
@@ -101,44 +100,10 @@ class RuneParser:
     def update_substats_map(substats_map, substat_list):
 
         for substat in substat_list:
-            substats_map[substat[0]] = substat[1]   # Asign value to corresponding stat in substats map
+            substats_map[substat[0]] = substat[1]  # Asign value to corresponding stat in substats map
 
         return substats_map
-    
+
     @staticmethod
     def dict_to_dense(dictionary):
         return tuple([x for x in dictionary.values()])
-
-
-
-
-
-    
-
-
-
-
-
-    
-
-    
-
-
-
-        
-
-
-
-
-
-
-
-
-
-  
-
-
-    
-
-    
-

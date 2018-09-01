@@ -3,7 +3,6 @@ from parser_rune import RuneParser
 
 
 class Rune:
-
     SUBS_UPGRADE_AVG_EFF = 47 / 59  # 6 star sub upgrade min 35 max 59, avg 47...
     SUBS_MAX_EFFICIENCY = 2.8  # 2.8 is from 1 main stat + (9 times roll x 0.2 max efficiency)
 
@@ -44,14 +43,14 @@ class Rune:
         self.loc = rune_user
 
     def _set_innate_if_available(self, innate):
-        
+
         self.innate = RuneParser.get_rune_stat(innate)
         self._remove_innate_if_none()
 
     def _remove_innate_if_none(self):
 
-        if self.innate[0] is None:  
-            self.innate = None 
+        if self.innate[0] is None:
+            self.innate = None
 
     def _set_substats_with_grind(self, rune_substat_raw):
 
@@ -75,11 +74,11 @@ class Rune:
             self._set_grind_value(stat)
 
     def _set_grind_value(self, stat):
-        
+
         sub_type = RuneParser.get_rune_stat_type(stat)
         if DataMappingCollection.is_substat_grindable(sub_type):
             self.grind_values[sub_type] = RuneParser.get_rune_grind_value(stat)
-    
+
     def _set_enchanted_stat_type(self, substats):
         """
         Set rune enchantment type if the rune is enchanted
@@ -101,8 +100,6 @@ class Rune:
     def _rune_efficiency(self, include_grind):
         """
         Finding rune's current efficiency
-        :param rune: instance of Rune which's efficiency gonna be calculated
-        :type rune: Rune
         :param include_grind: if set True, applied grind will be counted in efficiency
         :type include_grind: bool
         :return: rune's efficiency
@@ -143,7 +140,7 @@ class Rune:
 
         substats_roll_score = 0
         substats = self._select_substats_according_to(include_grind)
-        
+
         for substat in substats:
             substats_roll_score += substat[1] / RuneParser.max_roll_substats(substat[0])
 
@@ -172,7 +169,6 @@ class Rune:
 
         return score / Rune.SUBS_MAX_EFFICIENCY
 
-
     def _set_rune_expected_efficiency(self):
         """
         Set rune's expected efficiency with and without grind
@@ -184,8 +180,6 @@ class Rune:
     def _rune_expected_efficiency(self, include_grind):
         """
         Finding rune's expected efficiency at +12 (4 times roll)
-        :param rune: instance of Rune which's efficiency gonna be calculated
-        :type rune: Rune
         :param include_grind: if set True, applied grind will be counted in efficiency
         :type include_grind: bool
         :return: rune's expected efficiency
@@ -199,7 +193,7 @@ class Rune:
         new_stat_upgrade_score = self._forecast_new_stat_upgrade_score()
 
         return Rune._compute_final_score(primary_score, innate_score, substats_roll_score, new_stat_upgrade_score, owned_stat_upgrade_score)
-    
+
     def _forecast_primary_score(self):
         """
         Predict partial efficiency score based on primary stat,
@@ -210,7 +204,6 @@ class Rune:
             return 1
         else:
             return 0.75  # around +12
-
 
     def _forecast_owned_stat_upgrade_score(self):
 
@@ -236,12 +229,12 @@ class Rune:
         count_bad = self._count_owned_bad_substats()
 
         return count_good / (count_good + count_bad)
-    
+
     def _count_owned_good_substats(self):
         """
         Count how many good substats that already owned by a rune
         """
-        
+
         available_sub = self._get_owned_substats_type()
         good_substat = DataMappingCollection.get_good_substats()
         owned_good = len([x for x in available_sub if x in good_substat])
@@ -259,7 +252,7 @@ class Rune:
 
         return owned_bad
 
-    def _get_owned_substats_type(self):        
+    def _get_owned_substats_type(self):
         """
         :return: owned substats (only the stat type)
         :rtype: list of str
@@ -273,7 +266,7 @@ class Rune:
         roll_to_good_probability = self._probability_new_roll(roll_chance)
 
         return roll_chance * roll_to_good_probability * Rune.SUBS_UPGRADE_AVG_EFF * 0.2
-    
+
     def _get_new_stat_roll_chance(self):
         """
         Count how many times NEW sub available 
@@ -322,7 +315,7 @@ class Rune:
 
         # Special condition of slot 1 (no def%) and 3 (no atk%)
         if self.slot == 1 or self.slot == 3:
-            additional_cutoff -= 1 
+            additional_cutoff -= 1
 
         # Special assumption that slot 2 4 6 has 'good' primary stat (percents)
         if self.slot % 2 == 0:
@@ -349,7 +342,7 @@ class Rune:
 
         # Special condition of slot 1 (no def+) and 3 (no atk+)
         if self.slot == 1 or self.slot == 3:
-            additional_cutoff -= 1 
+            additional_cutoff -= 1
 
         # Special assumption that slot 1 3 5 has 'bad' primary stat (flats)
         if self.slot % 2 != 0:
@@ -362,7 +355,7 @@ class Rune:
         owned_substats = self._get_owned_substats_type()
         if self.innate is not None:
             owned_substats += [self.innate]
-            
+
         return owned_substats
 
     @staticmethod
@@ -371,8 +364,7 @@ class Rune:
         Calculate of how many roll into 'good' stat  (hyper geometry dist mean (n * k/N)
         """
 
-        return avail_rolls * (available_good_substat / (available_good_substat + available_bad_substat))    
-
+        return avail_rolls * (available_good_substat / (available_good_substat + available_bad_substat))
 
     def get_owned_all_stats_type(self):
         """
@@ -383,4 +375,3 @@ class Rune:
         owned_stats += self._get_owned_substats_include_innate()
 
         return owned_stats
-

@@ -6,7 +6,6 @@ import os
 
 
 class RuneDeletePicker:
-
     def __init__(self):
 
         self.wizard_id = None
@@ -23,8 +22,9 @@ class RuneDeletePicker:
 
         except Exception as e:
             self.handle_error(e)
-            
-    def handle_error(self, error):
+
+    @staticmethod
+    def handle_error(error):
         print(error)
         os.system("pause")
 
@@ -32,7 +32,7 @@ class RuneDeletePicker:
 
         self.set_wizard_id()
         self.create_file_parser_and_set_variables()
- 
+
         self.parse_runes_and_monster_eff()
         self.format_parsed_runes()
         self.format_monster_eff()
@@ -40,8 +40,6 @@ class RuneDeletePicker:
         excel = self.result_to_excel()
         excel.open_file()
 
-
-    
     def set_wizard_id(self):
 
         wizard_id_getter = WizardIdGetter()
@@ -59,9 +57,6 @@ class RuneDeletePicker:
 
     def set_monster_list(self, file_parser):
         self.monster_list = file_parser.get_unit_list()
-        
-
-   
 
     def parse_runes_and_monster_eff(self):
         """
@@ -77,7 +72,7 @@ class RuneDeletePicker:
 
             self.parsed_rune_result += self.format_rune(current_rune)
 
-            # Can't calculate monster eff if the rune is not equiped on a monster
+            # Can't calculate monster eff if the rune is not equipped on a monster
             if current_rune.loc == "":
                 continue
 
@@ -91,8 +86,8 @@ class RuneDeletePicker:
 
             self.monster_eff_result.append((monster, avg_real_eff, avg_exp_eff))
 
-
-    def format_rune(self, current_rune):
+    @staticmethod
+    def format_rune(current_rune):
         """
         Reshape for printout
         """
@@ -100,25 +95,26 @@ class RuneDeletePicker:
         _separator_ = None
 
         rune_data = (current_rune.type,
-                    current_rune.slot,
-                    current_rune.grade,
-                    current_rune.base_grade,
-                    current_rune.stars,
-                    current_rune.level,
-                    current_rune.main,
-                    current_rune.innate,
-                    _separator_)
+                     current_rune.slot,
+                     current_rune.grade,
+                     current_rune.base_grade,
+                     current_rune.stars,
+                     current_rune.level,
+                     current_rune.main,
+                     current_rune.innate,
+                     _separator_)
         rune_data += current_rune.dense_substats
         rune_data += (_separator_,
-                    current_rune.efficiency,
-                    current_rune.exp_efficiency,
-                    current_rune.efficiency_without_grind,
-                    current_rune.exp_efficiency_without_grind,
-                    current_rune.loc)
+                      current_rune.efficiency,
+                      current_rune.exp_efficiency,
+                      current_rune.efficiency_without_grind,
+                      current_rune.exp_efficiency_without_grind,
+                      current_rune.loc)
 
         return [rune_data]
 
-    def increment_dict_value(self, dictionary, dict_key, dict_value):
+    @staticmethod
+    def increment_dict_value(dictionary, dict_key, dict_value):
 
         if dict_key in dictionary:
             dictionary[dict_key] += dict_value
@@ -138,7 +134,6 @@ class RuneDeletePicker:
 
         self.parsed_rune_result = parsed_runes_pd_sorted
 
-
     def format_monster_eff(self):
         """
         Convert monster eff data to pandas data frame
@@ -150,10 +145,8 @@ class RuneDeletePicker:
 
         self.monster_eff_result = monster_eff_sorted
 
-
-   
-
-    def get_pd_column_name(self, data_name):
+    @staticmethod
+    def get_pd_column_name(data_name):
         """
         :param data_name: type of data contained in the table
         :type data_name: str
@@ -175,16 +168,12 @@ class RuneDeletePicker:
 
     def result_to_excel(self):
 
-        excel = ExcelFile(filename='{} rune_eff.xlsx'.format(self.wizard_id), 
-                          dataframes=[self.parsed_rune_result, self.monster_eff_result], 
+        excel = ExcelFile(filename='{} rune_eff.xlsx'.format(self.wizard_id),
+                          dataframes=[self.parsed_rune_result, self.monster_eff_result],
                           sheets_name=['Rune', 'Monster eff'])
         return excel
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     app = RuneDeletePicker()
     app.start()
-    
-        
-
-

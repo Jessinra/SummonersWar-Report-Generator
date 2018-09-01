@@ -1,7 +1,7 @@
 from data_mapping import DataMappingCollection
 
-class Enhancement:
 
+class Enhancement:
     def __init__(self, enhancement):
 
         self.type_id = str(enhancement['craft_type_id'])
@@ -25,7 +25,7 @@ class Enhancement:
 
         if craft_type == 1 or craft_type == 3:
             self.type = "Enchant"
-            
+
         else:
             self.type = "Grind"
 
@@ -56,9 +56,9 @@ class Enhancement:
 
         self.min_value = DataMappingCollection.get_grindstone_value_min(self.stat, self.grade)
         self.max_value = DataMappingCollection.get_grindstone_value_max(self.stat, self.grade)
-    
+
     def set_enchantgem_values(self):
-        
+
         self.min_value = DataMappingCollection.get_enchantgem_value_min(self.stat, self.grade)
         self.max_value = DataMappingCollection.get_enchantgem_value_max(self.stat, self.grade)
 
@@ -69,6 +69,3 @@ class Enhancement:
 
     def __eq__(self, other):
         return self.type_id == other.type_id
-
-
-

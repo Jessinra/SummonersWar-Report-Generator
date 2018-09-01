@@ -1,7 +1,7 @@
 from data_mapping import DataMappingCollection
 
-class UnitParser:
 
+class UnitParser:
     def __init__(self):
 
         self._unit_dict = {}
@@ -10,7 +10,6 @@ class UnitParser:
     def parse_units(self, list_of_monster):
 
         for mons in list_of_monster:
-
             unit_id = UnitParser._get_monster_id(mons)
             unit_name = UnitParser._get_monster_name(mons)
 
@@ -35,7 +34,7 @@ class UnitParser:
             self._duplicate_unit_dict[unit_name] += 1
 
     def _set_unit_name_id_mapping(self, unit_name, unit_id):
-        
+
         if self._duplicate_unit_dict[unit_name] == 1:
             self._unit_dict[unit_id] = unit_name
         else:

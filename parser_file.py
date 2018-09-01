@@ -2,13 +2,12 @@ from parser_mons import UnitParser
 from parser_format import ExcelFormatter
 import json
 import os
-import sys
 import pandas.io.formats.excel
 
 pandas.io.formats.excel.header_style = None
 
-class WizardIdGetter:
 
+class WizardIdGetter:
     default_filename = "default_id.txt"
 
     def __init__(self):
@@ -26,18 +25,20 @@ class WizardIdGetter:
         except:
             self.wizard_id = self._ask_user_wizard_id()
 
-    def _read_cached_wizard_id(self):
+    @staticmethod
+    def _read_cached_wizard_id():
 
         filename = WizardIdGetter.default_filename
         first_line = open(filename, encoding="utf-8").readline()
         return first_line.strip()
 
-    def _ask_user_wizard_id(self, ):
+    @staticmethod
+    def _ask_user_wizard_id():
 
         display_text = "<Your wizard id will be stored in this folder>\n\nPlease input your id (example 101222 or visit-110200) : "
 
         wizard_id = input(display_text)
-        return wizard_id            
+        return wizard_id
 
     def _make_sure_wizard_id_valid(self):
 
@@ -48,11 +49,12 @@ class WizardIdGetter:
     def _is_wizard_id_valid(self):
 
         if self.wizard_id is None:
-            return False    # Not initialized
+            return False  # Not initialized
         else:
             return self.wizard_id.isdigit() or "visit-" in self.wizard_id
 
-    def _display_wizard_id_invalid(self):
+    @staticmethod
+    def _display_wizard_id_invalid():
 
         error_message = "Your current wizard id is invalid, please input a valid one\n"
         print(error_message)
@@ -63,13 +65,11 @@ class WizardIdGetter:
         with open(filename, "w") as f:
             f.write(self.wizard_id)
 
-
-    def get_wizard_id(self):   
+    def get_wizard_id(self):
         return self.wizard_id
-            
+
 
 class FileParser:
-
     def __init__(self, wizard_id):
 
         self.json_data = None
@@ -90,7 +90,7 @@ class FileParser:
         self._set_grind_enchant_list()
 
     def _set_json_data(self, filename):
-        
+
         self.json_data = json.load(open(filename, encoding="utf-8"))
 
     def _set_monster_list(self):
@@ -109,10 +109,10 @@ class FileParser:
             return self.json_data["friend"]["unit_list"]
 
     def _set_rune_list(self):
-        
+
         storage_runes = self._parse_runes_in_storage()
-        equiped_runes = self._parse_runes_equiped()
-        self.rune_list = storage_runes + equiped_runes
+        equipped_runes = self._parse_runes_equiped()
+        self.rune_list = storage_runes + equipped_runes
 
     def _parse_runes_in_storage(self):
 
@@ -136,7 +136,7 @@ class FileParser:
         if FileParser._is_monster_has_rune(monster):
             monster_runes = monster["runes"]
             return FileParser._get_runes_from_list_or_dict(monster_runes)
-        
+
         else:
             return []
 
@@ -191,9 +191,7 @@ class FileParser:
         return self.grind_enchant_list
 
 
-
 class ExcelFile:
-
     def __init__(self, filename, dataframes, sheets_name):
 
         self.filename = filename
@@ -211,7 +209,7 @@ class ExcelFile:
             success = self.try_to_construct_excel()
 
     def try_to_construct_excel(self):
-        
+
         successfully_constructed = False
 
         try:
@@ -242,18 +240,18 @@ class ExcelFile:
         """
         Convert dataframe to excel sheet
         """
-        
+
         dataframe.to_excel(self.writer, sheet_name=sheet_name)
-        worksheet = self.writer.sheets[sheet_name]  
+        worksheet = self.writer.sheets[sheet_name]
         ExcelFormatter(self.workbook, worksheet, format_type=sheet_name)
 
     def save(self):
         self.writer.save()
 
-    def handle_exception(self, exception):
+    @staticmethod
+    def handle_exception(exception):
         print(exception)
         os.system("pause")
 
     def open_file(self):
         os.startfile(self.filename)
-    

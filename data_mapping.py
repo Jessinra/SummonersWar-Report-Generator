@@ -1,6 +1,4 @@
-
 class DataMappingCollection:
-
     _monsters_name = {
 
         "101": "Fairy",
@@ -842,16 +840,16 @@ class DataMappingCollection:
                 "Legend": {"min": 4, "max": 5}},
 
         "ATK%": {"Unknown": {"min": 1, "max": 3},
-                    "Magic": {"min": 2, "max": 5},
-                    "Rare": {"min": 3, "max": 6},
-                    "Hero": {"min": 4, "max": 7},
-                    "Legend": {"min": 5, "max": 10}},
+                 "Magic": {"min": 2, "max": 5},
+                 "Rare": {"min": 3, "max": 6},
+                 "Hero": {"min": 4, "max": 7},
+                 "Legend": {"min": 5, "max": 10}},
 
         "ATK flat": {"Unknown": {"min": 4, "max": 8},
-                        "Magic": {"min": 6, "max": 12},
-                        "Rare": {"min": 10, "max": 18},
-                        "Hero": {"min": 12, "max": 22},
-                        "Legend": {"min": 18, "max": 30}},
+                     "Magic": {"min": 6, "max": 12},
+                     "Rare": {"min": 10, "max": 18},
+                     "Hero": {"min": 12, "max": 22},
+                     "Legend": {"min": 18, "max": 30}},
 
         "HP%": {"Unknown": {"min": 1, "max": 3},
                 "Magic": {"min": 2, "max": 5},
@@ -866,28 +864,28 @@ class DataMappingCollection:
                     "Legend": {"min": 430, "max": 550}},
 
         "DEF%": {"Unknown": {"min": 1, "max": 3},
-                    "Magic": {"min": 2, "max": 5},
-                    "Rare": {"min": 3, "max": 6},
-                    "Hero": {"min": 4, "max": 7},
-                    "Legend": {"min": 5, "max": 10}},
+                 "Magic": {"min": 2, "max": 5},
+                 "Rare": {"min": 3, "max": 6},
+                 "Hero": {"min": 4, "max": 7},
+                 "Legend": {"min": 5, "max": 10}},
 
         "DEF flat": {"Unknown": {"min": 4, "max": 8},
-                        "Magic": {"min": 6, "max": 12},
-                        "Rare": {"min": 10, "max": 18},
-                        "Hero": {"min": 12, "max": 22},
-                        "Legend": {"min": 18, "max": 30}},
+                     "Magic": {"min": 6, "max": 12},
+                     "Rare": {"min": 10, "max": 18},
+                     "Hero": {"min": 12, "max": 22},
+                     "Legend": {"min": 18, "max": 30}},
 
         "CRate": {"Unknown": {"min": 1, "max": 2},
-                    "Magic": {"min": 1, "max": 3},
-                    "Rare": {"min": 2, "max": 4},
-                    "Hero": {"min": 3, "max": 5},
-                    "Legend": {"min": 4, "max": 6}},
+                  "Magic": {"min": 1, "max": 3},
+                  "Rare": {"min": 2, "max": 4},
+                  "Hero": {"min": 3, "max": 5},
+                  "Legend": {"min": 4, "max": 6}},
 
         "CDmg": {"Unknown": {"min": 1, "max": 3},
-                    "Magic": {"min": 2, "max": 4},
-                    "Rare": {"min": 2, "max": 5},
-                    "Hero": {"min": 3, "max": 5},
-                    "Legend": {"min": 4, "max": 7}},
+                 "Magic": {"min": 2, "max": 4},
+                 "Rare": {"min": 2, "max": 5},
+                 "Hero": {"min": 3, "max": 5},
+                 "Legend": {"min": 4, "max": 7}},
 
         "RES": {"Unknown": {"min": 1, "max": 3},
                 "Magic": {"min": 2, "max": 4},
@@ -911,16 +909,16 @@ class DataMappingCollection:
                 "Legend": {"min": 7, "max": 10}},
 
         "ATK%": {"Unknown": {"min": 2, "max": 4},
-                    "Magic": {"min": 3, "max": 7},
-                    "Rare": {"min": 5, "max": 9},
-                    "Hero": {"min": 7, "max": 11},
-                    "Legend": {"min": 9, "max": 13}},
+                 "Magic": {"min": 3, "max": 7},
+                 "Rare": {"min": 5, "max": 9},
+                 "Hero": {"min": 7, "max": 11},
+                 "Legend": {"min": 9, "max": 13}},
 
         "ATK flat": {"Unknown": {"min": 8, "max": 12},
-                        "Magic": {"min": 10, "max": 16},
-                        "Rare": {"min": 15, "max": 23},
-                        "Hero": {"min": 20, "max": 30},
-                        "Legend": {"min": 28, "max": 40}},
+                     "Magic": {"min": 10, "max": 16},
+                     "Rare": {"min": 15, "max": 23},
+                     "Hero": {"min": 20, "max": 30},
+                     "Legend": {"min": 28, "max": 40}},
 
         "HP%": {"Unknown": {"min": 2, "max": 4},
                 "Magic": {"min": 3, "max": 7},
@@ -935,28 +933,28 @@ class DataMappingCollection:
                     "Legend": {"min": 400, "max": 580}},
 
         "DEF%": {"Unknown": {"min": 2, "max": 4},
-                    "Magic": {"min": 3, "max": 7},
-                    "Rare": {"min": 5, "max": 9},
-                    "Hero": {"min": 7, "max": 11},
-                    "Legend": {"min": 9, "max": 13}},
+                 "Magic": {"min": 3, "max": 7},
+                 "Rare": {"min": 5, "max": 9},
+                 "Hero": {"min": 7, "max": 11},
+                 "Legend": {"min": 9, "max": 13}},
 
         "DEF flat": {"Unknown": {"min": 8, "max": 12},
-                        "Magic": {"min": 10, "max": 16},
-                        "Rare": {"min": 15, "max": 23},
-                        "Hero": {"min": 20, "max": 30},
-                        "Legend": {"min": 28, "max": 40}},
+                     "Magic": {"min": 10, "max": 16},
+                     "Rare": {"min": 15, "max": 23},
+                     "Hero": {"min": 20, "max": 30},
+                     "Legend": {"min": 28, "max": 40}},
 
         "CRate": {"Unknown": {"min": 1, "max": 3},
-                    "Magic": {"min": 2, "max": 4},
-                    "Rare": {"min": 3, "max": 5},
-                    "Hero": {"min": 4, "max": 7},
-                    "Legend": {"min": 6, "max": 9}},
+                  "Magic": {"min": 2, "max": 4},
+                  "Rare": {"min": 3, "max": 5},
+                  "Hero": {"min": 4, "max": 7},
+                  "Legend": {"min": 6, "max": 9}},
 
         "CDmg": {"Unknown": {"min": 2, "max": 4},
-                    "Magic": {"min": 3, "max": 5},
-                    "Rare": {"min": 4, "max": 6},
-                    "Hero": {"min": 5, "max": 8},
-                    "Legend": {"min": 7, "max": 10}},
+                 "Magic": {"min": 3, "max": 5},
+                 "Rare": {"min": 4, "max": 6},
+                 "Hero": {"min": 5, "max": 8},
+                 "Legend": {"min": 7, "max": 10}},
 
         "RES": {"Unknown": {"min": 2, "max": 4},
                 "Magic": {"min": 3, "max": 6},
@@ -1024,7 +1022,7 @@ class DataMappingCollection:
     }
 
     _rune_class_shorten = {
-    
+
         0: 'U',  # unknown
         1: 'C',  # common
         2: 'M',  # magic
@@ -1049,11 +1047,11 @@ class DataMappingCollection:
     }
 
     _rune_sub_stat_max_value = {
-        
+
         # 99999999999 max value means that certain sub-stat is less significant,
         # efficiency of that sub should be set near zero at all time
 
-        "HP flat": 99999999999, 
+        "HP flat": 99999999999,
         "HP%": 40,
         "ATK flat": 99999999999,
         "ATK%": 40,
@@ -1068,7 +1066,7 @@ class DataMappingCollection:
 
     _rune_sub_stat_max_roll = {
 
-        "HP flat": 375, 
+        "HP flat": 375,
         "HP%": 8,
         "ATK flat": 20,
         "ATK%": 8,
@@ -1082,8 +1080,8 @@ class DataMappingCollection:
     }
 
     _rune_sub_stat_grindable = {
-        
-        "HP flat": True, 
+
+        "HP flat": True,
         "HP%": True,
         "ATK flat": True,
         "ATK%": True,
@@ -1097,16 +1095,16 @@ class DataMappingCollection:
     }
 
     _good_substat = ["HP%", "ATK%", "DEF%", "SPD", "CRate", "CDmg", "RES", "ACC"]
-    
+
     _bad_substat = ["HP flat", "ATK flat", "DEF flat"]
 
     @staticmethod
     def get_monster_name(monster_id):
-        
+
         monster_id = str(monster_id)
         is_awaken = DataMappingCollection._is_monster_awakened(monster_id)
         is_id_valid = DataMappingCollection._is_monster_id_valid(monster_id)
-        
+
         if is_awaken and is_id_valid:
             return DataMappingCollection._get_monster_awakened_name(monster_id)
 
@@ -1127,10 +1125,10 @@ class DataMappingCollection:
     @staticmethod
     def _get_monster_awakened_name(monster_id):
         return DataMappingCollection._monsters_name[monster_id]
-    
+
     @staticmethod
     def _get_monster_unawakened_name(monster_id):
-        
+
         family_id = monster_id[0:3]
         attribute_id = monster_id[4]
 
@@ -1195,7 +1193,7 @@ class DataMappingCollection:
     @staticmethod
     def get_rune_sub_stat_max_roll(stat):
         return DataMappingCollection._rune_sub_stat_max_roll[stat]
-        
+
     @staticmethod
     def is_substat_grindable(stat):
         return DataMappingCollection._rune_sub_stat_grindable[stat]

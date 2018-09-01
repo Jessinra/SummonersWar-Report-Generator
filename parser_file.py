@@ -97,7 +97,9 @@ class FileParser:
         self.monster_list = self._parse_monster_section()
 
     def _set_unit_list(self):
-        self.unit_list = UnitParser(self.monster_list)
+        unit_parser = UnitParser()
+        unit_parser.parse_units(self.monster_list)
+        self.unit_list = unit_parser.get_unit_dict()
 
     def _parse_monster_section(self):
 

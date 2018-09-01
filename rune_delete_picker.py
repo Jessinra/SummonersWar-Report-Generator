@@ -69,11 +69,16 @@ def parse_runes_and_monster_eff(rune_list):
         current_rune = Rune(rune)
         current_rune.set_loc(get_rune_user(monster_list, rune["occupied_id"]))
 
+        formatted_result = format_rune(current_rune)
+        parsed_runes.append(formatted_result)
+
+        if current_rune.loc == "":
+            continue
+            
         monster_eff = increment_dict_value(monster_eff, current_rune.loc, current_rune.efficiency)
         monster_exp_eff = increment_dict_value(monster_exp_eff, current_rune.loc, current_rune.exp_efficiency)
 
-        formatted_result = format_rune(current_rune)
-        parsed_runes.append(formatted_result)
+        
 
     # Average it
     monster_eff_avg = []
@@ -132,7 +137,7 @@ try:
 
         file_parser = FileParser(wizard_id)
         rune_list = file_parser.get_rune_list()
-        monster_list = file_parser.get_monster_list()
+        monster_list = file_parser.get_unit_list()
  
         parsed_runes, monster_eff_avg = parse_runes_and_monster_eff(rune_list)
 

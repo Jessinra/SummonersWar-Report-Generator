@@ -1,4 +1,4 @@
-from parser_file import WizardIdGetter, parse_file, ExcelFile
+from parser_file import WizardIdGetter, FileParser, ExcelFile
 from parser_enhancement import Enhancement
 from parser_rune import Rune, get_rune_user
 import os
@@ -436,9 +436,12 @@ try:
         wizard_id_getter = WizardIdGetter()
         wizard_id = wizard_id_getter.get_wizard_id()
         
-        rune_list, monster_list, enhancement_list = parse_file(wizard_id)
+        file_parser = FileParser(wizard_id)
+        rune_list = file_parser.get_rune_list()
+        monster_list = file_parser.get_monster_list()
+        grind_enchant_list = file_parser.get_grind_enchant_list()
 
-        enhancement_inventory = parse_enhancement(enhancement_list)
+        enhancement_inventory = parse_enhancement(grind_enchant_list)
         rune_inventory = parse_rune(rune_list, monster_list)
 
         grind_result, enchant_result = apply_enhancements(enhancement_inventory, rune_inventory)

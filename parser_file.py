@@ -15,16 +15,9 @@ class WizardIdGetter:
 
         self.wizard_id = None
 
-        while not self._is_wizard_id_valid():
-            self._display_wizard_id_invalid()
-            self._set_wizard_id()
-        
+        self._set_wizard_id()
+        self._make_sure_wizard_id_valid()
         self._store_new_wizard_id()
-
-    def _display_wizard_id_invalid(self):
-
-        error_message = "Your current wizard id is invalid, please input a valid one\n"
-        print(error_message)
 
     def _set_wizard_id(self):
 
@@ -44,13 +37,13 @@ class WizardIdGetter:
         display_text = "<Your wizard id will be stored in this folder>\n\nPlease input your id (example 101222 or visit-110200) : "
 
         wizard_id = input(display_text)
-        return wizard_id
+        return wizard_id            
 
-    def _store_new_wizard_id(self):
+    def _make_sure_wizard_id_valid(self):
 
-        filename = WizardIdGetter.default_filename
-        with open(filename, "w") as f:
-            f.write(self.wizard_id)
+        while not self._is_wizard_id_valid():
+            self._display_wizard_id_invalid()
+            self._set_wizard_id()
 
     def _is_wizard_id_valid(self):
 
@@ -59,101 +52,141 @@ class WizardIdGetter:
         else:
             return self.wizard_id.isdigit() or "visit-" in self.wizard_id
 
+    def _display_wizard_id_invalid(self):
+
+        error_message = "Your current wizard id is invalid, please input a valid one\n"
+        print(error_message)
+
+    def _store_new_wizard_id(self):
+
+        filename = WizardIdGetter.default_filename
+        with open(filename, "w") as f:
+            f.write(self.wizard_id)
+
+
     def get_wizard_id(self):   
         return self.wizard_id
             
 
-def parse_file(wizard_id):
-    """
-    Parse Json file into three separate json (rune, monster, enhancement)
-    :return: list of runes, list of monster, list of enhancement
-    :rtype: list, list, list
-    """
+class FileParser:
 
-    filename = "{}.json".format(wizard_id)
-    json_data = read_json(filename)
+    def __init__(self, wizard_id):
 
-    monsters = parse_monster_section(json_data)
-    monster_list = generate_monsters(monsters)
-    
-    storage_runes = parse_runes_in_storage(json_data)
-    equiped_runes = parse_runes_equiped(monsters)
-    rune_list = storage_runes + equiped_runes
+        self.json_data = None
+        self._raw_monster_list = None
+        self.monster_list = None
+        self.rune_list = None
+        self.grind_enchant_list = None
 
-    grind_enchant_list = parse_enhancement_section(json_data)
+        self._parse_file(wizard_id)
 
-    return rune_list, monster_list, grind_enchant_list
+    def _parse_file(self, wizard_id):
 
-def read_json(filename):
-    
-    try:
-        return json.load(open(filename, encoding="utf-8"))
-    except:
-        raise
+        filename = "{}.json".format(wizard_id)
+        self._set_json_data(filename)
+        self._set_raw_monster_list()
+        self._set_monster_list()
+        self._set_rune_list()
+        self._set_grind_enchant_list()
 
-def parse_monster_section(json_data):
+    def _set_json_data(self, filename):
+        
+        self.json_data = json.load(open(filename, encoding="utf-8"))
 
-    try:
-        return json_data["unit_list"]
-    except:
-        return json_data["friend"]["unit_list"]
+    def _set_raw_monster_list(self):
+        self._raw_monster_list = self._parse_monster_section()
 
-def parse_runes_in_storage(json_data):
+    def _set_monster_list(self):
+        self.monster_list = generate_monsters(self._raw_monster_list)
 
-    try:
-        return json_data["runes"]
-    except:
-        return []
+    def _parse_monster_section(self):
 
-def parse_runes_equiped(monsters):
+        try:
+            return self.json_data["unit_list"]
+        except:
+            return self.json_data["friend"]["unit_list"]
 
-    rune_list = []
+    def _set_rune_list(self):
+        
+        storage_runes = self._parse_runes_in_storage()
+        equiped_runes = self._parse_runes_equiped()
+        self.rune_list = storage_runes + equiped_runes
 
-    for monster in monsters:
-        if is_monster_has_rune(monster):
-            rune_list += get_runes_from_monster(monster)
+    def _parse_runes_in_storage(self):
 
-    return rune_list
+        try:
+            return self.json_data["runes"]
+        except:
+            return []
 
-def is_monster_has_rune(monster):
-    return len(monster["runes"]) > 0
+    def _parse_runes_equiped(self):
 
-def get_runes_from_monster(monster):
+        rune_list = []
 
-    monster_runes = monster["runes"]
+        for monster in self._raw_monster_list:
+            rune_list += FileParser._get_runes_from_monster(monster)
 
-    # Format : [{rune data}, {rune data}, {rune data}]
-    if isinstance(monster_runes, list):
-        return get_runes_from_list(monster_runes)
+        return rune_list
 
-    # Format : {"XX": {rune data}, "XX": {rune data}, "XX": {rune data}}
-    elif isinstance(monster_runes, dict):
-        return get_runes_from_dict(monster_runes)
+    @staticmethod
+    def _get_runes_from_monster(monster):
 
-    else:
-        return []
+        if FileParser._is_monster_has_rune(monster):
+            monster_runes = monster["runes"]
+            return FileParser._get_runes_from_list_or_dict(monster_runes)
+        
+        else:
+            return []
 
-def get_runes_from_list(monster_runes):
+    @staticmethod
+    def _is_monster_has_rune(monster):
+        return len(monster["runes"]) > 0
 
-    rune_list = []
-    for rune in monster_runes:
-        rune_list.append(rune)
-    return rune_list
+    @staticmethod
+    def _get_runes_from_list_or_dict(monster_runes):
 
-def get_runes_from_dict(monster_runes):
+        # Format : [{rune data}, {rune data}, {rune data}]
+        if isinstance(monster_runes, list):
+            return FileParser._get_runes_from_list(monster_runes)
 
-    rune_list = []
-    for key in monster_runes:
-        rune_list.append(monster_runes[key])
-    return rune_list
+        # Format : {"XX": {rune data}, "XX": {rune data}, "XX": {rune data}}
+        elif isinstance(monster_runes, dict):
+            return FileParser._get_runes_from_dict(monster_runes)
 
-def parse_enhancement_section(json_data):
+        else:
+            return []
 
-    try:
-        return json_data["rune_craft_item_list"]
-    except:
-        return []
+    @staticmethod
+    def _get_runes_from_list(monster_runes):
 
+        rune_list = []
+        for rune in monster_runes:
+            rune_list.append(rune)
+        return rune_list
+
+    @staticmethod
+    def _get_runes_from_dict(monster_runes):
+
+        rune_list = []
+        for key in monster_runes:
+            rune_list.append(monster_runes[key])
+        return rune_list
+
+    def _set_grind_enchant_list(self):
+
+        try:
+            self.grind_enchant_list = self.json_data["rune_craft_item_list"]
+        except:
+            self.grind_enchant_list = []
+
+    def get_rune_list(self):
+        return self.rune_list
+
+    def get_monster_list(self):
+        return self.monster_list
+
+    def get_grind_enchant_list(self):
+        return self.grind_enchant_list
 
 
 

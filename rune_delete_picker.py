@@ -1,5 +1,5 @@
 from parser_rune import Rune, get_rune_user
-from parser_file import WizardIdGetter, parse_file, ExcelFile
+from parser_file import WizardIdGetter, FileParser, ExcelFile
 from parser_mons import store_monster_eff
 import pandas as pd
 import os
@@ -122,9 +122,11 @@ try:
         
         wizard_id_getter = WizardIdGetter()
         wizard_id = wizard_id_getter.get_wizard_id()
-        
-        rune_list, monster_list, grind_enchant_list = parse_file(wizard_id)
 
+        file_parser = FileParser(wizard_id)
+        rune_list = file_parser.get_rune_list()
+        monster_list = file_parser.get_monster_list()
+ 
         parsed_runes, monster_eff_avg = parse_runes_and_monster_eff(rune_list)
 
         formatted_parsed_runes = format_parsed_runes(parsed_runes)

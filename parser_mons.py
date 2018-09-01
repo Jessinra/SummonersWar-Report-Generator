@@ -1,46 +1,45 @@
 from data_mapping import DataMappingCollection
 
+class UnitParser:
 
-def generate_monsters(list_of_unit):
-    """
-    convert list of unit to monsters list
-    :param list_of_unit: list of raw unit data
-    :type list_of_unit: list
-    :return: monster list
-    :rtype: list
-    """
+    def __init__(self, list_of_monster):
 
-    monster_list = {}
-    count_duplicate = {}
-    for unit in list_of_unit:
-        unit_id = unit['unit_id']
-        unit_name = get_monster_name(unit['unit_master_id'])
+        self.unit_dict = {}
+        self.duplicate_unit_dict = {}
+        self.parse_units(list_of_monster)
 
-        if unit_name not in count_duplicate:
-            monster_list[unit_id] = unit_name
+    def parse_units(self, list_of_monster):
+
+        for mons in list_of_monster:
+
+            unit_id = UnitParser.get_monster_id(mons)
+            unit_name = UnitParser.get_monster_name(mons)
+
+            self.track_unit_duplicates(unit_name)
+            self.set_unit_name_id_mapping(unit_name, unit_id)
+
+    @staticmethod
+    def get_monster_id(monster):
+        return monster['unit_id']
+
+    @staticmethod
+    def get_monster_name(monster):
+
+        monster_id = monster['unit_master_id']
+        return DataMappingCollection.get_monster_name(monster_id)
+
+    def track_unit_duplicates(self, unit_name):
+
+        if unit_name not in self.duplicate_unit_dict:
+            self.duplicate_unit_dict[unit_name] = 1
         else:
-            monster_list[unit_id] = unit_name + " " + str(count_duplicate[unit_name] + 1)
+            self.duplicate_unit_dict[unit_name] += 1
 
-        count_duplicate[unit_name] = 1
-
-    return monster_list
-
-def get_monster_name(monster_id):
-    return DataMappingCollection.get_monster_name(monster_id)
-
-def store_monster_eff(monsters_eff, monster_id, rune_eff):
-    """
-    Update monster efficiency dictionary
-    :param monsters_eff: dictionary to keep monsters efficiencies
-    :type monsters_eff: dict
-    :param monster_id: id representing monster
-    :type monster_id: string
-    :param rune_eff: rune's efficiency
-    :type rune_eff: float
-    """
-
-    if len(monster_id) > 2:
-        if monster_id in monsters_eff:
-            monsters_eff[monster_id] += rune_eff
+    def set_unit_name_id_mapping(self, unit_name, unit_id):
+        
+        if self.duplicate_unit_dict[unit_name] == 1:
+            self.unit_dict[unit_id] = unit_name
         else:
-            monsters_eff[monster_id] = rune_eff
+            self.unit_dict[unit_id] = unit_name + " " + str(self.duplicate_unit_dict[unit_name])
+
+

@@ -1,4 +1,4 @@
-from parser_mons import generate_monsters
+from parser_mons import UnitParser
 from parser_format import ExcelFormatter
 import json
 import os
@@ -73,8 +73,8 @@ class FileParser:
     def __init__(self, wizard_id):
 
         self.json_data = None
-        self._raw_monster_list = None
         self.monster_list = None
+        self.unit_list = None
         self.rune_list = None
         self.grind_enchant_list = None
 
@@ -84,8 +84,8 @@ class FileParser:
 
         filename = "{}.json".format(wizard_id)
         self._set_json_data(filename)
-        self._set_raw_monster_list()
         self._set_monster_list()
+        self._set_unit_list()
         self._set_rune_list()
         self._set_grind_enchant_list()
 
@@ -93,11 +93,11 @@ class FileParser:
         
         self.json_data = json.load(open(filename, encoding="utf-8"))
 
-    def _set_raw_monster_list(self):
-        self._raw_monster_list = self._parse_monster_section()
-
     def _set_monster_list(self):
-        self.monster_list = generate_monsters(self._raw_monster_list)
+        self.monster_list = self._parse_monster_section()
+
+    def _set_unit_list(self):
+        self.unit_list = UnitParser(self.monster_list)
 
     def _parse_monster_section(self):
 
@@ -123,7 +123,7 @@ class FileParser:
 
         rune_list = []
 
-        for monster in self._raw_monster_list:
+        for monster in self.monster_list:
             rune_list += FileParser._get_runes_from_monster(monster)
 
         return rune_list
@@ -182,8 +182,8 @@ class FileParser:
     def get_rune_list(self):
         return self.rune_list
 
-    def get_monster_list(self):
-        return self.monster_list
+    def get_unit_list(self):
+        return self.unit_list
 
     def get_grind_enchant_list(self):
         return self.grind_enchant_list

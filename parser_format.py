@@ -18,7 +18,7 @@ class ExcelFormatter:
         elif format_type == "Monster eff":
             self._apply_monster_eff_format()
 
-        elif format_type == "Grinds":
+        elif format_type == "Grinds": 
             self._apply_grind_format()
 
         elif format_type == "Enchant":

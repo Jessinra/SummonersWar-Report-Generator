@@ -53,10 +53,13 @@ class ApplyGrind:
         self.format_grind_result()
         self.format_enchant_result()
 
-        excel = self.create_excel()
+        excel = self.result_to_excel()
         excel.open_file()
 
-    
+    def set_wizard_id(self):
+
+        wizard_id_getter = WizardIdGetter()
+        self.wizard_id = wizard_id_getter.get_wizard_id()
 
     def create_file_parser_and_set_variables(self):
 
@@ -75,10 +78,7 @@ class ApplyGrind:
     def set_grind_enchant_list(self, file_parser):
         self.grind_enchant_list = file_parser.get_grind_enchant_list()
 
-    def set_wizard_id(self):
 
-        wizard_id_getter = WizardIdGetter()
-        self.wizard_id = wizard_id_getter.get_wizard_id()
 
     def construct_enhancement_inventory(self):
         """
@@ -459,7 +459,7 @@ class ApplyGrind:
 
         return columns_name
 
-    def create_excel(self):
+    def result_to_excel(self):
 
         excel = ExcelFile(filename='{} applying_grinds.xlsx'.format(self.wizard_id), 
                         dataframes=[self.grind_result, self.enchant_result], 

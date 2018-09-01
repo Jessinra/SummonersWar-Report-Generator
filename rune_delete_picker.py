@@ -7,8 +7,17 @@ import os
 
 class RuneDeletePicker:
 
-    def start(self):
+    def __init__(self):
 
+        self.wizard_id = None
+        self.rune_list = []
+        self.monster_list = []
+        self.grind_enchant_list = []
+
+        self.parsed_rune_result = []
+        self.monster_eff_result = []
+
+    def start(self):
         try:
             self.run_main_function()
 
@@ -21,61 +30,67 @@ class RuneDeletePicker:
 
     def run_main_function(self):
 
-        wizard_id_getter = WizardIdGetter()
-        wizard_id = wizard_id_getter.get_wizard_id()
-
-        file_parser = FileParser(wizard_id)
-        rune_list = file_parser.get_rune_list()
-        monster_list = file_parser.get_unit_list()
+        self.set_wizard_id()
+        self.create_file_parser_and_set_variables()
  
-        parsed_runes, monster_eff_avg = self.parse_runes_and_monster_eff(rune_list, monster_list)
+        self.parse_runes_and_monster_eff()
+        self.format_parsed_runes()
+        self.format_monster_eff()
 
-        formatted_parsed_runes = self.format_parsed_runes(parsed_runes)
-        formatted_monster_eff = self.format_monster_eff(monster_eff_avg)
-
-        excel = ExcelFile(filename='{} rune_eff.xlsx'.format(wizard_id), 
-                          dataframes=[formatted_parsed_runes, formatted_monster_eff], 
-                          sheets_name=['Rune', 'Monster eff'])
-                          
+        excel = self.result_to_excel()
         excel.open_file()
 
-    def parse_runes_and_monster_eff(self, rune_list, monster_list):
+
+    
+    def set_wizard_id(self):
+
+        wizard_id_getter = WizardIdGetter()
+        self.wizard_id = wizard_id_getter.get_wizard_id()
+
+    def create_file_parser_and_set_variables(self):
+
+        file_parser = FileParser(self.wizard_id)
+
+        self.set_rune_list(file_parser)
+        self.set_monster_list(file_parser)
+
+    def set_rune_list(self, file_parser):
+        self.rune_list = file_parser.get_rune_list()
+
+    def set_monster_list(self, file_parser):
+        self.monster_list = file_parser.get_unit_list()
+        
+
+   
+
+    def parse_runes_and_monster_eff(self):
         """
         Parse runes and calculate monster efficiency
-        :param rune_list: list of raw rune data
-        :type rune_list: list
-        :return: parsed runes, monster efficiency
-        :rtype: (list, list)
         """
 
-        parsed_runes = []
         monster_eff = {}
         monster_exp_eff = {}
 
-        for rune in rune_list:
+        for rune in self.rune_list:
             current_rune = Rune(rune)
-            current_rune.set_loc(RuneParser.get_rune_user(monster_list, rune["occupied_id"]))
+            current_rune.set_loc(RuneParser.get_rune_user(self.monster_list, rune["occupied_id"]))
 
-            formatted_result = self.format_rune(current_rune)
-            parsed_runes.append(formatted_result)
+            self.parsed_rune_result += self.format_rune(current_rune)
 
+            # Can't calculate monster eff if the rune is not equiped on a monster
             if current_rune.loc == "":
                 continue
 
             monster_eff = self.increment_dict_value(monster_eff, current_rune.loc, current_rune.efficiency)
             monster_exp_eff = self.increment_dict_value(monster_exp_eff, current_rune.loc, current_rune.exp_efficiency)
 
-
         # Average it
-        monster_eff_avg = []
-
         for monster in monster_eff:
             avg_real_eff = monster_eff[monster] / 6
             avg_exp_eff = monster_exp_eff[monster] / 6
 
-            monster_eff_avg.append((monster, avg_real_eff, avg_exp_eff))
+            self.monster_eff_result.append((monster, avg_real_eff, avg_exp_eff))
 
-        return parsed_runes, monster_eff_avg
 
     def format_rune(self, current_rune):
         """
@@ -101,7 +116,7 @@ class RuneDeletePicker:
                     current_rune.exp_efficiency_without_grind,
                     current_rune.loc)
 
-        return rune_data
+        return [rune_data]
 
     def increment_dict_value(self, dictionary, dict_key, dict_value):
 
@@ -112,32 +127,28 @@ class RuneDeletePicker:
 
         return dictionary
 
-    def format_parsed_runes(self, parsed_runes):
+    def format_parsed_runes(self):
         """
-        :return: formatted parsed runes
-        :rtype: pandas.DataFrame
+        Convert rune data to pandas data frame
         """
 
-        # Convert rune data to pandas data frame
         columns_name = self.get_pd_column_name("Rune")
-        parsed_runes_pd = pd.DataFrame(parsed_runes, columns=columns_name)
+        parsed_runes_pd = pd.DataFrame(self.parsed_rune_result, columns=columns_name)
         parsed_runes_pd_sorted = parsed_runes_pd.sort_values(by=['Exp eff'])
 
-        return parsed_runes_pd_sorted
+        self.parsed_rune_result = parsed_runes_pd_sorted
 
 
-    def format_monster_eff(self, monster_eff_avg):
+    def format_monster_eff(self):
         """
-        :return: formatted monsters efficiency
-        :rtype: pandas.DataFrame
+        Convert monster eff data to pandas data frame
         """
 
-        # Convert monster eff data to pandas data frame
         columns_name = self.get_pd_column_name("Monster eff")
-        monster_eff_pd = pd.DataFrame(monster_eff_avg, columns=columns_name)
+        monster_eff_pd = pd.DataFrame(self.monster_eff_result, columns=columns_name)
         monster_eff_sorted = monster_eff_pd.sort_values(by=['avg real eff'], ascending=False)
 
-        return monster_eff_sorted
+        self.monster_eff_result = monster_eff_sorted
 
 
    
@@ -162,6 +173,12 @@ class RuneDeletePicker:
 
         return columns_name
 
+    def result_to_excel(self):
+
+        excel = ExcelFile(filename='{} rune_eff.xlsx'.format(self.wizard_id), 
+                          dataframes=[self.parsed_rune_result, self.monster_eff_result], 
+                          sheets_name=['Rune', 'Monster eff'])
+        return excel
 
 if __name__ == '__main__':
 

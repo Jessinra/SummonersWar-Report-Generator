@@ -135,6 +135,7 @@ try:
         excel = ExcelFile(filename='{} rune_eff.xlsx'.format(wizard_id), 
                           dataframes=[formatted_parsed_runes, formatted_monster_eff], 
                           sheets_name=['Rune', 'Monster eff'])
+                          
         excel.open_file()
 
 

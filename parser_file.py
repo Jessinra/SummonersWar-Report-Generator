@@ -1,5 +1,5 @@
 from parser_mons import generate_monsters
-from parser_format import excel_formatting
+from parser_format import ExcelFormatter
 import json
 import os
 import sys
@@ -209,19 +209,18 @@ class ExcelFile:
             success = self.try_to_construct_excel()
 
     def try_to_construct_excel(self):
+        
+        successfully_constructed = False
 
         try:
             self.set_writer()
             self.set_workbook()
             self.dataframes_to_sheet()
             self.save()
-
             successfully_constructed = True
 
         except Exception as e:
             self.handle_exception(e)
-
-            successfully_constructed = False
 
         finally:
             return successfully_constructed
@@ -234,10 +233,17 @@ class ExcelFile:
 
     def dataframes_to_sheet(self):
         for i in range(0, len(self.dataframes)):
-            dataframe_to_sheet(dataframe=self.dataframes[i],
-                               sheet_name=self.sheet_names[i], 
-                               writer=self.writer, 
-                               workbook=self.workbook)
+            self.dataframe_to_sheet(dataframe=self.dataframes[i],
+                                    sheet_name=self.sheet_names[i])
+
+    def dataframe_to_sheet(self, dataframe, sheet_name):
+        """
+        Convert dataframe to excel sheet
+        """
+        
+        dataframe.to_excel(self.writer, sheet_name=sheet_name)
+        worksheet = self.writer.sheets[sheet_name]  
+        ExcelFormatter(self.workbook, worksheet, format_type=sheet_name)
 
     def save(self):
         self.writer.save()
@@ -249,11 +255,3 @@ class ExcelFile:
     def open_file(self):
         os.startfile(self.filename)
     
-def dataframe_to_sheet(dataframe, sheet_name, writer, workbook):
-    """
-    Convert dataframe to excel sheet
-    """
-
-    dataframe.to_excel(writer, sheet_name=sheet_name)
-    worksheet = writer.sheets[sheet_name]
-    excel_formatting(workbook, worksheet, cond=sheet_name)

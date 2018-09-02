@@ -814,6 +814,7 @@ class DataMappingCollection:
         "15105": "Devilmon",
         "14314": "Rainbowmon",
 
+        "100": "Homunculus",
         "1000111": "Homunculus - Attack (Water)",
         "1000112": "Homunculus - Attack (Fire)",
         "1000113": "Homunculus - Attack (Wind)",
@@ -1116,7 +1117,7 @@ class DataMappingCollection:
 
     @staticmethod
     def _is_monster_awakened(monster_id):
-        return monster_id[3] == "1"
+        return monster_id[-2] == "1"
 
     @staticmethod
     def _is_monster_id_valid(monster_id):

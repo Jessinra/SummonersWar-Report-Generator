@@ -354,7 +354,7 @@ class Rune:
 
         owned_substats = self._get_owned_substats_type()
         if self.innate is not None:
-            owned_substats += [self.innate]
+            owned_substats += [self.innate[0]]
 
         return owned_substats
 

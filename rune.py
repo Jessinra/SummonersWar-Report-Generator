@@ -200,8 +200,9 @@ class Rune:
         assumption: normally rune upgraded to +12 at least
         """
 
-        if self.level > 12:
+        if self.level >= 12 :
             return 1
+
         else:
             return 0.75  # around +12
 

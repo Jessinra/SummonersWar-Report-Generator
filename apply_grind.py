@@ -193,7 +193,7 @@ class ApplyGrind:
         runes.sort(key=operator.attrgetter('efficiency_without_grind'), reverse=True)
 
     @staticmethod
-    def grind_applicable(grindstone, rune, eff_threshold=0.75):
+    def grind_applicable(grindstone, rune, eff_threshold=0.73):
         """
         Check whether a grind can be used and passed certain constraints
         :param grindstone: which grindstone to be used
@@ -233,10 +233,14 @@ class ApplyGrind:
 
         else:
 
-            if grindstone.grade == "Hero" or grindstone.grade == "Legend":
+            if grindstone.grade == "Legend":
+                return substat_to_be_grinded < grindstone.max_value - 3  # 4 Point gap
+
+            elif grindstone.grade == "Hero":
                 return substat_to_be_grinded < grindstone.max_value - 2  # 3 Point gap
+
             else:
-                return substat_to_be_grinded < grindstone.max_value - 1  # 2 Point gap
+                return substat_to_be_grinded < grindstone.max_value - 1 # 2 Point gap
 
     @staticmethod
     def format_applying_grind(grindstone, rune):

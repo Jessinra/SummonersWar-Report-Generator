@@ -221,7 +221,7 @@ class ApplyGrind:
             if grindstone.grade == "Hero" or grindstone.grade == "Legend":
                 return substat_to_be_grinded <= grindstone.max_value - 2  # 2 Point gap
             else:
-                return substat_to_be_grinded <= grindstone.max_value - 1 # 1 Point gap
+                return substat_to_be_grinded <= grindstone.max_value - 1  # 1 Point gap
 
         elif "flat" in grindstone.stat:
             return substat_to_be_grinded < grindstone.max_value * 0.85
@@ -234,7 +234,7 @@ class ApplyGrind:
                 return substat_to_be_grinded <= grindstone.max_value - 3  # 3 Point gap
 
             else:
-                return substat_to_be_grinded <= grindstone.max_value - 2 # 2 Point gap
+                return substat_to_be_grinded <= grindstone.max_value - 2  # 2 Point gap
 
     @staticmethod
     def format_applying_grind(grindstone, rune):

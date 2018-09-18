@@ -6,7 +6,7 @@ class RuneParser:
     def get_rune_user(unit_list, rune_owner_id):
 
         if rune_owner_id == 0:
-            return "" # Inventory
+            return ""  # Inventory
         else:
             return unit_list[rune_owner_id]
 

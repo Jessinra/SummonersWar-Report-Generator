@@ -4,8 +4,8 @@ from rune import Rune
 import pandas as pd
 import os
 
-class RuneDeletePicker:
 
+class RuneDeletePicker:
     def __init__(self):
 
         self.wizard_id = None
@@ -178,6 +178,5 @@ class RuneDeletePicker:
 
 
 if __name__ == '__main__':
-
     app = RuneDeletePicker()
     app.start()

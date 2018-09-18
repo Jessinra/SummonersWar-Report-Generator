@@ -61,7 +61,7 @@ class Rune:
             self.substats_without_grind.append(substat)
 
     def _set_dense_substats(self):
-        
+
         self.dense_substats = RuneParser.substats_to_dense_form(self.substats)
 
     def _set_grind_values(self, substats):
@@ -197,7 +197,7 @@ class Rune:
         assumption: normally rune upgraded to +12 at least
         """
 
-        if self.level >= 12 :
+        if self.level >= 12:
             return 1
         else:
             return 0.75  # around +12
@@ -369,7 +369,7 @@ class Rune:
         return owned_stats
 
     def set_loc(self, rune_user):
-        
+
         self.loc = rune_user
 
     def get_rune_set(self):
@@ -378,5 +378,5 @@ class Rune:
         return self.rune_set
 
     def is_equiped(self):
-        
+
         return self.loc != "" and self.loc is not None

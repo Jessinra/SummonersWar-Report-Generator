@@ -8,13 +8,12 @@ class Rune:
 
     def __init__(self, rune):
 
-        # Default initialization
         self.slot = rune['slot_no']
         self.stars = rune['class']
-        self.grade = RuneParser.get_rune_grade(rune['rank'])
-        self.base_grade = RuneParser.get_rune_grade(rune['extra'])
-        self.type = RuneParser.get_rune_set(rune['set_id'])
         self.level = rune['upgrade_curr']
+        self.grade = RuneParser.get_rune_grade_shorten(rune['rank'])
+        self.base_grade = RuneParser.get_rune_grade_shorten(rune['extra'])
+        self.rune_set = RuneParser.get_rune_set(rune['set_id'])
         self.main = RuneParser.get_rune_stat(rune['pri_eff'])
 
         self.loc = None
@@ -39,9 +38,6 @@ class Rune:
         self._set_rune_efficiencies()
         self._set_rune_expected_efficiency()
 
-    def set_loc(self, rune_user):
-        self.loc = rune_user
-
     def _set_innate_if_available(self, innate):
 
         self.innate = RuneParser.get_rune_stat(innate)
@@ -65,6 +61,7 @@ class Rune:
             self.substats_without_grind.append(substat)
 
     def _set_dense_substats(self):
+        
         self.dense_substats = RuneParser.substats_to_dense_form(self.substats)
 
     def _set_grind_values(self, substats):
@@ -202,7 +199,6 @@ class Rune:
 
         if self.level >= 12 :
             return 1
-
         else:
             return 0.75  # around +12
 
@@ -219,6 +215,7 @@ class Rune:
         """
 
         available_upgrade_chance = 4 - min(self.level // 3, 4)
+
         return available_upgrade_chance - self._get_new_stat_roll_chance()
 
     def _probability_owned_stat(self):
@@ -239,7 +236,6 @@ class Rune:
         available_sub = self._get_owned_substats_type()
         good_substat = DataMappingCollection.get_good_substats()
         owned_good = len([x for x in available_sub if x in good_substat])
-
         return owned_good
 
     def _count_owned_bad_substats(self):
@@ -250,7 +246,6 @@ class Rune:
         available_sub = self._get_owned_substats_type()
         bad_substat = DataMappingCollection.get_bad_substats()
         owned_bad = len([x for x in available_sub if x in bad_substat])
-
         return owned_bad
 
     def _get_owned_substats_type(self):
@@ -286,7 +281,6 @@ class Rune:
         # Count number of good and bad stats
         expected_roll_into_good = self.calculate_expectation_into_good_roll(available_rolls)
         prob_getting_good = expected_roll_into_good / available_rolls
-
         return prob_getting_good
 
     def calculate_expectation_into_good_roll(self, available_rolls):
@@ -307,7 +301,6 @@ class Rune:
         good_substat = DataMappingCollection.get_good_substats()
         available_good = len([x for x in good_substat if x not in owned_substats])
         available_good += self._additional_good_point_reduction()
-
         return available_good
 
     def _additional_good_point_reduction(self):
@@ -334,7 +327,6 @@ class Rune:
         bad_substat = DataMappingCollection.get_bad_substats()
         available_bad = len([x for x in bad_substat if x not in owned_substats])
         available_bad += self._additional_bad_point_reduction()
-
         return available_bad
 
     def _additional_bad_point_reduction(self):
@@ -374,5 +366,17 @@ class Rune:
 
         owned_stats = [self.main[0]]
         owned_stats += self._get_owned_substats_include_innate()
-
         return owned_stats
+
+    def set_loc(self, rune_user):
+        
+        self.loc = rune_user
+
+    def get_rune_set(self):
+        """ getter used as 'polymorphsm' with enhancement object """
+
+        return self.rune_set
+
+    def is_equiped(self):
+        
+        return self.loc != "" and self.loc is not None

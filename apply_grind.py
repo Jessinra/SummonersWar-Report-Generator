@@ -1,8 +1,8 @@
 from parser_file import WizardIdGetter, FileParser, ExcelFile
-from parser_enhancement import Enhancement
 from parser_rune import RuneParser
 from data_mapping import DataMappingCollection
 from rune import Rune
+from enhancement import EnhancementFactory
 import os
 import operator
 import pandas as pd
@@ -14,22 +14,17 @@ class ApplyGrind:
         self.wizard_id = None
         self.rune_list = []
         self.monster_list = []
-        self.grind_enchant_list = []
-        self.enhancement_inventory = {}
+        self.enhancement_list = []
+
+        self.enchant_gem_inventory = {}
+        self.grind_stone_inventory = {}
         self.rune_inventory = {}
 
         self.grind_result = []
         self.enchant_result = []
 
-        self.initialize_enhancement_inventory()
-
-    def initialize_enhancement_inventory(self):
-        self.enhancement_inventory = {
-            "Grind": {},
-            "Enchant": {}
-        }
-
     def start(self):
+
         try:
             self.run_main_function()
 
@@ -38,6 +33,7 @@ class ApplyGrind:
 
     @staticmethod
     def handle_error(error):
+
         print(error)
         os.system("pause")
 
@@ -70,36 +66,33 @@ class ApplyGrind:
         self.set_grind_enchant_list(file_parser)
 
     def set_rune_list(self, file_parser):
+
         self.rune_list = file_parser.get_rune_list()
 
     def set_monster_list(self, file_parser):
+
         self.monster_list = file_parser.get_unit_list()
 
     def set_grind_enchant_list(self, file_parser):
-        self.grind_enchant_list = file_parser.get_grind_enchant_list()
+
+        self.enhancement_list = file_parser.get_grind_enchant_list()
 
     def construct_enhancement_inventory(self):
         """
         Parse grind and enchant and sort by rune set
         """
 
-        inventory = self.enhancement_inventory
-        for enhancement in self.grind_enchant_list:
-            current_e = Enhancement(enhancement)
-            inventory = self.group_enhancement_by_set(current_e, inventory)
+        for enhancement in self.enhancement_list:
+            current_e = EnhancementFactory.create(enhancement)
+            self._add_into_inventory(current_e)
 
-    @staticmethod
-    def group_enhancement_by_set(enhancement, inventory):
-        """
-        Group each enhancement according to it's set
-        """
+    def _add_into_inventory(self, enhancement):
 
-        if enhancement.set in inventory[enhancement.type]:
-            inventory[enhancement.type][enhancement.set].append(enhancement)
-        else:
-            inventory[enhancement.type][enhancement.set] = [enhancement]
+        if enhancement.type == "Grind":
+            self.grind_stone_inventory = self.group_item_by_set(enhancement, self.grind_stone_inventory)
 
-        return inventory
+        elif enhancement.type == "Enchant":
+            self.enchant_gem_inventory = self.group_item_by_set(enhancement, self.enchant_gem_inventory)
 
     def construct_rune_inventory(self):
         """
@@ -111,18 +104,20 @@ class ApplyGrind:
             current_rune = Rune(rune)
             rune_user = RuneParser.get_rune_user(self.monster_list, rune["occupied_id"])
             current_rune.set_loc(rune_user)
-            self.group_rune_by_set(current_rune, inventory)
+            inventory = self.group_item_by_set(current_rune, inventory)
 
     @staticmethod
-    def group_rune_by_set(current_rune, inventory):
+    def group_item_by_set(item, inventory):
         """
-        Group each RUNE according to it's set
+        Group each enhancement/ rune according to it's set
         """
 
-        if current_rune.type in inventory:
-            inventory[current_rune.type].append(current_rune)
+        rune_set = item.get_rune_set()
+
+        if rune_set in inventory:
+            inventory[rune_set].append(item)
         else:
-            inventory[current_rune.type] = [current_rune]
+            inventory[rune_set] = [item]
 
         return inventory
 
@@ -131,8 +126,8 @@ class ApplyGrind:
         Try to apply all grind and enchant stone for all rune
         """
 
-        grindstone_inventory = self.enhancement_inventory["Grind"]
-        enchant_inventory = self.enhancement_inventory["Enchant"]
+        grindstone_inventory = self.grind_stone_inventory
+        enchant_inventory = self.enchant_gem_inventory
         rune_inventory = self.rune_inventory
 
         for rune_set in self.rune_inventory:
@@ -178,7 +173,7 @@ class ApplyGrind:
                     # Continue to next grindstone
                     break
 
-            # If this kind of rune is unusable, skip those which has same stats, and is same or even lower grade
+            # If this kind of rune is unusable, skip those which has same stats, same or even lower grade
             if not is_applicable:
                 is_checked_and_failed_table[grindstone.stat] = True
 
@@ -224,23 +219,22 @@ class ApplyGrind:
         elif grindstone.stat == "SPD":
 
             if grindstone.grade == "Hero" or grindstone.grade == "Legend":
-                return substat_to_be_grinded < grindstone.max_value - 1  # 2 Point gap
+                return substat_to_be_grinded <= grindstone.max_value - 2  # 2 Point gap
             else:
-                return substat_to_be_grinded < grindstone.max_value  # 1 Point gap
+                return substat_to_be_grinded <= grindstone.max_value - 1 # 1 Point gap
 
         elif "flat" in grindstone.stat:
             return substat_to_be_grinded < grindstone.max_value * 0.85
 
         else:
-
             if grindstone.grade == "Legend":
-                return substat_to_be_grinded < grindstone.max_value - 3  # 4 Point gap
+                return substat_to_be_grinded <= grindstone.max_value - 4  # 4 Point gap
 
             elif grindstone.grade == "Hero":
-                return substat_to_be_grinded < grindstone.max_value - 2  # 3 Point gap
+                return substat_to_be_grinded <= grindstone.max_value - 3  # 3 Point gap
 
             else:
-                return substat_to_be_grinded < grindstone.max_value - 1 # 2 Point gap
+                return substat_to_be_grinded <= grindstone.max_value - 2 # 2 Point gap
 
     @staticmethod
     def format_applying_grind(grindstone, rune):
@@ -255,7 +249,7 @@ class ApplyGrind:
         """
         _separator = None
 
-        rune_data = (rune.type,
+        rune_data = (rune.rune_set,
                      rune.slot,
                      rune.grade,
                      rune.base_grade,
@@ -271,7 +265,7 @@ class ApplyGrind:
                      rune.loc,
                      _separator)
 
-        grind_data = (grindstone.set,
+        grind_data = (grindstone.rune_set,
                       grindstone.grade,
                       grindstone.stat)
 
@@ -392,7 +386,7 @@ class ApplyGrind:
         """
         _separator = None
 
-        rune_data = (rune.type,
+        rune_data = (rune.rune_set,
                      rune.slot,
                      rune.grade,
                      rune.base_grade,
@@ -408,7 +402,7 @@ class ApplyGrind:
                      rune.loc,
                      _separator)
 
-        enchant_data = (enchantgem.set,
+        enchant_data = (enchantgem.rune_set,
                         enchantgem.grade,
                         enchantgem.stat,
                         enchantgem.id)

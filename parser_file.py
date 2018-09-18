@@ -29,14 +29,13 @@ class WizardIdGetter:
     def _read_cached_wizard_id():
 
         filename = WizardIdGetter.default_filename
-        first_line = open(filename, encoding="utf-8").readline()
-        return first_line.strip()
+        first_line = open(filename, encoding="utf-8").readline().strip()
+        return first_line
 
     @staticmethod
     def _ask_user_wizard_id():
 
         display_text = "<Your wizard id will be stored in this folder>\n\nPlease input your id (example 101222 or visit-110200) : "
-
         wizard_id = input(display_text)
         return wizard_id
 
@@ -66,6 +65,7 @@ class WizardIdGetter:
             f.write(self.wizard_id)
 
     def get_wizard_id(self):
+
         return self.wizard_id
 
 
@@ -94,9 +94,11 @@ class FileParser:
         self.json_data = json.load(open(filename, encoding="utf-8"))
 
     def _set_monster_list(self):
+
         self.monster_list = self._parse_monster_section()
 
     def _set_unit_list(self):
+
         unit_parser = UnitParser()
         unit_parser.parse_units(self.monster_list)
         self.unit_list = unit_parser.get_unit_dict()
@@ -124,7 +126,6 @@ class FileParser:
     def _parse_runes_equiped(self):
 
         rune_list = []
-
         for monster in self.monster_list:
             rune_list += FileParser._get_runes_from_monster(monster)
 
@@ -136,12 +137,12 @@ class FileParser:
         if FileParser._is_monster_has_rune(monster):
             monster_runes = monster["runes"]
             return FileParser._get_runes_from_list_or_dict(monster_runes)
-
         else:
             return []
 
     @staticmethod
     def _is_monster_has_rune(monster):
+
         return len(monster["runes"]) > 0
 
     @staticmethod
@@ -154,7 +155,6 @@ class FileParser:
         # Format : {"XX": {rune data}, "XX": {rune data}, "XX": {rune data}}
         elif isinstance(monster_runes, dict):
             return FileParser._get_runes_from_dict(monster_runes)
-
         else:
             return []
 
@@ -255,3 +255,59 @@ class ExcelFile:
 
     def open_file(self):
         os.startfile(self.filename)
+
+
+class ConfigParser:
+
+    default_filename = "config.txt"
+    default_separator = " == "
+
+    def __init__(self):
+        
+        self.config = None
+        self.parse_and_set_config()
+
+    def parse_and_set_config(self):
+
+        raw_config = ConfigParser._read_config()
+        split_config = ConfigParser._split_parameters(raw_config)
+        json_config = ConfigParser._to_json(split_config)
+
+        self.config = json_config
+
+    @staticmethod
+    def _read_config():
+        
+        filename = ConfigParser.default_filename
+        
+        raw_config = []
+        with open(filename, encoding="utf-8") as f:
+            for line in f.readlines():
+                raw_config.append(line.strip())
+        
+        return raw_config
+    
+    @staticmethod
+    def _split_parameters(raw_config):
+        
+        split_config = []
+        for config in raw_config:
+            split_config.append(config.split(ConfigParser.default_separator))
+        
+        return split_config
+    
+    @staticmethod
+    def _to_json(split_config):
+
+        json_config = {}
+        for config in split_config:
+            
+            config_key = config[0]
+            config_value = float(config[1])
+            json_config[config_key] = config_value
+
+        return json_config
+
+    def get_config(self):
+
+        return self.config

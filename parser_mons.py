@@ -14,7 +14,7 @@ class UnitParser:
             unit_name = UnitParser._get_monster_name(mons)
 
             self._track_unit_duplicates(unit_name)
-            self._set_unit_name_id_mapping(unit_name, unit_id)
+            self._pair_unit_name_and_unit_id(unit_name, unit_id)
 
     @staticmethod
     def _get_monster_id(monster):
@@ -33,7 +33,7 @@ class UnitParser:
         else:
             self._duplicate_unit_dict[unit_name] += 1
 
-    def _set_unit_name_id_mapping(self, unit_name, unit_id):
+    def _pair_unit_name_and_unit_id(self, unit_name, unit_id):
 
         if self._duplicate_unit_dict[unit_name] == 1:
             self._unit_dict[unit_id] = unit_name

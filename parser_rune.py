@@ -3,12 +3,12 @@ from data_mapping import DataMappingCollection
 
 class RuneParser:
     @staticmethod
-    def get_rune_user(unit_list, rune_id):
+    def get_rune_user(unit_list, rune_owner_id):
 
-        if rune_id == 0:
-            return ""
+        if rune_owner_id == 0:
+            return "" # Inventory
         else:
-            return unit_list[rune_id]
+            return unit_list[rune_owner_id]
 
     @staticmethod
     def is_stat_enchanted(substat):
@@ -19,12 +19,8 @@ class RuneParser:
         return DataMappingCollection.get_rune_set(set_id)
 
     @staticmethod
-    def get_rune_grade(class_id, shorten=True):
-
-        if shorten:
-            return DataMappingCollection.get_rune_class_shorten(class_id)
-        else:
-            return DataMappingCollection.get_rune_class(class_id)
+    def get_rune_grade_shorten(class_id):
+        return DataMappingCollection.get_rune_class_shorten(class_id)
 
     @staticmethod
     def get_rune_stat(stats):
@@ -71,8 +67,8 @@ class RuneParser:
     @staticmethod
     def substats_to_dense_form(substat_list):
 
-        substats_map = RuneParser.create_substats_map()
-        substats_map = RuneParser.update_substats_map(substats_map, substat_list)
+        empty_substats_map = RuneParser.create_substats_map()
+        substats_map = RuneParser.update_substats_map(empty_substats_map, substat_list)
         dense_tuples = RuneParser.dict_to_dense(substats_map)
         return dense_tuples
 

@@ -4,19 +4,19 @@ from rune import Rune
 import pandas as pd
 import os
 
-
 class RuneDeletePicker:
+
     def __init__(self):
 
         self.wizard_id = None
         self.rune_list = []
         self.monster_list = []
         self.grind_enchant_list = []
-
         self.parsed_rune_result = []
         self.monster_eff_result = []
 
     def start(self):
+
         try:
             self.run_main_function()
 
@@ -25,6 +25,7 @@ class RuneDeletePicker:
 
     @staticmethod
     def handle_error(error):
+
         print(error)
         os.system("pause")
 
@@ -53,9 +54,11 @@ class RuneDeletePicker:
         self.set_monster_list(file_parser)
 
     def set_rune_list(self, file_parser):
+
         self.rune_list = file_parser.get_rune_list()
 
     def set_monster_list(self, file_parser):
+
         self.monster_list = file_parser.get_unit_list()
 
     def parse_runes_and_monster_eff(self):
@@ -63,8 +66,8 @@ class RuneDeletePicker:
         Parse runes and calculate monster efficiency
         """
 
-        monster_eff = {}
-        monster_exp_eff = {}
+        monster_eff_map = {}
+        monster_exp_eff_map = {}
 
         for rune in self.rune_list:
             current_rune = Rune(rune)
@@ -73,18 +76,18 @@ class RuneDeletePicker:
             self.parsed_rune_result += self.format_rune(current_rune)
 
             # Can't calculate monster eff if the rune is not equipped on a monster
-            if current_rune.loc == "":
+            if not current_rune.is_equiped():
                 continue
 
-            monster_eff = self.increment_dict_value(monster_eff, current_rune.loc, current_rune.efficiency)
-            monster_exp_eff = self.increment_dict_value(monster_exp_eff, current_rune.loc, current_rune.exp_efficiency)
+            monster_eff_map = self.increment_dict_value(monster_eff_map, current_rune.loc, current_rune.efficiency)
+            monster_exp_eff_map = self.increment_dict_value(monster_exp_eff_map, current_rune.loc, current_rune.exp_efficiency)
 
         # Average it
-        for monster in monster_eff:
-            avg_real_eff = monster_eff[monster] / 6
-            avg_exp_eff = monster_exp_eff[monster] / 6
+        for monster in monster_eff_map:
+            average_real_efficiency = monster_eff_map[monster] / 6
+            average_expected_efficiency = monster_exp_eff_map[monster] / 6
 
-            self.monster_eff_result.append((monster, avg_real_eff, avg_exp_eff))
+            self.monster_eff_result.append((monster, average_real_efficiency, average_expected_efficiency))
 
     @staticmethod
     def format_rune(current_rune):
@@ -94,7 +97,7 @@ class RuneDeletePicker:
 
         _separator_ = None
 
-        rune_data = (current_rune.type,
+        rune_data = (current_rune.rune_set,
                      current_rune.slot,
                      current_rune.grade,
                      current_rune.base_grade,
@@ -175,5 +178,6 @@ class RuneDeletePicker:
 
 
 if __name__ == '__main__':
+
     app = RuneDeletePicker()
     app.start()

@@ -31,12 +31,6 @@ class ApplyGrind:
         except Exception as e:
             self.handle_error(e)
 
-    @staticmethod
-    def handle_error(error):
-
-        print(error)
-        os.system("pause")
-
     def run_main_function(self):
 
         self.set_wizard_id()
@@ -201,6 +195,10 @@ class ApplyGrind:
         :rtype: bool
         """
 
+        # Check for slot 1 and 3 compability
+        if not ApplyGrind.slot_compatible(grindstone, rune):
+            return False
+
         # Bad rune should not be grinded
         if rune.exp_efficiency_without_grind <= eff_threshold:
             return False
@@ -340,6 +338,10 @@ class ApplyGrind:
         if rune.enchant_type is not None:
             return False
 
+        # Check for slot 1 and 3 compability
+        if not ApplyGrind.slot_compatible(enchantgem, rune):
+            return False
+
         owned_stats = rune.get_owned_all_stats_type()
 
         # If the stone stat already exist
@@ -372,6 +374,19 @@ class ApplyGrind:
                     return True
                 elif substat[0] == "HP flat" and substat[1] <= max_roll_flat_hp * 2:
                     return True
+
+    @staticmethod
+    def slot_compatible(enhancement, rune):
+        
+        if rune.slot == 1:
+            if enhancement.stat == "DEF flat" or enhancement.stat == "DEF%":
+                return False
+
+        elif rune.slot == 3:
+            if enhancement.stat == "ATK flat" or enhancement.stat == "ATK%":
+                return False
+        
+        return True
 
     @staticmethod
     def format_applying_enchant(enchantgem, rune):
@@ -464,6 +479,11 @@ class ApplyGrind:
 
         return excel
 
+    @staticmethod
+    def handle_error(error):
+
+        print(error)
+        os.system("pause")
 
 if __name__ == '__main__':
     app = ApplyGrind()

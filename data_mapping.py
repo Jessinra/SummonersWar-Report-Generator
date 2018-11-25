@@ -811,6 +811,13 @@ class DataMappingCollection:
         "22014": "Bailey",
         "22015": "Martina",
 
+        "226": "Lightning Emperor",
+        "22611": "Bolverk",
+        "22612": "Baleygr",
+        "22613": "Odin",
+        "22614": "Geldnir",
+        "22615": "Herteit",
+
         "15105": "Devilmon",
         "14314": "Rainbowmon",
 

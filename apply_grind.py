@@ -444,7 +444,7 @@ class ApplyGrind:
 
         columns_name = self.get_pd_column_name("Grind")
         grind_result_pd = pd.DataFrame(self.grind_result, columns=columns_name)
-        grind_result_pd_sorted = grind_result_pd.sort_values(by=['Type', 'Exp eff'], ascending=[True, False])
+        grind_result_pd_sorted = grind_result_pd.sort_values(by=['Exp eff'], ascending=[False])
 
         self.grind_result = grind_result_pd_sorted
 

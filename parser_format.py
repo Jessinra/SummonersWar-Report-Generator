@@ -24,17 +24,25 @@ class ExcelFormatter:
 
     def _apply_rune_format(self):
 
+        format_5star = self.workbook.add_format({'bg_color': '#632d17', 'font_color': '#eadbd5'})
+
         format_legend = self.workbook.add_format({'bg_color': '#f9e7a9', 'font_color': '#2B2925'})
         format_hero = self.workbook.add_format({'bg_color': '#f4d9f9', 'font_color': '#2B2925'})
         format_rare = self.workbook.add_format({'bg_color': '#d5f0f2', 'font_color': '#2B2925'})
 
-        format_del_candidate = self.workbook.add_format({'bg_color': '#261a17', 'font_color': '#f9525d'})
+        format_del_candidate = self.workbook.add_format({'bg_color': '#58595b', 'font_color': '#ffaaaa'})
         format_header = self.workbook.add_format({'bg_color': '#30305e', 'font_color': '#FFFFFF', 'rotation': '45',
                                                   'valign': 'vcenter', 'align': 'center', 'bold': True})
 
-        format_border = self.workbook.add_format({'bg_color': '#030930', 'font_color': '#030930'})
+        format_border = self.workbook.add_format({'bg_color': '#030930', 'font_color': '#ef4a4a'})
 
         format_center = self.workbook.add_format({'valign': 'vcenter', 'align': 'center'})
+        format_left_with_indent = self.workbook.add_format({'indent': 1})
+
+        self.worksheet.conditional_format('F1:F1600', {'type': 'text',
+                                                       'criteria': 'containing',
+                                                       'value': '5',
+                                                       'format': format_5star})
 
         self.worksheet.conditional_format('D1:E1600', {'type': 'text',
                                                        'criteria': 'containing',
@@ -51,6 +59,26 @@ class ExcelFormatter:
 
         self.worksheet.conditional_format('G1:G1600', {'type': '3_color_scale'})
 
+        # Color scale for substats
+        self.worksheet.conditional_format('K1:R1600', {'type': '3_color_scale',
+                                                       'min_color': '#e5eeff',
+                                                       'mid_color': '#96aedd',
+                                                       'max_color': '#3e74dd'})
+
+        self.worksheet.conditional_format('S1:S1600', {'type': '3_color_scale',
+                                                       'min_color': '#f9e3f5',
+                                                       'mid_color': '#fca9ec',
+                                                       'max_color': '#ff7ce5'})
+        self.worksheet.conditional_format('T1:T1600', {'type': '3_color_scale',
+                                                       'min_color': '#f9e3f5',
+                                                       'mid_color': '#fca9ec',
+                                                       'max_color': '#ff7ce5'})
+        self.worksheet.conditional_format('U1:U1600', {'type': '3_color_scale',
+                                                       'min_color': '#f9e3f5',
+                                                       'mid_color': '#fca9ec',
+                                                       'max_color': '#ff7ce5'})
+
+        # Color scale for efficiency
         self.worksheet.conditional_format('X1:X1600', {'type': 'bottom',
                                                        'criteria': '%',
                                                        'value': '20',
@@ -60,41 +88,42 @@ class ExcelFormatter:
                                                        'criteria': '%',
                                                        'value': '20',
                                                        'format': format_del_candidate})
+        self.worksheet.conditional_format('W1:Z1600', {'type': '3_color_scale'})
 
         self.worksheet.set_column('A:G', None, format_center)
         self.worksheet.set_column('K:AA', None, format_center)
-        self.worksheet.set_column('A:A', 4)
-        self.worksheet.set_column('B:B', 9)
-        self.worksheet.set_column('C:C', 4)
-        self.worksheet.set_column('D:D', 3.2)
-        self.worksheet.set_column('E:E', 3.2)
-        self.worksheet.set_column('F:F', 3.33)
-        self.worksheet.set_column('G:G', 3.33)
-        self.worksheet.set_column('H:H', 14.6)
-        self.worksheet.set_column('I:I', 12)
+        self.worksheet.set_column('A:A', 5)
+        self.worksheet.set_column('B:B', 13.5)
+        self.worksheet.set_column('C:C', 5)
+        self.worksheet.set_column('D:D', 4.2)
+        self.worksheet.set_column('E:E', 4.2)
+        self.worksheet.set_column('F:F', 4.33)
+        self.worksheet.set_column('G:G', 4.33)
+        self.worksheet.set_column('H:H', 18.6, format_left_with_indent)
+        self.worksheet.set_column('I:I', 15, format_left_with_indent)
 
         self.worksheet.set_column('J:J', 0.3, format_border)  # border
 
-        self.worksheet.set_column('K:K', 5.2)
-        self.worksheet.set_column('L:L', 5.2)
-        self.worksheet.set_column('M:M', 5.2)
-        self.worksheet.set_column('N:N', 5.2)
-        self.worksheet.set_column('O:O', 5.2)
-        self.worksheet.set_column('P:P', 5.2)
-        self.worksheet.set_column('Q:Q', 5.2)
-        self.worksheet.set_column('R:R', 5.2)
-        self.worksheet.set_column('S:S', 5.2)
-        self.worksheet.set_column('T:T', 5.2)
-        self.worksheet.set_column('U:U', 5.2)
+        self.worksheet.set_column('K:K', 6)
+        self.worksheet.set_column('L:L', 6)
+        self.worksheet.set_column('M:M', 6)
+        self.worksheet.set_column('N:N', 6)
+        self.worksheet.set_column('O:O', 6)
+        self.worksheet.set_column('P:P', 6)
+        self.worksheet.set_column('Q:Q', 6)
+        self.worksheet.set_column('R:R', 6)
+        self.worksheet.set_column('S:S', 6)
+        self.worksheet.set_column('T:T', 6)
+        self.worksheet.set_column('U:U', 6)
 
         self.worksheet.set_column('V:V', 0.3, format_border)
 
-        self.worksheet.set_column('W:W', 6.2)
-        self.worksheet.set_column('X:X', 6.2)
-        self.worksheet.set_column('Y:Y', 6.2)
-        self.worksheet.set_column('Z:Z', 6.2)
+        self.worksheet.set_column('W:W', 7.2)
+        self.worksheet.set_column('X:X', 7.2)
+        self.worksheet.set_column('Y:Y', 7.2)
+        self.worksheet.set_column('Z:Z', 7.2)
 
-        self.worksheet.set_column('AA:AA', 9)
+        self.worksheet.set_column('AA:AA', 15)
 
         self.worksheet.autofilter('A1:AA1600')
         self.worksheet.set_row(0, 58, format_header)
@@ -104,14 +133,16 @@ class ExcelFormatter:
 
         format_center = self.workbook.add_format({'valign': 'vcenter', 'align': 'center'})
         format_header = self.workbook.add_format({'bg_color': '#30305e', 'font_color': '#FFFFFF', 'valign': 'vcenter', 'align': 'center', 'bold': True})
+        self.worksheet.conditional_format('C1:C600', {'type': '3_color_scale'})
+        self.worksheet.conditional_format('D1:D600', {'type': '3_color_scale'})
 
         self.worksheet.set_column('A:D', None, format_center)
         self.worksheet.set_column('A:A', 4)
-        self.worksheet.set_column('B:B', 13)
+        self.worksheet.set_column('B:B', 15)
         self.worksheet.set_column('C:C', 13.2)
         self.worksheet.set_column('D:D', 13.2)
 
-        self.worksheet.set_row(0, None, format_header)
+        self.worksheet.set_row(0, 58, format_header)
         self.worksheet.freeze_panes(1, 0)
 
     def _apply_grind_format(self):
@@ -126,6 +157,7 @@ class ExcelFormatter:
                                                         'valign': 'vcenter', 'align': 'center', 'bold': True})
 
         format_center = self.workbook.add_format({'valign': 'vcenter', 'align': 'center'})
+        format_left_with_indent = self.workbook.add_format({'indent': 1})
 
         self.worksheet.conditional_format('D1:E1600', {'type': 'text',
                                                        'criteria': 'containing',
@@ -164,28 +196,28 @@ class ExcelFormatter:
 
         self.worksheet.set_column('A:G', None, format_center)
         self.worksheet.set_column('K:AA', None, format_center)
-        self.worksheet.set_column('A:A', 4)
-        self.worksheet.set_column('B:B', 9)
-        self.worksheet.set_column('C:C', 4)
-        self.worksheet.set_column('D:D', 3.2)
-        self.worksheet.set_column('E:E', 3.2)
-        self.worksheet.set_column('F:F', 3.33)
-        self.worksheet.set_column('G:G', 3.33)
-        self.worksheet.set_column('H:H', 14.6)
-        self.worksheet.set_column('I:I', 12)
-        self.worksheet.set_column('J:J', 42)
+        self.worksheet.set_column('A:A', 5)
+        self.worksheet.set_column('B:B', 13.5)
+        self.worksheet.set_column('C:C', 5)
+        self.worksheet.set_column('D:D', 4.2)
+        self.worksheet.set_column('E:E', 4.2)
+        self.worksheet.set_column('F:F', 4.33)
+        self.worksheet.set_column('G:G', 4.33)
+        self.worksheet.set_column('H:H', 18.6, format_left_with_indent)
+        self.worksheet.set_column('I:I', 15, format_left_with_indent)
+        self.worksheet.set_column('J:J', 49, format_left_with_indent)
 
-        self.worksheet.set_column('K:K', 6.2)
-        self.worksheet.set_column('L:L', 6.2)
-        self.worksheet.set_column('M:M', 6.2)
-        self.worksheet.set_column('N:N', 6.2)
-        self.worksheet.set_column('O:O', 9)
+        self.worksheet.set_column('K:K', 7.2)
+        self.worksheet.set_column('L:L', 7.2)
+        self.worksheet.set_column('M:M', 7.2)
+        self.worksheet.set_column('N:N', 7.2)
+        self.worksheet.set_column('O:O', 15)
 
         self.worksheet.set_column('P:P', 0.3, format_border)
 
-        self.worksheet.set_column('Q:Q', 12.5)
-        self.worksheet.set_column('R:R', 7)
-        self.worksheet.set_column('S:S', 7.2)
+        self.worksheet.set_column('Q:Q', 13.5)
+        self.worksheet.set_column('R:R', 8)
+        self.worksheet.set_column('S:S', 9.2)
 
         self.worksheet.autofilter('A1:S1600')
         self.worksheet.set_row(0, 58, format_header_grind)
@@ -203,6 +235,7 @@ class ExcelFormatter:
                                                         'valign': 'vcenter', 'align': 'center', 'bold': True})
 
         format_center = self.workbook.add_format({'valign': 'vcenter', 'align': 'center'})
+        format_left_with_indent = self.workbook.add_format({'indent': 1})
 
         self.worksheet.conditional_format('D1:E1600', {'type': 'text',
                                                        'criteria': 'containing',
@@ -241,28 +274,28 @@ class ExcelFormatter:
 
         self.worksheet.set_column('A:G', None, format_center)
         self.worksheet.set_column('K:AA', None, format_center)
-        self.worksheet.set_column('A:A', 4)
-        self.worksheet.set_column('B:B', 9)
-        self.worksheet.set_column('C:C', 4)
-        self.worksheet.set_column('D:D', 3.2)
-        self.worksheet.set_column('E:E', 3.2)
-        self.worksheet.set_column('F:F', 3.33)
-        self.worksheet.set_column('G:G', 3.33)
-        self.worksheet.set_column('H:H', 14.6)
-        self.worksheet.set_column('I:I', 12)
-        self.worksheet.set_column('J:J', 42)
+        self.worksheet.set_column('A:A', 5)
+        self.worksheet.set_column('B:B', 13.5)
+        self.worksheet.set_column('C:C', 5)
+        self.worksheet.set_column('D:D', 4.2)
+        self.worksheet.set_column('E:E', 4.2)
+        self.worksheet.set_column('F:F', 4.33)
+        self.worksheet.set_column('G:G', 4.33)
+        self.worksheet.set_column('H:H', 18.6, format_left_with_indent)
+        self.worksheet.set_column('I:I', 15, format_left_with_indent)
+        self.worksheet.set_column('J:J', 49, format_left_with_indent)
 
-        self.worksheet.set_column('K:K', 6.2)
-        self.worksheet.set_column('L:L', 6.2)
-        self.worksheet.set_column('M:M', 6.2)
-        self.worksheet.set_column('N:N', 6.2)
-        self.worksheet.set_column('O:O', 9)
+        self.worksheet.set_column('K:K', 7.2)
+        self.worksheet.set_column('L:L', 7.2)
+        self.worksheet.set_column('M:M', 7.2)
+        self.worksheet.set_column('N:N', 7.2)
+        self.worksheet.set_column('O:O', 15)
 
         self.worksheet.set_column('P:P', 0.3, format_border)
 
-        self.worksheet.set_column('Q:Q', 12.5)
-        self.worksheet.set_column('R:R', 7)
-        self.worksheet.set_column('S:S', 7.2)
+        self.worksheet.set_column('Q:Q', 13.5)
+        self.worksheet.set_column('R:R', 8)
+        self.worksheet.set_column('S:S', 9.2)
         self.worksheet.set_column('T:T', 9.2)
 
         self.worksheet.autofilter('A1:T1600')

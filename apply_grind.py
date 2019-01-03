@@ -336,7 +336,10 @@ class ApplyGrind:
 
         # If runes is enchanted already (assumption that enchant into good stat)
         if rune.enchant_type is not None:
-            return False
+
+            # If enchanted stat with / without grind already above certain treshold
+            if rune.enchant_value >= 0.70 * DataMappingCollection.get_rune_sub_stat_max_roll(rune.enchant_type):
+                return False
 
         # Check for slot 1 and 3 compability
         if not ApplyGrind.slot_compatible(enchantgem, rune):
@@ -348,32 +351,42 @@ class ApplyGrind:
         if enchantgem.stat in owned_stats:
             return False
 
-        max_roll_flat_atk = DataMappingCollection.get_rune_sub_stat_max_roll('ATK flat')
-        max_roll_flat_def = DataMappingCollection.get_rune_sub_stat_max_roll('DEF flat')
-        max_roll_flat_hp = DataMappingCollection.get_rune_sub_stat_max_roll('HP flat')
-
         # If there exist a flat stat without any roll into it (best scenario)
         if rune.grade == 'L':
             for substat in rune.substats:
+                substat_type = substat[0]
+                substat_value = substat[1]
 
-                if substat[0] == "ATK flat" and substat[1] <= max_roll_flat_atk:
-                    return True
-                elif substat[0] == "DEF flat" and substat[1] <= max_roll_flat_def:
-                    return True
-                elif substat[0] == "HP flat" and substat[1] <= max_roll_flat_hp:
-                    return True
+                if substat_type in ["ATK flat", "DEF flat", "HP flat"]:
+
+                    max_roll_value = DataMappingCollection.get_rune_sub_stat_max_roll(substat_type)
+                    if substat_value <= max_roll_value:
+                        return True
+
+                elif substat_type in ["ACC", "RES", "CDmg", "CRate", "SPD"]:
+
+                    min_roll_value = DataMappingCollection.get_rune_sub_stat_min_roll(substat_type)
+                    if substat_value <= min_roll_value:
+                        return True
 
         # Since it's not legend (hero or below), it's not going to be reap,
         # So might as well enchant the flat stat if it's feasible (no more than 1 roll into flat)
         else:
             for substat in rune.substats:
+                substat_type = substat[0]
+                substat_value = substat[1]
 
-                if substat[0] == "ATK flat" and substat[1] <= max_roll_flat_atk * 2:
-                    return True
-                elif substat[0] == "DEF flat" and substat[1] <= max_roll_flat_def * 2:
-                    return True
-                elif substat[0] == "HP flat" and substat[1] <= max_roll_flat_hp * 2:
-                    return True
+                if substat_type in ["ATK flat", "DEF flat", "HP flat"]:
+
+                    max_roll_value = DataMappingCollection.get_rune_sub_stat_max_roll(substat_type)
+                    if substat_value <= max_roll_value * 2: # no more than 1 roll into flat
+                        return True
+
+                elif substat_type in ["ACC", "RES", "CDmg", "CRate", "SPD"]:
+
+                    min_roll_value = DataMappingCollection.get_rune_sub_stat_min_roll(substat_type)
+                    if substat_value <= min_roll_value:
+                        return True
 
     @staticmethod
     def slot_compatible(enhancement, rune):

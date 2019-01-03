@@ -23,20 +23,24 @@ class RuneParser:
         return DataMappingCollection.get_rune_class_shorten(class_id)
 
     @staticmethod
-    def get_rune_stat(stats):
+    def get_rune_stat(stat):
 
-        rune_stat_type, value = RuneParser.get_rune_stat_without_grind(stats)
-        grind = RuneParser.get_rune_grind_value(stats)
+        rune_stat_type, value = RuneParser.get_rune_stat_without_grind(stat)
+        grind = RuneParser.get_rune_grind_value(stat)
 
         return rune_stat_type, (value + grind)
 
     @staticmethod
-    def get_rune_stat_without_grind(stats):
+    def get_rune_stat_without_grind(stat):
 
-        rune_stat_type = RuneParser.get_rune_stat_type(stats)
-        value = stats[1]
+        rune_stat_type = RuneParser.get_rune_stat_type(stat)
+        value = RuneParser.get_rune_stat_value(stat)
 
         return rune_stat_type, value
+
+    @staticmethod
+    def get_rune_stat_value(stat):
+        return stat[1]
 
     @staticmethod
     def get_rune_stat_type(stat):
@@ -61,8 +65,8 @@ class RuneParser:
         return DataMappingCollection.get_rune_primary_stat_max_value(primary_stat)
 
     @staticmethod
-    def max_roll_substats(sub_stat):
-        return DataMappingCollection.get_rune_sub_stat_max_value(sub_stat)
+    def max_roll_substats(substat):
+        return DataMappingCollection.get_rune_sub_stat_max_value(substat)
 
     @staticmethod
     def substats_to_dense_form(substat_list):
@@ -96,7 +100,7 @@ class RuneParser:
     def update_substats_map(substats_map, substat_list):
 
         for substat in substat_list:
-            substats_map[substat[0]] = substat[1]  # Asign value to corresponding stat in substats map
+            substats_map[substat[0]] = RuneParser.get_rune_stat_value(substat)  # Asign value to corresponding stat in substats map
 
         return substats_map
 

@@ -23,6 +23,7 @@ class Rune:
         self.dense_substats = None
         self.grind_values = None
         self.enchant_type = None
+        self.enchant_value = 0
         self.efficiency = 0
         self.exp_efficiency = 0
         self.efficiency_without_grind = 0
@@ -83,7 +84,7 @@ class Rune:
 
         for stat in substats:
             if RuneParser.is_stat_enchanted(stat):
-                self.enchant_type = RuneParser.get_rune_stat_type(stat)
+                self.enchant_type, self.enchant_value = RuneParser.get_rune_stat(stat)
                 break
 
     def _set_rune_efficiencies(self):
@@ -380,3 +381,26 @@ class Rune:
     def is_equiped(self):
 
         return self.loc != "" and self.loc is not None
+
+    def display_rune_detail(self):
+        print("========================")
+        print("slot", self.slot)
+        print("stars", self.stars)
+        print("level", self.level)
+        print("grade", self.grade)
+        print("base_grade", self.base_grade)
+        print("rune_set", self.rune_set)
+        print("main", self.main)
+        print("loc", self.loc)
+        print("innate", self.innate)
+        print("substats", self.substats)
+        print("substats_without_grind", self.substats_without_grind)
+        print("dense_substats", self.dense_substats)
+        print("grind_values", self.grind_values)
+        print("enchant_type", self.enchant_type)
+        print("enchant_value", self.enchant_value)
+        print("efficiency", self.efficiency)
+        print("exp_efficiency", self.exp_efficiency)
+        print("efficiency_without_grind", self.efficiency_without_grind)
+        print("exp_efficiency_without_grind", self.exp_efficiency_without_grind)
+        print("========================")

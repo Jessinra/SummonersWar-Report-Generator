@@ -379,7 +379,7 @@ class ApplyGrind:
                 if substat_type in ["ATK flat", "DEF flat", "HP flat"]:
 
                     max_roll_value = DataMappingCollection.get_rune_sub_stat_max_roll(substat_type)
-                    if substat_value <= max_roll_value * 2: # no more than 1 roll into flat
+                    if substat_value <= max_roll_value * 2:  # no more than 1 roll into flat
                         return True
 
                 elif substat_type in ["ACC", "RES", "CDmg", "CRate", "SPD"]:
@@ -390,7 +390,7 @@ class ApplyGrind:
 
     @staticmethod
     def slot_compatible(enhancement, rune):
-        
+
         if rune.slot == 1:
             if enhancement.stat == "DEF flat" or enhancement.stat == "DEF%":
                 return False
@@ -398,7 +398,7 @@ class ApplyGrind:
         elif rune.slot == 3:
             if enhancement.stat == "ATK flat" or enhancement.stat == "ATK%":
                 return False
-        
+
         return True
 
     @staticmethod
@@ -497,6 +497,7 @@ class ApplyGrind:
 
         print(error)
         os.system("pause")
+
 
 if __name__ == '__main__':
     app = ApplyGrind()

@@ -811,6 +811,13 @@ class DataMappingCollection:
         "22014": "Bailey",
         "22015": "Martina",
 
+        "224": "Giant Warrior",
+        "22411": "Bagir",
+        "22412": "Vidurr",
+        "22413": "Skogul",
+        "22414": "Einheri",
+        "22415": "Trasar",
+
         "226": "Lightning Emperor",
         "22611": "Bolverk",
         "22612": "Baleygr",
@@ -822,12 +829,12 @@ class DataMappingCollection:
         "14314": "Rainbowmon",
 
         "100": "Homunculus",
-        "1000111": "Homunculus - Attack (Water)",
-        "1000112": "Homunculus - Attack (Fire)",
-        "1000113": "Homunculus - Attack (Wind)",
+        "1000111": "Homunculus - Water",
+        "1000112": "Homunculus - Fire",
+        "1000113": "Homunculus - Wind",
 
-        "1000214": "Homunculus - Support (Light)",
-        "1000215": "Homunculus - Support (Dark)"
+        "1000214": "Homunculus - Light",
+        "1000215": "Homunculus - Dark"
     }
 
     _monster_attribute = {

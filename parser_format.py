@@ -147,6 +147,8 @@ class ExcelFormatter:
 
     def _apply_grind_format(self):
 
+        format_5star = self.workbook.add_format({'bg_color': '#632d17', 'font_color': '#eadbd5'})
+
         format_legend = self.workbook.add_format({'bg_color': '#f9e7a9', 'font_color': '#2B2925'})
         format_hero = self.workbook.add_format({'bg_color': '#f4d9f9', 'font_color': '#2B2925'})
         format_rare = self.workbook.add_format({'bg_color': '#d5f0f2', 'font_color': '#2B2925'})
@@ -158,6 +160,11 @@ class ExcelFormatter:
 
         format_center = self.workbook.add_format({'valign': 'vcenter', 'align': 'center'})
         format_left_with_indent = self.workbook.add_format({'indent': 1})
+
+        self.worksheet.conditional_format('F1:F1600', {'type': 'text',
+                                                       'criteria': 'containing',
+                                                       'value': '5',
+                                                       'format': format_5star})
 
         self.worksheet.conditional_format('D1:E1600', {'type': 'text',
                                                        'criteria': 'containing',
@@ -225,6 +232,8 @@ class ExcelFormatter:
 
     def _apply_enchant_format(self):
 
+        format_5star = self.workbook.add_format({'bg_color': '#632d17', 'font_color': '#eadbd5'})
+
         format_legend = self.workbook.add_format({'bg_color': '#f9e7a9', 'font_color': '#2B2925'})
         format_hero = self.workbook.add_format({'bg_color': '#f4d9f9', 'font_color': '#2B2925'})
         format_rare = self.workbook.add_format({'bg_color': '#d5f0f2', 'font_color': '#2B2925'})
@@ -236,6 +245,11 @@ class ExcelFormatter:
 
         format_center = self.workbook.add_format({'valign': 'vcenter', 'align': 'center'})
         format_left_with_indent = self.workbook.add_format({'indent': 1})
+
+        self.worksheet.conditional_format('F1:F1600', {'type': 'text',
+                                                       'criteria': 'containing',
+                                                       'value': '5',
+                                                       'format': format_5star})
 
         self.worksheet.conditional_format('D1:E1600', {'type': 'text',
                                                        'criteria': 'containing',

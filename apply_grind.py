@@ -83,10 +83,12 @@ class ApplyGrind:
     def _add_into_inventory(self, enhancement):
 
         if enhancement.type == "Grind":
-            self.grind_stone_inventory = self.group_item_by_set(enhancement, self.grind_stone_inventory)
+            self.grind_stone_inventory = self.group_item_by_set(
+                enhancement, self.grind_stone_inventory)
 
         elif enhancement.type == "Enchant":
-            self.enchant_gem_inventory = self.group_item_by_set(enhancement, self.enchant_gem_inventory)
+            self.enchant_gem_inventory = self.group_item_by_set(
+                enhancement, self.enchant_gem_inventory)
 
     def construct_rune_inventory(self):
         """
@@ -96,7 +98,8 @@ class ApplyGrind:
         inventory = self.rune_inventory
         for rune in self.rune_list:
             current_rune = Rune(rune)
-            rune_user = RuneParser.get_rune_user(self.monster_list, rune["occupied_id"])
+            rune_user = RuneParser.get_rune_user(
+                self.monster_list, rune["occupied_id"])
             current_rune.set_loc(rune_user)
             inventory = self.group_item_by_set(current_rune, inventory)
 
@@ -128,10 +131,12 @@ class ApplyGrind:
 
             # Only check if there's grind and rune that match
             if rune_set in grindstone_inventory:
-                self.apply_grindstones(grindstone_inventory[rune_set], rune_inventory[rune_set])
+                self.apply_grindstones(
+                    grindstone_inventory[rune_set], rune_inventory[rune_set])
 
             if rune_set in enchant_inventory:
-                self.apply_enchantgems(enchant_inventory[rune_set], rune_inventory[rune_set])
+                self.apply_enchantgems(
+                    enchant_inventory[rune_set], rune_inventory[rune_set])
 
     def apply_grindstones(self, grindstones, runes):
         """
@@ -144,7 +149,8 @@ class ApplyGrind:
         """
 
         self.sort_grindstones_and_runes(grindstones, runes)
-        is_checked_and_failed_table = RuneParser.create_substats_map(default=False)
+        is_checked_and_failed_table = RuneParser.create_substats_map(
+            default=False)
 
         for grindstone in grindstones:
 
@@ -158,7 +164,8 @@ class ApplyGrind:
 
                 if self.grind_applicable(grindstone, rune):
                     # If it's applicable, format and append the result
-                    self.grind_result += self.format_applying_grind(grindstone, rune)
+                    self.grind_result += self.format_applying_grind(
+                        grindstone, rune)
 
                     # Make sure same substat from a rune won't get grind using two different grind
                     self.virtually_apply_grind(grindstone, rune)
@@ -179,7 +186,8 @@ class ApplyGrind:
 
         grindstones.sort(key=operator.attrgetter('stat'))
         grindstones.sort(key=operator.attrgetter('grade_int'), reverse=True)
-        runes.sort(key=operator.attrgetter('efficiency_without_grind'), reverse=True)
+        runes.sort(key=operator.attrgetter(
+            'efficiency_without_grind'), reverse=True)
 
     @staticmethod
     def grind_applicable(grindstone, rune, eff_threshold=0.73):
@@ -255,13 +263,15 @@ class ApplyGrind:
                      rune.level,
                      rune.main,
                      rune.innate,
-                     rune.substats,
-                     rune.efficiency,
-                     rune.exp_efficiency,
-                     rune.efficiency_without_grind,
-                     rune.exp_efficiency_without_grind,
-                     rune.loc,
                      _separator)
+        rune_data += rune.dense_substats
+        rune_data += (_separator,
+                      rune.efficiency,
+                      rune.exp_efficiency,
+                      rune.efficiency_without_grind,
+                      rune.exp_efficiency_without_grind,
+                      rune.loc,
+                      _separator)
 
         grind_data = (grindstone.rune_set,
                       grindstone.grade,
@@ -306,7 +316,8 @@ class ApplyGrind:
 
                 if self.enchant_applicable(enchantgem, rune):
                     # If it's applicable, format and append the result
-                    self.enchant_result += self.format_applying_enchant(enchantgem, rune)
+                    self.enchant_result += self.format_applying_enchant(
+                        enchantgem, rune)
                     is_applicable = True
 
             # If this kind of rune is unusable, skip those which has same stats, and is same or even lower grade
@@ -359,13 +370,15 @@ class ApplyGrind:
 
                 if substat_type in ["ATK flat", "DEF flat", "HP flat"]:
 
-                    max_roll_value = DataMappingCollection.get_rune_sub_stat_max_roll(substat_type)
+                    max_roll_value = DataMappingCollection.get_rune_sub_stat_max_roll(
+                        substat_type)
                     if substat_value <= max_roll_value:
                         return True
 
                 elif substat_type in ["ACC", "RES", "CDmg", "CRate", "SPD"]:
 
-                    min_roll_value = DataMappingCollection.get_rune_sub_stat_min_roll(substat_type)
+                    min_roll_value = DataMappingCollection.get_rune_sub_stat_min_roll(
+                        substat_type)
                     if substat_value <= min_roll_value:
                         return True
 
@@ -378,13 +391,15 @@ class ApplyGrind:
 
                 if substat_type in ["ATK flat", "DEF flat", "HP flat"]:
 
-                    max_roll_value = DataMappingCollection.get_rune_sub_stat_max_roll(substat_type)
+                    max_roll_value = DataMappingCollection.get_rune_sub_stat_max_roll(
+                        substat_type)
                     if substat_value <= max_roll_value * 2:  # no more than 1 roll into flat
                         return True
 
                 elif substat_type in ["ACC", "RES", "CDmg", "CRate", "SPD"]:
 
-                    min_roll_value = DataMappingCollection.get_rune_sub_stat_min_roll(substat_type)
+                    min_roll_value = DataMappingCollection.get_rune_sub_stat_min_roll(
+                        substat_type)
                     if substat_value <= min_roll_value:
                         return True
 
@@ -422,13 +437,15 @@ class ApplyGrind:
                      rune.level,
                      rune.main,
                      rune.innate,
-                     rune.substats,
-                     rune.efficiency,
-                     rune.exp_efficiency,
-                     rune.efficiency_without_grind,
-                     rune.exp_efficiency_without_grind,
-                     rune.loc,
                      _separator)
+        rune_data += rune.dense_substats
+        rune_data += (_separator,
+                      rune.efficiency,
+                      rune.exp_efficiency,
+                      rune.efficiency_without_grind,
+                      rune.exp_efficiency_without_grind,
+                      rune.loc,
+                      _separator)
 
         enchant_data = (enchantgem.rune_set,
                         enchantgem.grade,
@@ -444,7 +461,8 @@ class ApplyGrind:
 
         columns_name = self.get_pd_column_name("Grind")
         grind_result_pd = pd.DataFrame(self.grind_result, columns=columns_name)
-        grind_result_pd_sorted = grind_result_pd.sort_values(by=['Exp eff'], ascending=[False])
+        grind_result_pd_sorted = grind_result_pd.sort_values(
+            by=['Exp eff'], ascending=[False])
 
         self.grind_result = grind_result_pd_sorted
 
@@ -454,8 +472,10 @@ class ApplyGrind:
         """
 
         columns_name = self.get_pd_column_name("Enchant")
-        enchant_result_pd = pd.DataFrame(self.enchant_result, columns=columns_name)
-        enchant_result_pd_sorted = enchant_result_pd.sort_values(by=['Id', 'Exp eff'], ascending=[True, False])
+        enchant_result_pd = pd.DataFrame(
+            self.enchant_result, columns=columns_name)
+        enchant_result_pd_sorted = enchant_result_pd.sort_values(
+            by=['Id', 'Exp eff'], ascending=[True, False])
 
         self.enchant_result = enchant_result_pd_sorted
 
@@ -472,15 +492,17 @@ class ApplyGrind:
 
         if data_name == "Grind":
 
-            columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate',
-                            'Substats', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc", "",
-                            'GType', 'Grade', 'Stat')
+            columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate', '',
+                            'Spd', 'Atk%', 'Hp%', 'Def%', 'Crate', 'Cdmg', 'Res', 'Acc', 'Atk+', 'Hp+', 'Def+', '',
+                            'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc", "",
+                            'Type', 'Grade', 'Stat')
 
         elif data_name == "Enchant":
 
-            columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate',
-                            'Substats', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc", "",
-                            'Type', 'Enchant Grade', 'Stat', 'Id')
+            columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate', '',
+                            'Spd', 'Atk%', 'Hp%', 'Def%', 'Crate', 'Cdmg', 'Res', 'Acc', 'Atk+', 'Hp+', 'Def+', '',
+                            'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc", "",
+                            'Type', 'Grade', 'Stat', 'Id')
 
         return columns_name
 

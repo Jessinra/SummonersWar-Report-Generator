@@ -90,6 +90,7 @@ class ExcelFormatter:
                                                        'format': format_del_candidate})
         self.worksheet.conditional_format('W1:Z1600', {'type': '3_color_scale'})
 
+        # Rune Informations
         self.worksheet.set_column('A:G', None, format_center)
         self.worksheet.set_column('K:AA', None, format_center)
         self.worksheet.set_column('A:A', 5)
@@ -103,7 +104,8 @@ class ExcelFormatter:
         self.worksheet.set_column('I:I', 15, format_left_with_indent)
 
         self.worksheet.set_column('J:J', 0.3, format_border)  # border
-
+        
+        # Substats
         self.worksheet.set_column('K:K', 6)
         self.worksheet.set_column('L:L', 6)
         self.worksheet.set_column('M:M', 6)
@@ -117,7 +119,8 @@ class ExcelFormatter:
         self.worksheet.set_column('U:U', 6)
 
         self.worksheet.set_column('V:V', 0.3, format_border)
-
+        
+        # Efficiencies
         self.worksheet.set_column('W:W', 7.2)
         self.worksheet.set_column('X:X', 7.2)
         self.worksheet.set_column('Y:Y', 7.2)
@@ -178,31 +181,49 @@ class ExcelFormatter:
                                                        'criteria': 'containing',
                                                        'value': 'R',
                                                        'format': format_rare})
+        self.worksheet.conditional_format('G1:G1600', {'type': '3_color_scale'})
+        
+        # Color scale for substats
+        self.worksheet.conditional_format('K1:R1600', {'type': '3_color_scale',
+                                                       'min_color': '#e5eeff',
+                                                       'mid_color': '#96aedd',
+                                                       'max_color': '#3e74dd'})
 
-        self.worksheet.conditional_format('J2:J1600', {'type': 'text',
-                                                       'criteria': 'containing',
-                                                       'value': 'flat',
-                                                       'format': format_flat})
+        self.worksheet.conditional_format('S1:S1600', {'type': '3_color_scale',
+                                                       'min_color': '#f9e3f5',
+                                                       'mid_color': '#fca9ec',
+                                                       'max_color': '#ff7ce5'})
+        self.worksheet.conditional_format('T1:T1600', {'type': '3_color_scale',
+                                                       'min_color': '#f9e3f5',
+                                                       'mid_color': '#fca9ec',
+                                                       'max_color': '#ff7ce5'})
+        self.worksheet.conditional_format('U1:U1600', {'type': '3_color_scale',
+                                                       'min_color': '#f9e3f5',
+                                                       'mid_color': '#fca9ec',
+                                                       'max_color': '#ff7ce5'})
 
-        self.worksheet.conditional_format('R1:R1600', {'type': 'text',
+        # Color scale for efficiency
+        self.worksheet.conditional_format('W1:Z1600', {'type': '3_color_scale'})
+
+
+
+        self.worksheet.conditional_format('AD1:AD1600', {'type': 'text',
                                                        'criteria': 'containing',
                                                        'value': 'Legend',
                                                        'format': format_legend})
 
-        self.worksheet.conditional_format('R1:R1600', {'type': 'text',
+        self.worksheet.conditional_format('AD1:AD1600', {'type': 'text',
                                                        'criteria': 'containing',
                                                        'value': 'Hero',
                                                        'format': format_hero})
-        self.worksheet.conditional_format('R2:R1600', {'type': 'text',
+        self.worksheet.conditional_format('AD2:AD1600', {'type': 'text',
                                                        'criteria': 'containing',
                                                        'value': 'Rare',
                                                        'format': format_rare})
 
-        self.worksheet.conditional_format('G1:G1600', {'type': '3_color_scale'})
-        self.worksheet.conditional_format('K1:N1600', {'type': '3_color_scale'})
-
+        # Rune Informations
         self.worksheet.set_column('A:G', None, format_center)
-        self.worksheet.set_column('K:AA', None, format_center)
+        self.worksheet.set_column('K:AE', None, format_center)
         self.worksheet.set_column('A:A', 5)
         self.worksheet.set_column('B:B', 13.5)
         self.worksheet.set_column('C:C', 5)
@@ -212,21 +233,40 @@ class ExcelFormatter:
         self.worksheet.set_column('G:G', 4.33)
         self.worksheet.set_column('H:H', 18.6, format_left_with_indent)
         self.worksheet.set_column('I:I', 15, format_left_with_indent)
-        self.worksheet.set_column('J:J', 49, format_left_with_indent)
+        
+        self.worksheet.set_column('J:J', 0.3, format_border)  # border
 
-        self.worksheet.set_column('K:K', 7.2)
-        self.worksheet.set_column('L:L', 7.2)
-        self.worksheet.set_column('M:M', 7.2)
-        self.worksheet.set_column('N:N', 7.2)
-        self.worksheet.set_column('O:O', 15)
+        # Substats
+        self.worksheet.set_column('K:K', 6)
+        self.worksheet.set_column('L:L', 6)
+        self.worksheet.set_column('M:M', 6)
+        self.worksheet.set_column('N:N', 6)
+        self.worksheet.set_column('O:O', 6)
+        self.worksheet.set_column('P:P', 6)
+        self.worksheet.set_column('Q:Q', 6)
+        self.worksheet.set_column('R:R', 6)
+        self.worksheet.set_column('S:S', 6)
+        self.worksheet.set_column('T:T', 6)
+        self.worksheet.set_column('U:U', 6)
 
-        self.worksheet.set_column('P:P', 0.3, format_border)
+        self.worksheet.set_column('V:V', 0.3, format_border)
 
-        self.worksheet.set_column('Q:Q', 13.5)
-        self.worksheet.set_column('R:R', 8)
-        self.worksheet.set_column('S:S', 9.2)
+        # Efficiencies
+        self.worksheet.set_column('W:W', 7.2)
+        self.worksheet.set_column('X:X', 7.2)
+        self.worksheet.set_column('Y:Y', 7.2)
+        self.worksheet.set_column('Z:Z', 7.2)
 
-        self.worksheet.autofilter('A1:S1600')
+        self.worksheet.set_column('AA:AA', 15)
+
+        self.worksheet.set_column('AB:AB', 0.3, format_border)
+
+        # Grind section
+        self.worksheet.set_column('AC:AC', 13.5)
+        self.worksheet.set_column('AD:AD', 8)
+        self.worksheet.set_column('AE:AE', 9.2)
+
+        self.worksheet.autofilter('A1:AE1600')
         self.worksheet.set_row(0, 58, format_header_grind)
         self.worksheet.freeze_panes(1, 0)
 
@@ -263,31 +303,49 @@ class ExcelFormatter:
                                                        'criteria': 'containing',
                                                        'value': 'R',
                                                        'format': format_rare})
+        self.worksheet.conditional_format('G1:G1600', {'type': '3_color_scale'})
+        
+        # Color scale for substats
+        self.worksheet.conditional_format('K1:R1600', {'type': '3_color_scale',
+                                                       'min_color': '#e5eeff',
+                                                       'mid_color': '#96aedd',
+                                                       'max_color': '#3e74dd'})
 
-        self.worksheet.conditional_format('J2:J1600', {'type': 'text',
-                                                       'criteria': 'containing',
-                                                       'value': 'flat',
-                                                       'format': format_flat})
+        self.worksheet.conditional_format('S1:S1600', {'type': '3_color_scale',
+                                                       'min_color': '#f9e3f5',
+                                                       'mid_color': '#fca9ec',
+                                                       'max_color': '#ff7ce5'})
+        self.worksheet.conditional_format('T1:T1600', {'type': '3_color_scale',
+                                                       'min_color': '#f9e3f5',
+                                                       'mid_color': '#fca9ec',
+                                                       'max_color': '#ff7ce5'})
+        self.worksheet.conditional_format('U1:U1600', {'type': '3_color_scale',
+                                                       'min_color': '#f9e3f5',
+                                                       'mid_color': '#fca9ec',
+                                                       'max_color': '#ff7ce5'})
 
-        self.worksheet.conditional_format('R1:R1600', {'type': 'text',
+        # Color scale for efficiency
+        self.worksheet.conditional_format('W1:Z1600', {'type': '3_color_scale'})
+
+
+
+        self.worksheet.conditional_format('AD1:AD1600', {'type': 'text',
                                                        'criteria': 'containing',
                                                        'value': 'Legend',
                                                        'format': format_legend})
 
-        self.worksheet.conditional_format('R1:R1600', {'type': 'text',
+        self.worksheet.conditional_format('AD1:AD1600', {'type': 'text',
                                                        'criteria': 'containing',
                                                        'value': 'Hero',
                                                        'format': format_hero})
-        self.worksheet.conditional_format('R2:R1600', {'type': 'text',
+        self.worksheet.conditional_format('AD2:AD1600', {'type': 'text',
                                                        'criteria': 'containing',
                                                        'value': 'Rare',
                                                        'format': format_rare})
 
-        self.worksheet.conditional_format('G1:G1600', {'type': '3_color_scale'})
-        self.worksheet.conditional_format('K1:N1600', {'type': '3_color_scale'})
-
+        # Rune Informations
         self.worksheet.set_column('A:G', None, format_center)
-        self.worksheet.set_column('K:AA', None, format_center)
+        self.worksheet.set_column('K:AE', None, format_center)
         self.worksheet.set_column('A:A', 5)
         self.worksheet.set_column('B:B', 13.5)
         self.worksheet.set_column('C:C', 5)
@@ -297,20 +355,39 @@ class ExcelFormatter:
         self.worksheet.set_column('G:G', 4.33)
         self.worksheet.set_column('H:H', 18.6, format_left_with_indent)
         self.worksheet.set_column('I:I', 15, format_left_with_indent)
-        self.worksheet.set_column('J:J', 49, format_left_with_indent)
+        
+        self.worksheet.set_column('J:J', 0.3, format_border)  # border
 
-        self.worksheet.set_column('K:K', 7.2)
-        self.worksheet.set_column('L:L', 7.2)
-        self.worksheet.set_column('M:M', 7.2)
-        self.worksheet.set_column('N:N', 7.2)
-        self.worksheet.set_column('O:O', 15)
+        # Substats
+        self.worksheet.set_column('K:K', 6)
+        self.worksheet.set_column('L:L', 6)
+        self.worksheet.set_column('M:M', 6)
+        self.worksheet.set_column('N:N', 6)
+        self.worksheet.set_column('O:O', 6)
+        self.worksheet.set_column('P:P', 6)
+        self.worksheet.set_column('Q:Q', 6)
+        self.worksheet.set_column('R:R', 6)
+        self.worksheet.set_column('S:S', 6)
+        self.worksheet.set_column('T:T', 6)
+        self.worksheet.set_column('U:U', 6)
 
-        self.worksheet.set_column('P:P', 0.3, format_border)
+        self.worksheet.set_column('V:V', 0.3, format_border)
+        
+        # Efficiencies
+        self.worksheet.set_column('W:W', 7.2)
+        self.worksheet.set_column('X:X', 7.2)
+        self.worksheet.set_column('Y:Y', 7.2)
+        self.worksheet.set_column('Z:Z', 7.2)
 
-        self.worksheet.set_column('Q:Q', 13.5)
-        self.worksheet.set_column('R:R', 8)
-        self.worksheet.set_column('S:S', 9.2)
-        self.worksheet.set_column('T:T', 9.2)
+        self.worksheet.set_column('AA:AA', 15)
 
-        self.worksheet.autofilter('A1:T1600')
+        self.worksheet.set_column('AB:AB', 0.3, format_border)
+
+        # Enchant sections
+        self.worksheet.set_column('AC:AC', 13.5)
+        self.worksheet.set_column('AD:AD', 8)
+        self.worksheet.set_column('AE:AE', 9.2)
+
+        self.worksheet.autofilter('A1:AF1600')
         self.worksheet.set_row(0, 58, format_header_grind)
+        self.worksheet.freeze_panes(1, 0)

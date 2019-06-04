@@ -25,9 +25,10 @@ class Rune:
         self.enchant_type = None
         self.enchant_value = 0
         self.efficiency = 0
-        self.exp_efficiency = 0
+        self.exp_efficiency_12 = 0
+        self.exp_efficiency_15 = 0
         self.efficiency_without_grind = 0
-        self.exp_efficiency_without_grind = 0
+        self.exp_efficiency_12_without_grind = 0
         self.enhance_coeficient = 0
 
         self._set_innate_if_available(rune['prefix_eff'])
@@ -174,8 +175,8 @@ class Rune:
         Set rune's expected efficiency with and without grind
         """
 
-        self.exp_efficiency = self._rune_expected_efficiency(include_grind=True)
-        self.exp_efficiency_without_grind = self._rune_expected_efficiency(include_grind=False)
+        self.exp_efficiency_12, self.exp_efficiency_15 = self._rune_expected_efficiency(include_grind=True)
+        self.exp_efficiency_12_without_grind, _ = self._rune_expected_efficiency(include_grind=False)
 
     def _rune_expected_efficiency(self, include_grind):
         """
@@ -186,24 +187,28 @@ class Rune:
         :rtype: float
         """
 
-        primary_score = self._forecast_primary_score()
+        primary_score_12 = self._forecast_primary_score(exp_level=12)
+        primary_score_15 = self._forecast_primary_score(exp_level=15)
         innate_score = self._compute_innate_score()
         substats_roll_score = self._compute_roll_score(include_grind)
         owned_stat_upgrade_score = self._forecast_owned_stat_upgrade_score()
         new_stat_upgrade_score = self._forecast_new_stat_upgrade_score()
 
-        return Rune._compute_final_score(primary_score, innate_score, substats_roll_score, new_stat_upgrade_score, owned_stat_upgrade_score)
+        exp_eff_at_12 = Rune._compute_final_score(primary_score_12, innate_score, substats_roll_score, new_stat_upgrade_score, owned_stat_upgrade_score)
+        exp_eff_at_15 = Rune._compute_final_score(primary_score_15, innate_score, substats_roll_score, new_stat_upgrade_score, owned_stat_upgrade_score)
 
-    def _forecast_primary_score(self):
+        return exp_eff_at_12, exp_eff_at_15
+
+    def _forecast_primary_score(self, exp_level):
         """
         Predict partial efficiency score based on primary stat,
         assumption: normally rune upgraded to +12 at least
         """
 
-        if self.level >= 12:
+        if exp_level > 12:
             return 1
         else:
-            return 0.75  # around +12
+            return 0.75  # expected at +12
 
     def _forecast_owned_stat_upgrade_score(self):
 
@@ -372,7 +377,7 @@ class Rune:
         return owned_stats
 
     def _set_rune_enhance_coeficient(self):
-        self.enhance_coeficient = 0.5 * self.efficiency_without_grind + 0.25 * self.exp_efficiency + 0.25 * self.efficiency
+        self.enhance_coeficient = 0.5 * self.efficiency_without_grind + 0.25 * self.exp_efficiency_12 + 0.25 * self.efficiency
 
     def set_loc(self, rune_user):
 
@@ -405,8 +410,9 @@ class Rune:
         print("enchant_type", self.enchant_type)
         print("enchant_value", self.enchant_value)
         print("efficiency", self.efficiency)
-        print("exp_efficiency", self.exp_efficiency)
+        print("exp_efficiency +12", self.exp_efficiency_12)
+        print("exp_efficiency +15", self.exp_efficiency_15)
         print("efficiency_without_grind", self.efficiency_without_grind)
-        print("exp_efficiency_without_grind", self.exp_efficiency_without_grind)
+        print("exp_efficiency_12_without_grind", self.exp_efficiency_12_without_grind)
         print("enhance_coeficient", self.enhance_coeficient)
         print("========================")

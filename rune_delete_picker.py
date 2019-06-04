@@ -80,7 +80,7 @@ class RuneDeletePicker:
                 continue
 
             monster_eff_map = self.increment_dict_value(monster_eff_map, current_rune.loc, current_rune.efficiency)
-            monster_exp_eff_map = self.increment_dict_value(monster_exp_eff_map, current_rune.loc, current_rune.exp_efficiency)
+            monster_exp_eff_map = self.increment_dict_value(monster_exp_eff_map, current_rune.loc, current_rune.exp_efficiency_15)
 
         # Average it
         for monster in monster_eff_map:
@@ -109,9 +109,10 @@ class RuneDeletePicker:
         rune_data += current_rune.dense_substats
         rune_data += (_separator_,
                       current_rune.efficiency,
-                      current_rune.exp_efficiency,
+                      current_rune.exp_efficiency_12,
+                      current_rune.exp_efficiency_15,
                       current_rune.efficiency_without_grind,
-                      current_rune.exp_efficiency_without_grind,
+                      current_rune.exp_efficiency_12_without_grind,
                       current_rune.loc)
 
         return [rune_data]
@@ -133,7 +134,7 @@ class RuneDeletePicker:
 
         columns_name = self.get_pd_column_name("Rune")
         parsed_runes_pd = pd.DataFrame(self.parsed_rune_result, columns=columns_name)
-        parsed_runes_pd_sorted = parsed_runes_pd.sort_values(by=['Exp eff'])
+        parsed_runes_pd_sorted = parsed_runes_pd.sort_values(by=['Exp eff 15'])
 
         self.parsed_rune_result = parsed_runes_pd_sorted
 
@@ -162,10 +163,10 @@ class RuneDeletePicker:
         if data_name == "Rune":
             columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate', '')
             columns_name += ('Spd', 'Atk%', 'Hp%', 'Def%', 'Crate', 'Cdmg', 'Res', 'Acc', 'Atk+', 'Hp+', 'Def+')
-            columns_name += ('', 'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc")
+            columns_name += ('', 'Eff', 'Exp eff 12', 'Exp eff 15', 'Ori-Eff', 'Ori-Exp eff 12', "Loc")
 
         elif data_name == "Monster eff":
-            columns_name = ('monster', 'avg real eff', 'avg exp eff')
+            columns_name = ('monster', 'avg real eff', 'avg exp eff 15')
 
         return columns_name
 

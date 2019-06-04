@@ -190,7 +190,7 @@ class ApplyGrind:
             'enhance_coeficient'), reverse=True)
 
     @staticmethod
-    def grind_applicable(grindstone, rune, eff_threshold=0.73):
+    def grind_applicable(grindstone, rune, eff_threshold=0.75):
         """
         Check whether a grind can be used and passed certain constraints
         :param grindstone: which grindstone to be used
@@ -208,7 +208,7 @@ class ApplyGrind:
             return False
 
         # Bad rune should not be grinded
-        if rune.exp_efficiency_without_grind <= eff_threshold:
+        if rune.exp_efficiency_12_without_grind <= eff_threshold:
             return False
 
         # Check the rune's substat
@@ -267,9 +267,10 @@ class ApplyGrind:
         rune_data += rune.dense_substats
         rune_data += (_separator,
                       rune.efficiency,
-                      rune.exp_efficiency,
+                      rune.exp_efficiency_12,
+                      rune.exp_efficiency_15,
                       rune.efficiency_without_grind,
-                      rune.exp_efficiency_without_grind,
+                      rune.exp_efficiency_12_without_grind,
                       rune.loc,
                       _separator)
 
@@ -441,9 +442,10 @@ class ApplyGrind:
         rune_data += rune.dense_substats
         rune_data += (_separator,
                       rune.efficiency,
-                      rune.exp_efficiency,
+                      rune.exp_efficiency_12,
+                      rune.exp_efficiency_15,
                       rune.efficiency_without_grind,
-                      rune.exp_efficiency_without_grind,
+                      rune.exp_efficiency_12_without_grind,
                       rune.loc,
                       _separator)
 
@@ -462,7 +464,7 @@ class ApplyGrind:
         columns_name = self.get_pd_column_name("Grind")
         grind_result_pd = pd.DataFrame(self.grind_result, columns=columns_name)
         grind_result_pd_sorted = grind_result_pd.sort_values(
-            by=['Exp eff'], ascending=[False])
+            by=['Exp eff 15'], ascending=[False])
 
         self.grind_result = grind_result_pd_sorted
 
@@ -475,7 +477,7 @@ class ApplyGrind:
         enchant_result_pd = pd.DataFrame(
             self.enchant_result, columns=columns_name)
         enchant_result_pd_sorted = enchant_result_pd.sort_values(
-            by=['Exp eff'], ascending=[False])
+            by=['Exp eff 15'], ascending=[False])
 
         self.enchant_result = enchant_result_pd_sorted
 
@@ -494,14 +496,14 @@ class ApplyGrind:
 
             columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate', '',
                             'Spd', 'Atk%', 'Hp%', 'Def%', 'Crate', 'Cdmg', 'Res', 'Acc', 'Atk+', 'Hp+', 'Def+', '',
-                            'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc", "",
+                            'Eff', 'Exp eff 12', 'Exp eff 15', 'Ori-Eff', 'Ori-Exp eff 12', "Loc", "",
                             'Type', 'Grade', 'Stat')
 
         elif data_name == "Enchant":
 
             columns_name = ('Type', 'Slot', 'Grade', 'Base', 'Stars', 'Lv', 'Main', 'Innate', '',
                             'Spd', 'Atk%', 'Hp%', 'Def%', 'Crate', 'Cdmg', 'Res', 'Acc', 'Atk+', 'Hp+', 'Def+', '',
-                            'Eff', 'Exp eff', 'Ori-Eff', 'Ori-Exp eff', "Loc", "",
+                            'Eff', 'Exp eff 12', 'Exp eff 15', 'Ori-Eff', 'Ori-Exp eff 12', "Loc", "",
                             'Type', 'Grade', 'Stat', 'Id')
 
         return columns_name

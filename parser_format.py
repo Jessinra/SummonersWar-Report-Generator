@@ -84,15 +84,21 @@ class ExcelFormatter:
                                                        'value': '20',
                                                        'format': format_del_candidate})
 
-        self.worksheet.conditional_format('Z1:Z1600', {'type': 'bottom',
+        self.worksheet.conditional_format('Y1:Y1600', {'type': 'bottom',
                                                        'criteria': '%',
                                                        'value': '20',
                                                        'format': format_del_candidate})
-        self.worksheet.conditional_format('W1:Z1600', {'type': '3_color_scale'})
+
+        self.worksheet.conditional_format('AA1:AA1600', {'type': 'bottom',
+                                                       'criteria': '%',
+                                                       'value': '20',
+                                                       'format': format_del_candidate})
+                                                       
+        self.worksheet.conditional_format('W1:AA1600', {'type': '3_color_scale'})
 
         # Rune Informations
         self.worksheet.set_column('A:G', None, format_center)
-        self.worksheet.set_column('K:AA', None, format_center)
+        self.worksheet.set_column('K:AC', None, format_center)
         self.worksheet.set_column('A:A', 5)
         self.worksheet.set_column('B:B', 13.5)
         self.worksheet.set_column('C:C', 5)
@@ -125,10 +131,11 @@ class ExcelFormatter:
         self.worksheet.set_column('X:X', 7.2)
         self.worksheet.set_column('Y:Y', 7.2)
         self.worksheet.set_column('Z:Z', 7.2)
+        self.worksheet.set_column('AA:AA', 7.2)
 
-        self.worksheet.set_column('AA:AA', 15)
+        self.worksheet.set_column('AB:AB', 15)
 
-        self.worksheet.autofilter('A1:AA1600')
+        self.worksheet.autofilter('A1:AB1600')
         self.worksheet.set_row(0, 58, format_header)
         self.worksheet.freeze_panes(1, 0)
 
@@ -203,27 +210,27 @@ class ExcelFormatter:
                                                        'max_color': '#ff7ce5'})
 
         # Color scale for efficiency
-        self.worksheet.conditional_format('W1:Z1600', {'type': '3_color_scale'})
+        self.worksheet.conditional_format('W1:AA1600', {'type': '3_color_scale'})
 
 
 
-        self.worksheet.conditional_format('AD1:AD1600', {'type': 'text',
+        self.worksheet.conditional_format('AE1:AE1600', {'type': 'text',
                                                        'criteria': 'containing',
                                                        'value': 'Legend',
                                                        'format': format_legend})
 
-        self.worksheet.conditional_format('AD1:AD1600', {'type': 'text',
+        self.worksheet.conditional_format('AE1:AE1600', {'type': 'text',
                                                        'criteria': 'containing',
                                                        'value': 'Hero',
                                                        'format': format_hero})
-        self.worksheet.conditional_format('AD2:AD1600', {'type': 'text',
+        self.worksheet.conditional_format('AE2:AE1600', {'type': 'text',
                                                        'criteria': 'containing',
                                                        'value': 'Rare',
                                                        'format': format_rare})
 
         # Rune Informations
         self.worksheet.set_column('A:G', None, format_center)
-        self.worksheet.set_column('K:AE', None, format_center)
+        self.worksheet.set_column('K:AF', None, format_center)
         self.worksheet.set_column('A:A', 5)
         self.worksheet.set_column('B:B', 13.5)
         self.worksheet.set_column('C:C', 5)
@@ -256,17 +263,18 @@ class ExcelFormatter:
         self.worksheet.set_column('X:X', 7.2)
         self.worksheet.set_column('Y:Y', 7.2)
         self.worksheet.set_column('Z:Z', 7.2)
+        self.worksheet.set_column('AA:AA', 7.2)
 
-        self.worksheet.set_column('AA:AA', 15)
+        self.worksheet.set_column('AB:AB', 15)
 
-        self.worksheet.set_column('AB:AB', 0.3, format_border)
+        self.worksheet.set_column('AC:AC', 0.3, format_border)
 
         # Grind section
-        self.worksheet.set_column('AC:AC', 13.5)
-        self.worksheet.set_column('AD:AD', 8)
-        self.worksheet.set_column('AE:AE', 9.2)
+        self.worksheet.set_column('AD:AD', 13.5)
+        self.worksheet.set_column('AE:AE', 8)
+        self.worksheet.set_column('AF:AF', 9.2)
 
-        self.worksheet.autofilter('A1:AE1600')
+        self.worksheet.autofilter('A1:AF1600')
         self.worksheet.set_row(0, 58, format_header_grind)
         self.worksheet.freeze_panes(1, 0)
 
@@ -325,20 +333,20 @@ class ExcelFormatter:
                                                        'max_color': '#ff7ce5'})
 
         # Color scale for efficiency
-        self.worksheet.conditional_format('W1:Z1600', {'type': '3_color_scale'})
+        self.worksheet.conditional_format('W1:AA1600', {'type': '3_color_scale'})
 
 
 
-        self.worksheet.conditional_format('AD1:AD1600', {'type': 'text',
+        self.worksheet.conditional_format('AE1:AE1600', {'type': 'text',
                                                        'criteria': 'containing',
                                                        'value': 'Legend',
                                                        'format': format_legend})
 
-        self.worksheet.conditional_format('AD1:AD1600', {'type': 'text',
+        self.worksheet.conditional_format('AE1:AE1600', {'type': 'text',
                                                        'criteria': 'containing',
                                                        'value': 'Hero',
                                                        'format': format_hero})
-        self.worksheet.conditional_format('AD2:AD1600', {'type': 'text',
+        self.worksheet.conditional_format('AE2:AE1600', {'type': 'text',
                                                        'criteria': 'containing',
                                                        'value': 'Rare',
                                                        'format': format_rare})
@@ -378,15 +386,16 @@ class ExcelFormatter:
         self.worksheet.set_column('X:X', 7.2)
         self.worksheet.set_column('Y:Y', 7.2)
         self.worksheet.set_column('Z:Z', 7.2)
+        self.worksheet.set_column('AA:AA', 7.2)
 
-        self.worksheet.set_column('AA:AA', 15)
+        self.worksheet.set_column('AB:AB', 15)
 
-        self.worksheet.set_column('AB:AB', 0.3, format_border)
+        self.worksheet.set_column('AC:AC', 0.3, format_border)
 
         # Enchant sections
-        self.worksheet.set_column('AC:AC', 13.5)
-        self.worksheet.set_column('AD:AD', 8)
-        self.worksheet.set_column('AE:AE', 9.2)
+        self.worksheet.set_column('AD:AD', 13.5)
+        self.worksheet.set_column('AE:AE', 8)
+        self.worksheet.set_column('AF:AF', 9.2)
 
         self.worksheet.autofilter('A1:AF1600')
         self.worksheet.set_row(0, 58, format_header_grind)

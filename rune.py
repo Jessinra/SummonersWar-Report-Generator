@@ -28,6 +28,7 @@ class Rune:
         self.exp_efficiency = 0
         self.efficiency_without_grind = 0
         self.exp_efficiency_without_grind = 0
+        self.enhance_coeficient = 0
 
         self._set_innate_if_available(rune['prefix_eff'])
         self._set_substats_with_grind(rune['sec_eff'])
@@ -38,6 +39,7 @@ class Rune:
 
         self._set_rune_efficiencies()
         self._set_rune_expected_efficiency()
+        self._set_rune_enhance_coeficient()
 
     def _set_innate_if_available(self, innate):
 
@@ -369,6 +371,9 @@ class Rune:
         owned_stats += self._get_owned_substats_include_innate()
         return owned_stats
 
+    def _set_rune_enhance_coeficient(self):
+        self.enhance_coeficient = 0.5 * self.efficiency_without_grind + 0.25 * self.exp_efficiency + 0.25 * self.efficiency
+
     def set_loc(self, rune_user):
 
         self.loc = rune_user
@@ -403,4 +408,5 @@ class Rune:
         print("exp_efficiency", self.exp_efficiency)
         print("efficiency_without_grind", self.efficiency_without_grind)
         print("exp_efficiency_without_grind", self.exp_efficiency_without_grind)
+        print("enhance_coeficient", self.enhance_coeficient)
         print("========================")

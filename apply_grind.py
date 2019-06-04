@@ -187,7 +187,7 @@ class ApplyGrind:
         grindstones.sort(key=operator.attrgetter('stat'))
         grindstones.sort(key=operator.attrgetter('grade_int'), reverse=True)
         runes.sort(key=operator.attrgetter(
-            'efficiency_without_grind'), reverse=True)
+            'enhance_coeficient'), reverse=True)
 
     @staticmethod
     def grind_applicable(grindstone, rune, eff_threshold=0.73):
@@ -475,7 +475,7 @@ class ApplyGrind:
         enchant_result_pd = pd.DataFrame(
             self.enchant_result, columns=columns_name)
         enchant_result_pd_sorted = enchant_result_pd.sort_values(
-            by=['Id', 'Exp eff'], ascending=[True, False])
+            by=['Exp eff'], ascending=[False])
 
         self.enchant_result = enchant_result_pd_sorted
 

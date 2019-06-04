@@ -204,11 +204,12 @@ class Rune:
         Predict partial efficiency score based on primary stat,
         assumption: normally rune upgraded to +12 at least
         """
+        star_coefficient = self.stars / 6
 
         if exp_level > 12:
-            return 1
+            return 1 * star_coefficient
         else:
-            return 0.75  # expected at +12
+            return 0.75 * star_coefficient # expected at +12
 
     def _forecast_owned_stat_upgrade_score(self):
 

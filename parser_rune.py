@@ -19,6 +19,10 @@ class RuneParser:
         return DataMappingCollection.get_rune_set(set_id)
 
     @staticmethod
+    def get_rune_stars(stars):
+        return int(str(stars)[-1])
+
+    @staticmethod
     def get_rune_grade_shorten(class_id):
         return DataMappingCollection.get_rune_class_shorten(class_id)
 

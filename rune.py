@@ -9,7 +9,7 @@ class Rune:
     def __init__(self, rune):
 
         self.slot = rune['slot_no']
-        self.stars = rune['class']
+        self.stars = RuneParser.get_rune_stars(rune['class'])
         self.level = rune['upgrade_curr']
         self.grade = RuneParser.get_rune_grade_shorten(rune['rank'])
         self.base_grade = RuneParser.get_rune_grade_shorten(rune['extra'])
@@ -29,6 +29,7 @@ class Rune:
         self.exp_efficiency_15 = 0
         self.efficiency_without_grind = 0
         self.exp_efficiency_12_without_grind = 0
+        self.exp_efficiency_15_without_grind = 0
         self.enhance_coeficient = 0
 
         self._set_innate_if_available(rune['prefix_eff'])
@@ -176,7 +177,7 @@ class Rune:
         """
 
         self.exp_efficiency_12, self.exp_efficiency_15 = self._rune_expected_efficiency(include_grind=True)
-        self.exp_efficiency_12_without_grind, _ = self._rune_expected_efficiency(include_grind=False)
+        self.exp_efficiency_12_without_grind, self.exp_efficiency_15_without_grind = self._rune_expected_efficiency(include_grind=False)
 
     def _rune_expected_efficiency(self, include_grind):
         """

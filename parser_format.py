@@ -353,7 +353,7 @@ class ExcelFormatter:
 
         # Rune Informations
         self.worksheet.set_column('A:G', None, format_center)
-        self.worksheet.set_column('K:AE', None, format_center)
+        self.worksheet.set_column('K:AF', None, format_center)
         self.worksheet.set_column('A:A', 5)
         self.worksheet.set_column('B:B', 13.5)
         self.worksheet.set_column('C:C', 5)

@@ -825,6 +825,9 @@ class DataMappingCollection:
         "22614": "Geldnir",
         "22615": "Herteit",
 
+        "230": "Vampire Lord",
+        "23015": "Eirgar",        
+
         "15105": "Devilmon",
         "14314": "Rainbowmon",
 
@@ -1034,6 +1037,12 @@ class DataMappingCollection:
         3: 'Rare',
         4: 'Hero',
         5: 'Legend',
+        10: 'Ancient Unknown',
+        11: 'Ancient Common',
+        12: 'Ancient Magic',
+        13: 'Ancient Rare',
+        14: 'Ancient Hero',
+        15: 'Ancient Legend',
     }
 
     _rune_class_shorten = {
@@ -1044,6 +1053,12 @@ class DataMappingCollection:
         3: 'R',  # rare
         4: 'H',  # hero
         5: 'L',  # legend
+        10: 'AU',  # ancient unknown
+        11: 'AC', # ancient common
+        12: 'AM', # ancient magic
+        13: 'AR', # ancient rare
+        14: 'AH', # ancient hero
+        15: 'AL', # ancient legend
     }
 
     _rune_primary_stat_max_value = {
@@ -1057,8 +1072,8 @@ class DataMappingCollection:
         "SPD": 42,
         "CRate": 58,
         "CDmg": 80,
-        "RES": 65,
-        "ACC": 65,
+        "RES": 64,
+        "ACC": 64,
     }
 
     _rune_sub_stat_max_value = {

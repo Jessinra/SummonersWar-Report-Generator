@@ -190,7 +190,7 @@ class ApplyGrind:
             'enhance_coeficient'), reverse=True)
 
     @staticmethod
-    def grind_applicable(grindstone, rune, eff_threshold=0.75):
+    def grind_applicable(grindstone, rune, eff_threshold=0.82):
         """
         Check whether a grind can be used and passed certain constraints
         :param grindstone: which grindstone to be used
@@ -208,7 +208,7 @@ class ApplyGrind:
             return False
 
         # Bad rune should not be grinded
-        if rune.exp_efficiency_12_without_grind <= eff_threshold:
+        if rune.exp_efficiency_15_without_grind <= eff_threshold:
             return False
 
         # Check the rune's substat
@@ -335,7 +335,7 @@ class ApplyGrind:
         enchantgems.sort(key=operator.attrgetter('grade_int'), reverse=True)
 
     @staticmethod
-    def enchant_applicable(enchantgem, rune):
+    def enchant_applicable(enchantgem, rune, eff_threshold=0.72):
         """
         Check whether a enchantgem can be used
         :param enchantgem: which enchantgem to be used
@@ -345,6 +345,10 @@ class ApplyGrind:
         :return: is enchantgem usable
         :rtype: bool
         """
+
+        # Bad rune should not be enchanted
+        if rune.exp_efficiency_15_without_grind <= eff_threshold:
+            return False
 
         # If runes is enchanted already (assumption that enchant into good stat)
         if rune.enchant_type is not None:

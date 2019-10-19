@@ -47,11 +47,7 @@ class WizardIdGetter:
             self._set_wizard_id()
 
     def _is_wizard_id_valid(self):
-
-        if self.wizard_id is None:
-            return False  # Not initialized
-        else:
-            return self.wizard_id.isdigit() or "visit-" in self.wizard_id
+        return self.wizard_id is not None
 
     @staticmethod
     def _display_wizard_id_invalid():

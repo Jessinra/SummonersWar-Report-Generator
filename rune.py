@@ -13,9 +13,10 @@ class Rune:
         self.level = rune['upgrade_curr']
         self.grade = RuneParser.get_rune_grade_shorten(rune['rank'])
         self.base_grade = RuneParser.get_rune_grade_shorten(rune['extra'])
-        self.rune_set = RuneParser.get_rune_set(rune['set_id'])
         self.main = RuneParser.get_rune_stat(rune['pri_eff'])
 
+        self.is_ancient = None
+        self.rune_set = None
         self.loc = None
         self.innate = None
         self.substats = []
@@ -32,6 +33,8 @@ class Rune:
         self.exp_efficiency_15_without_grind = 0
         self.enhance_coeficient = 0
 
+        self._set_is_ancient(rune['rank'])
+        self._set_rune_set(rune['set_id'])
         self._set_innate_if_available(rune['prefix_eff'])
         self._set_substats_with_grind(rune['sec_eff'])
         self._set_substats_without_grind(rune['sec_eff'])
@@ -42,6 +45,17 @@ class Rune:
         self._set_rune_efficiencies()
         self._set_rune_expected_efficiency()
         self._set_rune_enhance_coeficient()
+
+    def _set_is_ancient(self, rank_id):
+
+        self.is_ancient = rank_id >= 10
+
+    def _set_rune_set(self, set_id):
+
+        _ancient = "Ancient-" if self.is_ancient else ""
+        _set = RuneParser.get_rune_set(set_id)
+
+        self.rune_set = "{}{}".format(_ancient, _set)
 
     def _set_innate_if_available(self, innate):
 
@@ -195,8 +209,10 @@ class Rune:
         owned_stat_upgrade_score = self._forecast_owned_stat_upgrade_score()
         new_stat_upgrade_score = self._forecast_new_stat_upgrade_score()
 
-        exp_eff_at_12 = Rune._compute_final_score(primary_score_12, innate_score, substats_roll_score, new_stat_upgrade_score, owned_stat_upgrade_score)
-        exp_eff_at_15 = Rune._compute_final_score(primary_score_15, innate_score, substats_roll_score, new_stat_upgrade_score, owned_stat_upgrade_score)
+        exp_eff_at_12 = Rune._compute_final_score(primary_score_12, innate_score, substats_roll_score,
+                                                  new_stat_upgrade_score, owned_stat_upgrade_score)
+        exp_eff_at_15 = Rune._compute_final_score(primary_score_15, innate_score, substats_roll_score,
+                                                  new_stat_upgrade_score, owned_stat_upgrade_score)
 
         return exp_eff_at_12, exp_eff_at_15
 
@@ -210,7 +226,7 @@ class Rune:
         if exp_level > 12:
             return 1 * star_coefficient
         else:
-            return 0.75 * star_coefficient # expected at +12
+            return 0.75 * star_coefficient  # expected at +12
 
     def _forecast_owned_stat_upgrade_score(self):
 

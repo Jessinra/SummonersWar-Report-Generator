@@ -24,7 +24,7 @@ class RuneParser:
 
     @staticmethod
     def get_rune_grade_shorten(class_id):
-        return DataMappingCollection.get_rune_class_shorten(class_id)
+        return DataMappingCollection.get_rune_grade_shorten(class_id)
 
     @staticmethod
     def get_rune_stat(stat):

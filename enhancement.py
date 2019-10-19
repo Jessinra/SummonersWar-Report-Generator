@@ -19,6 +19,7 @@ class Enhancement:
         self.id = str(enhancement['craft_item_id'])
         self.type = None
 
+        self.is_ancient = None
         self.rune_set = None
         self.stat = None
         self.grade = None
@@ -26,13 +27,21 @@ class Enhancement:
         self.min_value = 0
         self.max_value = 0
 
+        self.set_is_ancient()
         self.set_enhancement_sets()
         self.set_enhancement_stat()
         self.set_enhancement_grade()
 
+    def set_is_ancient(self):
+        self.is_ancient = int(self.type_id[-2:]) >= 10
+
     def set_enhancement_sets(self):
+
         set_id = int(self.type_id[0:-4])
-        self.rune_set = DataMappingCollection.get_rune_set(set_id)
+        _set = DataMappingCollection.get_rune_set(set_id)
+        _ancient = "Ancient-" if self.is_ancient else ""
+
+        self.rune_set = "{}{}".format(_ancient, _set)
 
     def set_enhancement_stat(self):
         type_id = int(self.type_id[-4:-2])
@@ -40,7 +49,7 @@ class Enhancement:
 
     def set_enhancement_grade(self):
         self.grade_int = int(self.type_id[-1])
-        self.grade = DataMappingCollection.get_rune_class(self.grade_int)
+        self.grade = DataMappingCollection.get_rune_grade(self.grade_int)
 
     def __eq__(self, other):
         return self.type_id == other.type_id

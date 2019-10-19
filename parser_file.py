@@ -3,6 +3,7 @@ from parser_format import ExcelFormatter
 import json
 import os
 import pandas.io.formats.excel
+import subprocess, sys
 
 pandas.io.formats.excel.header_style = None
 
@@ -253,5 +254,17 @@ class ExcelFile:
         print(exception)
         os.system("pause")
 
-    def open_file(self):
-        os.startfile(self.filename)
+    def open_file(self, platform="Windows"):
+
+        # Windows platform
+        try:
+            os.startfile(self.filename)
+        except:
+            pass
+        
+        # Linux platform
+        try:
+            opener ="open" if sys.platform == "darwin" else "xdg-open"
+            subprocess.call([opener, self.filename])
+        except:
+            print("No suitable file opener found")

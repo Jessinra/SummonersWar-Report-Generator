@@ -1029,7 +1029,7 @@ class DataMappingCollection:
         12: "ACC",
     }
 
-    _rune_class = {
+    _rune_grade = {
 
         0: 'Unknown',
         1: 'Common',
@@ -1045,7 +1045,7 @@ class DataMappingCollection:
         15: 'Ancient Legend',
     }
 
-    _rune_class_shorten = {
+    _rune_grade_shorten = {
 
         0: 'U',  # unknown
         1: 'C',  # common
@@ -1220,12 +1220,12 @@ class DataMappingCollection:
         return DataMappingCollection._rune_stat_type[id]
 
     @staticmethod
-    def get_rune_class(id):
-        return DataMappingCollection._rune_class[id]
+    def get_rune_grade(id):
+        return DataMappingCollection._rune_grade[id]
 
     @staticmethod
-    def get_rune_class_shorten(id):
-        return DataMappingCollection._rune_class_shorten[id]
+    def get_rune_grade_shorten(id):
+        return DataMappingCollection._rune_grade_shorten[id]
 
     @staticmethod
     def get_rune_primary_stat_max_value(stat):

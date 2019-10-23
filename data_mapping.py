@@ -1246,7 +1246,7 @@ class DataMappingCollection:
 
     @staticmethod
     def _is_monster_id_valid(monster_id):
-        return int(monster_id[0:3]) in DataMappingCollection._monsters_name
+        return int(monster_id) in DataMappingCollection._monsters_name
 
     @staticmethod
     def _get_monster_awakened_name(monster_id):

@@ -1242,7 +1242,7 @@ class DataMappingCollection:
 
     @staticmethod
     def _is_monster_awakened(monster_id):
-        return monster_id[-2] == "1"
+        return int(monster_id[-2]) >= 1
 
     @staticmethod
     def _is_monster_id_valid(monster_id):

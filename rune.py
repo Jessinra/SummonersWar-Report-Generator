@@ -252,7 +252,7 @@ class Rune:
         count_good = self._count_owned_good_substats()
         count_bad = self._count_owned_bad_substats()
 
-        return count_good / (count_good + count_bad)
+        return count_good / max((count_good + count_bad), 1)
 
     def _count_owned_good_substats(self):
         """

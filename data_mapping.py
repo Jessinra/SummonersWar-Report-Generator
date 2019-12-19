@@ -884,7 +884,7 @@ class DataMappingCollection:
         22914: 'Emily',
         22915: 'Bella',
 
-        23005: 'Vampire Lord',
+        230: 'Vampire Lord',
         23015: 'Eirgar',
 
         231: 'Demon',
@@ -1135,11 +1135,11 @@ class DataMappingCollection:
         4: 'H',  # hero
         5: 'L',  # legend
         10: 'AU',  # ancient unknown
-        11: 'AC', # ancient common
-        12: 'AM', # ancient magic
-        13: 'AR', # ancient rare
-        14: 'AH', # ancient hero
-        15: 'AL', # ancient legend
+        11: 'AC',  # ancient common
+        12: 'AM',  # ancient magic
+        13: 'AR',  # ancient rare
+        14: 'AH',  # ancient hero
+        15: 'AL',  # ancient legend
     }
 
     _rune_primary_stat_max_value = {
@@ -1228,25 +1228,37 @@ class DataMappingCollection:
     def get_monster_name(monster_id):
 
         monster_id = str(monster_id)
-        is_awaken = DataMappingCollection._is_monster_awakened(monster_id)
+        is_awakened = DataMappingCollection._is_monster_awakened(monster_id)
+        is_secondary_awakened = DataMappingCollection._is_monster_secondary_awakened(monster_id)
+
+        if is_secondary_awakened:
+            monster_id = monster_id[:-2] + "1" + monster_id[-1]
+
         is_id_valid = DataMappingCollection._is_monster_id_valid(monster_id)
+        if not is_id_valid:
+            return "unknown {}".format(monster_id)
 
-        if is_awaken and is_id_valid:
-            return DataMappingCollection._get_monster_awakened_name(monster_id)
+        if is_awakened:
+            return "{}".format(DataMappingCollection._get_monster_awakened_name(monster_id))
 
-        elif not is_awaken and is_id_valid:
-            return DataMappingCollection._get_monster_unawakened_name(monster_id)
+        elif is_secondary_awakened:
+            return "{} (2A)".format(DataMappingCollection._get_monster_awakened_name(monster_id))
 
         else:
-            return "unknown {}".format(monster_id)
+            return "{}".format(DataMappingCollection._get_monster_unawakened_name(monster_id))
 
     @staticmethod
     def _is_monster_awakened(monster_id):
-        return int(monster_id[-2]) >= 1
+        return monster_id[-2] == "1"
+
+    @staticmethod
+    def _is_monster_secondary_awakened(monster_id):
+        return monster_id[-2] == "3"
 
     @staticmethod
     def _is_monster_id_valid(monster_id):
-        return int(monster_id) in DataMappingCollection._monsters_name
+        available_monsters = DataMappingCollection._monsters_name
+        return int(monster_id[:3]) in available_monsters or int(monster_id) in available_monsters
 
     @staticmethod
     def _get_monster_awakened_name(monster_id):

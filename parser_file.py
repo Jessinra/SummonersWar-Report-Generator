@@ -73,6 +73,7 @@ class FileParser:
         self.monster_list = None
         self.unit_list = None
         self.rune_list = None
+        self.RTA_rune_owner_mapping = None
         self.grind_enchant_list = None
 
         self._parse_file(wizard_id)
@@ -85,6 +86,7 @@ class FileParser:
         self._set_unit_list()
         self._set_rune_list()
         self._set_grind_enchant_list()
+        self._set_RTA_rune_owner_mapping()
 
     def _set_json_data(self, filename):
 
@@ -113,6 +115,10 @@ class FileParser:
         equipped_runes = self._parse_runes_equiped()
         self.rune_list = storage_runes + equipped_runes
 
+    def _set_RTA_rune_owner_mapping(self):
+
+        self.RTA_rune_owner_mapping = self._parse_RTA_runes()
+
     def _parse_runes_in_storage(self):
 
         try:
@@ -127,6 +133,14 @@ class FileParser:
             rune_list += FileParser._get_runes_from_monster(monster)
 
         return rune_list
+
+    def _parse_RTA_runes(self):
+
+        runes = {}
+        for rune in self.json_data["world_arena_rune_equip_list"]:
+            runes[rune['rune_id']] = rune['occupied_id']
+        
+        return runes
 
     @staticmethod
     def _get_runes_from_monster(monster):
@@ -186,6 +200,9 @@ class FileParser:
 
     def get_grind_enchant_list(self):
         return self.grind_enchant_list
+
+    def get_RTA_rune_owner_mapping(self):
+        return self.RTA_rune_owner_mapping
 
 
 class ExcelFile:

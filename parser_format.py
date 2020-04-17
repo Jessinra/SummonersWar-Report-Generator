@@ -133,7 +133,7 @@ class ExcelFormatter:
         self.worksheet.set_column('Z:Z', 7.2)
         self.worksheet.set_column('AA:AA', 7.2)
 
-        self.worksheet.set_column('AB:AB', 15)
+        self.worksheet.set_column('AB:AB', 25)
 
         self.worksheet.autofilter('A1:AB1600')
         self.worksheet.set_row(0, 58, format_header)
@@ -265,7 +265,7 @@ class ExcelFormatter:
         self.worksheet.set_column('Z:Z', 7.2)
         self.worksheet.set_column('AA:AA', 7.2)
 
-        self.worksheet.set_column('AB:AB', 15)
+        self.worksheet.set_column('AB:AB', 25)
 
         self.worksheet.set_column('AC:AC', 0.3, format_border)
 
@@ -388,7 +388,7 @@ class ExcelFormatter:
         self.worksheet.set_column('Z:Z', 7.2)
         self.worksheet.set_column('AA:AA', 7.2)
 
-        self.worksheet.set_column('AB:AB', 15)
+        self.worksheet.set_column('AB:AB', 25)
 
         self.worksheet.set_column('AC:AC', 0.3, format_border)
 

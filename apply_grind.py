@@ -16,6 +16,8 @@ class ApplyGrind:
         self.monster_list = []
         self.enhancement_list = []
 
+        self.RTA_rune_owner_mapping = None
+
         self.enchant_gem_inventory = {}
         self.grind_stone_inventory = {}
         self.rune_inventory = {}
@@ -58,6 +60,7 @@ class ApplyGrind:
         self.set_rune_list(file_parser)
         self.set_monster_list(file_parser)
         self.set_grind_enchant_list(file_parser)
+        self.set_RTA_rune_owner_mapping(file_parser)
 
     def set_rune_list(self, file_parser):
 
@@ -70,6 +73,10 @@ class ApplyGrind:
     def set_grind_enchant_list(self, file_parser):
 
         self.enhancement_list = file_parser.get_grind_enchant_list()
+
+    def set_RTA_rune_owner_mapping(self, file_parser):
+
+        self.RTA_rune_owner_mapping = file_parser.get_RTA_rune_owner_mapping()
 
     def construct_enhancement_inventory(self):
         """
@@ -98,10 +105,31 @@ class ApplyGrind:
         inventory = self.rune_inventory
         for rune in self.rune_list:
             current_rune = Rune(rune)
-            rune_user = RuneParser.get_rune_user(
-                self.monster_list, rune["occupied_id"])
+            rune_user = self.get_combined_rune_owner(rune)
             current_rune.set_loc(rune_user)
             inventory = self.group_item_by_set(current_rune, inventory)
+
+    def get_combined_rune_owner(self, rune):
+
+        rta_rune_user = self._get_RTA_rune_owner(rune["rune_id"])
+        rune_user = RuneParser.get_rune_user(self.monster_list, rune["occupied_id"])
+
+        if rta_rune_user == "":
+            return rune_user
+        elif rune_user == "":
+            return rta_rune_user
+        else:
+            return "{} | {}".format(rta_rune_user, rune_user)
+
+    def _get_RTA_rune_owner(self, rune_id):
+
+        if rune_id not in self.RTA_rune_owner_mapping:
+            return ""
+
+        user_id = self.RTA_rune_owner_mapping[rune_id]
+        user = RuneParser.get_rune_user(self.monster_list, user_id)
+        
+        return "(RTA) {}".format(user) 
 
     @staticmethod
     def group_item_by_set(item, inventory):
@@ -230,7 +258,7 @@ class ApplyGrind:
                 return substat_to_be_grinded <= grindstone.max_value - 1  # 1 Point gap
 
         elif "flat" in grindstone.stat:
-            return substat_to_be_grinded < grindstone.max_value * 0.85
+            return substat_to_be_grinded < grindstone.max_value * 0.75
 
         else:
             if grindstone.grade == "Legend":

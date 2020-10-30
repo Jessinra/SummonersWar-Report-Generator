@@ -7,7 +7,7 @@ class EnhancementFactory:
 
         craft_type = enhancement['craft_type']
 
-        if craft_type == 1 or craft_type == 3:
+        if craft_type % 2 != 0:
             return EnchantGem(enhancement)
         else:
             return GrindStone(enhancement)
